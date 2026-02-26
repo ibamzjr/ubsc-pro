@@ -39,7 +39,11 @@ export default function MembershipModal({
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="hidden w-1/2 flex-shrink-0 md:block">
-                    <img src={left} className="h-full w-full object-cover" alt="Membership" />
+                    <img
+                        src={left}
+                        className="h-full w-full object-cover"
+                        alt="Membership"
+                    />
                 </div>
 
                 <div className="flex w-full flex-col overflow-y-auto p-8 md:w-1/2 md:p-12">
@@ -52,18 +56,18 @@ export default function MembershipModal({
                         <X size={16} />
                     </button>
 
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col  text-left">
                         <img
                             src="/ubsc-blue.svg"
                             alt="UB Sport Center"
                             className="h-10 w-auto"
                         />
 
-                        <h2 className="mt-6 text-2xl font-bold leading-tight text-gray-900">
-                            Bergabung Sekarang Juga Untuk Menjadi Member Resmi
-                            Kami
+                        <h2 className="mt-6 text-2xl font-semibold leading-tight text-gray-900">
+                            Bergabung Sekarang Juga Untuk <br />
+                            Menjadi Member Resmi Kami
                         </h2>
-                        <p className="mt-2 text-xs text-gray-500">
+                        <p className="mt-2 text-sm text-left font-regular text-black opacity-60">
                             Fokus Konsisten Raih Target Sehat Kamu
                         </p>
                     </div>
