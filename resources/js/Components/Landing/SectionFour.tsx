@@ -126,9 +126,7 @@ export default function SectionFour() {
 
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA] pb-0 pt-12">
-
-            <div className="mx-auto max-w-7xl px-8">
-
+            <div className="mx-auto px-24">
                 <SectionDivider
                     number="02"
                     title="Fasilitas"
@@ -136,11 +134,10 @@ export default function SectionFour() {
                 />
 
                 <div className="mb-16 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-
                     <div className="lg:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm font-semibold text-gray-800">
+                            <span className="text-sm lg:text-2xl font-regular text-gray-800">
                                 Fasilitas Kami
                             </span>
                         </div>
@@ -151,23 +148,22 @@ export default function SectionFour() {
                     </div>
 
                     <div className="lg:col-span-6">
-                        <h2 className="max-w-lg text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl text-center items-center">
                             Dukungan Penuh Untuk Setiap Cabang Olahraga
                         </h2>
                     </div>
 
                     <div className="flex h-full flex-col lg:col-span-3 lg:pt-2">
-                        <p className="text-sm leading-relaxed text-gray-600">
+                        <p className="text-sm lg:text-xl font-regular leading-relaxed text-gray-600">
                             Kami menghadirkan berbagai pilihan fasilitas
-                            olahraga indoor dan fitness untuk kenyamanan
-                            latihan Anda.
+                            olahraga indoor dan fitness untuk kenyamanan latihan
+                            Anda.
                         </p>
-                        <p className="mt-12 text-right text-sm font-bold text-gray-900 lg:text-left">
+                        <p className="mt-12 text-right text-sm font-regular text-gray-900 lg:text-left">
                             {String(facilities.length).padStart(2, "0")}/
                             {String(facilities.length + 14).padStart(2, "0")}
                         </p>
                     </div>
-
                 </div>
             </div>
 
@@ -188,7 +184,6 @@ export default function SectionFour() {
                     <ArenaCard key={item.id} item={item} />
                 ))}
             </div>
-
         </section>
     );
 }

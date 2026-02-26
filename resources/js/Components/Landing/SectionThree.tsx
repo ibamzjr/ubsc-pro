@@ -4,7 +4,7 @@ export interface Location {
     image: string;
     title: string;
     subtitle: string;
-    slug?: string; 
+    slug?: string;
 }
 
 interface LocationCardProps {
@@ -15,12 +15,12 @@ interface LocationCardProps {
 function LocationCard({ location, onViewDetail }: LocationCardProps) {
     return (
         <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white">
-            <div className="aspect-[4/3] w-full overflow-hidden bg-gray-200">
+            <div className="aspect-[4/3] w-full overflow-hidden p-2">
                 {location.image ? (
                     <img
                         src={location.image}
                         alt={location.title}
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-xl"
                         draggable={false}
                     />
                 ) : (
@@ -30,10 +30,10 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
 
             <div className="flex items-center justify-between p-5">
                 <div>
-                    <p className="text-lg font-bold text-gray-900">
+                    <p className="text-lg font-semibold text-black">
                         {location.title}
                     </p>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm font-regular text-black opacity-60">
                         {location.subtitle}
                     </p>
                 </div>
@@ -41,7 +41,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
                 <button
                     type="button"
                     onClick={() => onViewDetail?.(location)}
-                    className="flex-shrink-0 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+                    className="flex-shrink-0 rounded-full bg-[#FF0000] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 border border-gray-400"
                 >
                     Lihat Detail
                 </button>
@@ -86,8 +86,7 @@ export default function SectionThree() {
 
     return (
         <section id="locations" className="w-full bg-white pb-20 pt-12">
-            <div className="mx-auto max-w-7xl px-8">
-
+            <div className="mx-auto px-10 lg:px-24">
                 <SectionDivider
                     number="01"
                     title="Lokasi Kami"
@@ -98,32 +97,33 @@ export default function SectionThree() {
                     <div className="lg:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm font-semibold text-gray-800">
+                            <span className="text-sm lg:text-xl font-semibold text-gray-800">
                                 Eksplorasi Cabang Kami
                             </span>
                         </div>
                     </div>
 
                     <div className="lg:col-span-6">
-                        <h2 className="text-5xl font-bold leading-tight tracking-tight text-gray-900">
-                            Pusat Olahraga saat ini ada di Berbagai Lokasi
+                        <h2 className="text-5xl font-medium leading-tight tracking-tight text-center text-gray-900">
+                            Pusat Olahraga saat ini <br /> ada di Berbagai
+                            Lokasi
                         </h2>
                     </div>
 
                     <div className="lg:col-span-3 lg:pt-2">
-                        <p className="text-sm leading-relaxed text-gray-600">
-                            Hadir di tiga lokasi strategis untuk memastikan
-                            Anda selalu punya akses ke fasilitas olahraga
-                            terbaik kapan saja.
+                        <p className="text-sm lg:text-xl leading-relaxed text-black">
+                            Hadir di tiga lokasi strategis untuk memastikan Anda
+                            selalu punya akses ke fasilitas olahraga terbaik
+                            kapan saja.
                         </p>
                     </div>
                 </div>
 
                 <div className="mb-6 flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-lg lg:text-xl font-regular text-gray-900">
                         Lokasi Strategis Kami
                     </span>
-                    <span className="text-lg font-medium text-gray-900">
+                    <span className="text-lg lg:text-xl font-medium text-gray-900">
                         01/{String(total).padStart(2, "0")}
                     </span>
                 </div>
@@ -138,11 +138,10 @@ export default function SectionThree() {
                     ))}
                 </div>
 
-                <div className="mt-12 flex items-center justify-between text-lg font-medium text-gray-900">
+                <div className="mt-5 lg:text-2xl flex items-center justify-between text-lg font-regular text-gray-900">
                     <span>Pengalaman olahraga</span>
                     <span>Demi Kemajuan</span>
                 </div>
-
             </div>
         </section>
     );
