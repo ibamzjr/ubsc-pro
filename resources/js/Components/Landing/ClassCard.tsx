@@ -2,8 +2,8 @@ import { Link } from "@inertiajs/react";
 import { ArrowUpRight, MapPin } from "lucide-react";
 
 export interface ClassItem {
-    id: string;       // e.g. "/Kelas 001/"
-    title: string;    // e.g. "/Yoga"
+    id: string; // e.g. "/Kelas 001/"
+    title: string; // e.g. "/Yoga"
     location: string;
     category: string;
     image: string;
@@ -37,7 +37,10 @@ export default function ClassCard({ item }: ClassCardProps) {
 
                 <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-semibold">
                     <span className="flex items-center gap-1 bg-black px-3 py-1.5 text-white">
-                        <MapPin size={10} className="flex-shrink-0 opacity-75" />
+                        <MapPin
+                            size={10}
+                            className="flex-shrink-0 opacity-75"
+                        />
                         {item.location}
                     </span>
                     <span

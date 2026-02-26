@@ -1,9 +1,8 @@
 import { MapPin } from "lucide-react";
 
-
 interface FacilityBadgeProps {
-    location: string; 
-    category: string; 
+    location: string;
+    category: string;
 }
 
 export default function FacilityBadge({

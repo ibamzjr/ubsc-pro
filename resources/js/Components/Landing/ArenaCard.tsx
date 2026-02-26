@@ -2,8 +2,8 @@ import { Link } from "@inertiajs/react";
 import { ArrowUpRight, MapPin } from "lucide-react";
 
 export interface ArenaItem {
-    id: string;       // e.g. "/Terbuka 001/"
-    title: string;    // e.g. "/Sepak Bola"
+    id: string; // e.g. "/Terbuka 001/"
+    title: string; // e.g. "/Sepak Bola"
     location: string;
     category: string;
     image: string;
