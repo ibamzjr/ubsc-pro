@@ -60,10 +60,9 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "BDO Grotesk";
-    src: url("/fonts/BDOGrotesk-Medium.otf") format("opentype");
+    src: url("/fonts/BDOGrotesk-Regular.otf") format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -76,11 +75,17 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "BDO Grotesk";
-    src: url("/fonts/BDOGrotesk-Medium.otf") format("opentype");
+    src: url("/fonts/BDOGrotesk-Semibold.otf") format("opentype");
     font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "BDO Grotesk";
+    src: url("/fonts/BDOGrotesk-Bold.otf") format("opentype");
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
