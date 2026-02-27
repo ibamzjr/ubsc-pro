@@ -1,7 +1,7 @@
 export default function SectionEight() {
     return (
         <section id="map" className="w-full bg-gray-50 pt-12 pb-12">
-            <div className="mx-auto max-w px-24">
+            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
                 <div className="grid h-[360px] grid-cols-1 items-stretch gap-6 lg:h-[450px] lg:grid-cols-12">
                     <div className="group relative w-full overflow-hidden rounded-3xl lg:col-span-4">
                         <img

@@ -5,6 +5,7 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import PriceCard from "@/Components/Landing/PriceCard";
 import type { PriceItem } from "@/Components/Landing/PriceCard";
+import futsal from "@/../assets/images/futsal.png";
 
 const PAGE_SIZE = 4;
 
@@ -35,7 +36,7 @@ const DUMMY_PRICES: PriceItem[] = [
         title: "Futsal",
         price: "45.000 - 50.000 / Jam",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1551958219-acbc595d5c41?w=600&q=80",
+        image: futsal,
     },
 ];
 
@@ -98,8 +99,8 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
     const nextDisabled = page >= totalPages - 1;
 
     return (
-        <section id="pricing" className="w-full bg-white pb-24 pt-12 px-24">
-            <div className="mx-auto">
+        <section id="pricing" className="w-full bg-white  pt-12 pb-24">
+            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
                 <SectionDivider
                     number="04"
                     title="Daftar harga"
@@ -159,25 +160,10 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
                         </div>
                     </div>
 
-                    <div className="col-span-1 hidden flex-col gap-4 lg:col-span-7 lg:flex">
+                    <div className="col-span-1 flex flex-col gap-4 lg:col-span-7">
                         {visiblePrices.map((item) => (
                             <PriceCard key={item.id} item={item} />
                         ))}
-                    </div>
-
-                    <div className="col-span-1 lg:hidden">
-                        <div className="overflow-hidden" ref={emblaRef}>
-                            <div className="flex gap-4">
-                                {prices.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="w-[85vw] flex-[0_0_auto] sm:w-[70vw]"
-                                    >
-                                        <PriceCard item={item} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

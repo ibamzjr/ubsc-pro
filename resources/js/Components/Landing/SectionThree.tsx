@@ -53,7 +53,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
 const DUMMY_LOCATIONS: Location[] = [
     {
         id: "1",
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+        image: "/assets/images/Kantor Pusat.avif",
         title: "UB Sport Center Veteran",
         subtitle: "Pusat Kebugaran Utama",
         slug: "veteran",
@@ -67,7 +67,7 @@ const DUMMY_LOCATIONS: Location[] = [
     },
     {
         id: "3",
-        image: "https://images.unsplash.com/photo-1496256654245-8f3d0ef3bebe?w=800&q=80",
+        image: "/assets/images/Kantor Pusat.avif",
         title: "UB Sport Center Transmart",
         subtitle: "Cabang Modern & Lifestyle",
         slug: "transmart",
@@ -85,15 +85,15 @@ export default function SectionThree() {
     };
 
     return (
-        <section id="locations" className="w-full bg-white pb-20 pt-12">
-            <div className="mx-auto px-10 lg:px-24">
+        <section id="locations" className="w-full bg-white">
+            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-24 lg:py-24">
                 <SectionDivider
                     number="01"
                     title="Lokasi Kami"
                     subtitle="01 homepage"
                 />
 
-                <div className="mb-16 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+                <div className="mb-10 lg:mb-16 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
                     <div className="lg:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
@@ -104,14 +104,14 @@ export default function SectionThree() {
                     </div>
 
                     <div className="lg:col-span-6">
-                        <h2 className="text-5xl font-medium leading-tight tracking-tight text-center text-gray-900">
+                        <h2 className="text-3xl lg:text-5xl font-medium leading-tight tracking-tight lg:text-center text-gray-900">
                             Pusat Olahraga saat ini <br /> ada di Berbagai
                             Lokasi
                         </h2>
                     </div>
 
                     <div className="lg:col-span-3 lg:pt-2">
-                        <p className="text-sm lg:text-xl leading-relaxed text-black">
+                        <p className="text-sm lg:text-xl leading-relaxed text-black opacity-50 lg:opacity-100">
                             Hadir di tiga lokasi strategis untuk memastikan Anda
                             selalu punya akses ke fasilitas olahraga terbaik
                             kapan saja.
@@ -120,10 +120,10 @@ export default function SectionThree() {
                 </div>
 
                 <div className="mb-6 flex items-center justify-between">
-                    <span className="text-lg lg:text-xl font-regular text-gray-900">
+                    <span className="text-sm lg:text-xl font-regular text-gray-900">
                         Lokasi Strategis Kami
                     </span>
-                    <span className="text-lg lg:text-xl font-medium text-gray-900">
+                    <span className="text-sm lg:text-xl font-medium text-gray-900">
                         01/{String(total).padStart(2, "0")}
                     </span>
                 </div>
@@ -138,7 +138,7 @@ export default function SectionThree() {
                     ))}
                 </div>
 
-                <div className="mt-5 lg:text-2xl flex items-center justify-between text-lg font-regular text-gray-900">
+                <div className="mt-5 text-sm lg:text-2xl flex items-center justify-between font-regular text-gray-900">
                     <span>Pengalaman olahraga</span>
                     <span>Demi Kemajuan</span>
                 </div>

@@ -6,6 +6,7 @@ import ArenaCard from "@/Components/Landing/ArenaCard";
 import type { Facility } from "@/Components/Landing/FacilityRow";
 import type { ClassItem } from "@/Components/Landing/ClassCard";
 import type { ArenaItem } from "@/Components/Landing/ArenaCard";
+import futsal from "@/../assets/images/futsal.png";
 
 const DUMMY_FACILITIES: Facility[] = [
     {
@@ -43,8 +44,7 @@ const DUMMY_FACILITIES: Facility[] = [
         name: "Lapangan Futsal",
         location: "Veteran",
         category: "Arena Dalam",
-        bgImage:
-            "https://images.unsplash.com/photo-1551958219-acbc595d5c41?w=1400&q=80",
+        bgImage: futsal,
         href: "#",
         slug: "lapangan-futsal",
     },
@@ -115,7 +115,7 @@ const DUMMY_ARENAS: ArenaItem[] = [
         title: "/Futsal Dieng",
         location: "Dieng",
         category: "Arena Lapangan",
-        image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
+        image: futsal,
         href: "#",
     },
 ];
@@ -125,8 +125,8 @@ export default function SectionFour() {
     const facilities = DUMMY_FACILITIES;
 
     return (
-        <section id="facilities" className="w-full bg-[#FAFAFA] pb-0 pt-12">
-            <div className="mx-auto px-24">
+        <section id="facilities" className="w-full bg-[#FAFAFA]">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-24">
                 <SectionDivider
                     number="02"
                     title="Fasilitas"
@@ -141,25 +141,37 @@ export default function SectionFour() {
                                 Fasilitas Kami
                             </span>
                         </div>
-
-                        <div className="mt-6">
+                        <div className="mt-6 hidden lg:block">
                             <ReservasiButton label="Mulai Reservasi" />
                         </div>
                     </div>
 
                     <div className="lg:col-span-6">
-                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl text-center items-center">
+                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl lg:text-center items-center">
                             Dukungan Penuh Untuk Setiap Cabang Olahraga
                         </h2>
                     </div>
 
                     <div className="flex h-full flex-col lg:col-span-3 lg:pt-2">
-                        <p className="text-sm lg:text-xl font-regular leading-relaxed text-gray-600">
-                            Kami menghadirkan berbagai pilihan fasilitas
-                            olahraga indoor dan fitness untuk kenyamanan latihan
-                            Anda.
-                        </p>
-                        <p className="mt-12 text-right text-sm font-regular text-gray-900 lg:text-left">
+                        <div className="flex flex-col gap-2 lg:block">
+                            <p className="text-sm lg:text-xl font-regular leading-relaxed text-black opacity-50 lg:opacity-100">
+                                Kami menghadirkan berbagai pilihan fasilitas
+                                olahraga indoor dan fitness untuk kenyamanan
+                                latihan Anda.
+                            </p>
+                            <div className="mt-4 flex items-center gap-2 lg:hidden">
+                                <ReservasiButton label="Mulai Reservasi" />
+                                <span className="text-sm font-regular text-gray-900">
+                                    {String(facilities.length).padStart(2, "0")}
+                                    /
+                                    {String(facilities.length + 14).padStart(
+                                        2,
+                                        "0",
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <p className="mt-12 text-right text-sm font-regular text-gray-900 lg:text-left hidden lg:block">
                             {String(facilities.length).padStart(2, "0")}/
                             {String(facilities.length + 14).padStart(2, "0")}
                         </p>

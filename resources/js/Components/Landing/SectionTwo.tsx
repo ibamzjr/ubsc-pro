@@ -37,7 +37,7 @@ export default function SectionTwo() {
     return (
         <>
             <section id="about" className="overflow-x-clip bg-white">
-                <div className="mx-auto max-w px-24 py-24">
+                <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-24 lg:py-24">
                     <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-20">
                         <div className="lg:col-span-5">
                             <div className="flex items-center gap-2">
@@ -96,39 +96,50 @@ export default function SectionTwo() {
                                 </div>
                             </div>
 
-                            <div className="mt-14 flex items-end justify-between gap-6">
+                            <div className="mt-0 flex items-end justify-between gap-6">
                                 <GymTrafficBadge variant="reversed" />
 
-                                <div className="h-44 w-44 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200">
-                                    <img
-                                        src={right}
-                                        className="h-full w-full object-cover"
-                                        alt="Athlete"
-                                    />
+                                <div className="flex-1 hidden lg:flex items-end justify-end">
+                                    <div className="w-64 h-64 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
+                                        <img
+                                            src={right}
+                                            className="h-full w-full object-cover"
+                                            alt="Athlete"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-0 pl-24">
+                <div className="mt-0 px-6 py-8 sm:px-10 lg:pl-24">
                     <ImageCarousel images={DUMMY_IMAGES} />
 
-                    <div className="mx-auto max-w-8xl px-24">
-                        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-                            <h2 className="text-4xl lg:text-5xl font-medium tracking-tight text-gray-900">
-                                Jelajahi Program Kami
-                            </h2>
-
-                            <p className="text-lg leading-relaxed font-regular text-gray-600">
-                                Jelajahi berbagai program pilihan dan aktivitas
-                                menarik yang dirancang khusus untuk anda.
-                            </p>
-
-                            <p className="text-lg leading-relaxed font-regular text-gray-600">
-                                Jangan lewatkan kesempatan untuk bergabung dalam
-                                berbagai agenda rutin dan penawaran spesial.
-                            </p>
+                    {/* Mobile: two-column grid for heading and description, hide third paragraph */}
+                    <div className="mx-auto max-w px-6 sm:px-10 lg:px-24">
+                        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {/* Mobile: two columns, desktop: three columns */}
+                            <div className="md:col-span-1">
+                                <h2 className="text-2xl sm:text-3xl lg:text-5xl font-medium tracking-tight text-gray-900">
+                                    Jelajahi Program Kami
+                                </h2>
+                            </div>
+                            <div className="md:col-span-1">
+                                <p className="text-base sm:text-lg leading-relaxed font-regular text-gray-600">
+                                    Jelajahi berbagai program pilihan dan
+                                    aktivitas menarik yang dirancang khusus
+                                    untuk anda.
+                                </p>
+                            </div>
+                            {/* Hide on mobile, show on desktop */}
+                            <div className="hidden md:block md:col-span-1">
+                                <p className="text-base sm:text-lg leading-relaxed font-regular text-gray-600">
+                                    Jangan lewatkan kesempatan untuk bergabung
+                                    dalam berbagai agenda rutin dan penawaran
+                                    spesial.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

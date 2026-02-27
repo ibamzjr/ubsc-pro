@@ -54,7 +54,7 @@ export default function SectionFive() {
                     "linear-gradient(180deg, #000000 0%, #09172B 50%, #173859 100%)",
             }}
         >
-            <div className="mx-auto flex flex-col px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-24">
                 <SectionDivider
                     number="03"
                     title="Dampak"
@@ -62,9 +62,9 @@ export default function SectionFive() {
                     theme="dark"
                 />
 
-                <div className="mt-4 grid grid-cols-1 gap-12 lg:grid-cols-12">
+                <div className="lg:mt-4 grid grid-cols-1 gap-12 lg:grid-cols-12">
                     <div className="col-span-1 lg:col-span-8">
-                        <h2 className="text-5xl font-bold leading-[1.1] tracking-tight lg:text-7xl">
+                        <h2 className="text-3xl font-clash font-medium leading-[1.1] tracking-tight lg:text-7xl">
                             Standar baru berolahraga
                             <br />
                             hanya di{" "}
@@ -128,13 +128,13 @@ export default function SectionFive() {
                     </div>
                 </div>
 
-                <div className="mt-32 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                <div className="mt-32 grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
                     {STATS.map((stat) => (
                         <div key={stat.value} className="flex flex-col">
-                            <span className="mb-6 text-6xl font-medium tracking-tighter lg:text-8xl">
+                            <span className="mb-6 text-6xl font-regular tracking-tighter lg:text-8xl">
                                 {stat.value}
                             </span>
-                            <p className="max-w-[250px] text-sm leading-relaxed text-gray-400">
+                            <p className="max-w-[250px] font-light text-sm leading-relaxed text-gray-400">
                                 {stat.description}
                             </p>
                         </div>
