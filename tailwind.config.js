@@ -17,6 +17,7 @@ export default {
                 monument: ['"Monument Extended"', "sans-serif"],
                 clash: ['"Clash Display"', "sans-serif"],
                 bdo: ['"BDO Grotesk"', "sans-serif"],
+                archivo: ["Archivo", "sans-serif"],
             },
             colors: {
                 navy: {
@@ -26,9 +27,9 @@ export default {
                 },
                 "accent-red": "#D50000",
             },
-            maxWidth: {
-                "8xl": "88rem", // 1408px
-            },
+            // maxWidth: {
+            //     "8xl": "88rem", // 1408px
+            // },
         },
     },
 
