@@ -39,8 +39,13 @@ export default function Footer() {
     const [ctaHovered, setCtaHovered] = useState(false);
 
     return (
-        <footer className="relative w-full overflow-hidden bg-[#0B1221] pt-20 text-white">
-            <div className="mx-auto w-full px-24">
+        <footer
+            className="relative w-full overflow-hidden pt-20 text-white"
+            style={{
+                background: "linear-gradient(180deg, #000000 0%, #173859 100%)",
+            }}
+        >
+            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
                 <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
                     <div className="lg:col-span-7">
                         <h2 className="font-semibold mb-12 text-4xl leading-tight tracking-tight lg:text-5xl">
@@ -198,7 +203,6 @@ export default function Footer() {
 
                 <hr className="mb-8 border-gray-800" />
 
-
                 <div className="mb-12 hidden items-center justify-between lg:flex">
                     <span className="font-clash text-sm text-gray-400">
                         02/{" "}
@@ -230,23 +234,46 @@ export default function Footer() {
                 </div>
             </div>
 
-            <div className="mt-auto w-full p-16">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full select-none object-cover object-top"
-                >
-                    <source src="/reels/vintage.mp4" type="video/mp4" />
-                    {/* Fallback ke image jika video tidak tersedia */}
-                    <img
-                        src={ubsc}
-                        alt="UBSC"
-                        className="w-full select-none object-cover object-top"
-                        draggable={false}
+            <div className="mt-auto w-full relative">
+                <div className="w-full aspect-[6/1] relative md:p-[0vw] overflow-hidden rounded-[1vw]">
+                    {/* Video Layer */}
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full select-none object-cover object-center"
+                    >
+                        <source src="/reels/footer.mp4" type="video/mp4" />
+                        {/* Fallback ke image jika video tidak tersedia */}
+                        <img
+                            src={ubsc}
+                            alt="UBSC"
+                            className="w-full h-full select-none object-cover object-center"
+                            draggable={false}
+                        />
+                    </video>
+                    {/* Blue Color Dodge Overlay */}
+                    <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                            background: "rgba(0,120,255,0.75)",
+                            mixBlendMode: "screen",
+                        }}
                     />
-                </video>
+                    {/* Large UBSC Text Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                        <span
+                            className="font-archivo font-semibold uppercase text-black opacity-50 leading-none w-full h-full flex items-center justify-center text-[min(30vw,43vh)] tracking-[-0.04em]"
+                            style={{
+                                textShadow: "0 2px 32px #0008",
+                                lineHeight: 1,
+                            }}
+                        >
+                            UBSC
+                        </span>
+                    </div>
+                </div>
             </div>
         </footer>
     );
