@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ArrowUp } from "lucide-react";
-import ubsc from "../../../assets/images/ubsc-footer.png";
 import ig from "../../../assets/icons/ig.svg";
 import x from "../../../assets/icons/x.svg";
 import tiktok from "../../../assets/icons/tiktok.svg";
@@ -103,7 +102,7 @@ export default function Footer() {
                                 <span className="lg:hidden">Lokasi</span>
                                 <span className="hidden lg:inline">Alamat</span>
                             </h3>
-                            <p className="font-bdo max-w-[200px] text-sm leading-relaxed text-white font-regular">
+                            <p className="font-bdo max-w-[220px] text-sm leading-relaxed text-white font-regular">
                                 Jl. Terusan Cibogo No.1, <br />
                                 Penanggungan, Kec. Klojen, <br />
                                 Kota Malang, Jawa Timur 65113
@@ -140,7 +139,7 @@ export default function Footer() {
                             <h3 className="font-bdo mb-4 text-lg font-semibold">
                                 Sosial Media
                             </h3>
-                            <div className="flex flex-wrap items-center gap-6">
+                            <div className="flex flex-wrap items-center gap-20">
                                 {SOCIAL_LINKS.map((s) => (
                                     <a
                                         key={s.label}
@@ -245,13 +244,7 @@ export default function Footer() {
                         className="w-full h-full select-none object-cover object-center"
                     >
                         <source src="/reels/footer.mp4" type="video/mp4" />
-                        {/* Fallback ke image jika video tidak tersedia */}
-                        <img
-                            src={ubsc}
-                            alt="UBSC"
-                            className="w-full h-full select-none object-cover object-center"
-                            draggable={false}
-                        />
+                        
                     </video>
                     {/* Blue Color Dodge Overlay */}
                     <div
