@@ -89,7 +89,20 @@
     font-style: normal;
     font-display: swap;
 }
-
+@font-face {
+    font-family: "Archivo";
+    src: url("/fonts/Archivo_Expanded-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Archivo";
+    src: url("/fonts/Archivo_Expanded-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
 @layer base {
     html {
         scroll-behavior: smooth;
