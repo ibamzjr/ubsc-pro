@@ -9,13 +9,13 @@ export default function GymTrafficBadge({
 }: GymTrafficBadgeProps) {
     if (variant === "reversed") {
         return (
-            <div className="flex items-stretch overflow-hidden rounded-lg">
-                <div className="flex items-center bg-red-600 lg:px-12 lg:py-8">
+            <div className="flex items-stretch overflow-hidden rounded-lg mt-5 lg:mt-0">
+                <div className="flex items-center bg-red-600 px-8 py-4  lg:px-12 lg:py-8">
                     <span className="font-clash text-sm lg:text-xl font-bold text-white">
                         High Occupancy
                     </span>
                 </div>
-                <div className="flex items-center gap-2 bg-gray-200 lg:px-12 lg:py-3">
+                <div className="flex items-center gap-2 bg-gray-200 px-5 py-4 lg:px-12 lg:py-3">
                     <img
                         src={gym}
                         alt="Gym Traffic"
@@ -30,7 +30,7 @@ export default function GymTrafficBadge({
     }
 
     return (
-        <div className="flex items-stretch overflow-hidden rounded-lg border border-black">
+        <div className="flex items-stretch overflow-hidden rounded-lg border border-black mt-16 lg:mt-0">
             <div className="flex items-center gap-2 bg-black px-5 py-4 lg:px-10 lg:py-3">
                 <img
                     src={gym}
