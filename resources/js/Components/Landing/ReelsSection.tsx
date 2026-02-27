@@ -8,52 +8,18 @@ const DUMMY_REELS: ReelItem[] = [
     {
         id: 1,
         date: "31/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=600&q=80",
-        subtitle: "Kegiatan Latihan FC Yang Berlangsung di",
+        thumbnail: "reels/thumbnail 1.png",
         title: "SPORT CENTER UB.",
         isActive: true,
-        videoUrl: "/reels/sg.mp4", // Sample video URL for testing
+        videoUrl: "/reels/reels ubsc 1.mp4",
     },
     {
         id: 2,
         date: "16/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80",
+        thumbnail: "reels/thumbnail 2.png",
         subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
         title: "SPORT CENTER UB.",
-    },
-    {
-        id: 3,
-        date: "16/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",
-        subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
-        title: "SPORT CENTER UB.",
-    },
-    {
-        id: 4,
-        date: "16/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
-        subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
-        title: "SPORT CENTER UB.",
-    },
-    {
-        id: 5,
-        date: "16/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
-        subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
-        title: "SPORT CENTER UB.",
-    },
-    {
-        id: 6,
-        date: "16/12 2025",
-        thumbnail:
-            "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80",
-        subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
-        title: "SPORT CENTER UB.",
+        videoUrl: "/reels/reels ubsc 2.mp4",
     },
 ];
 
@@ -119,8 +85,8 @@ export default function ReelsSection({
     const [linkHovered, setLinkHovered] = useState(false);
 
     return (
-        <div className="mt-32 flex flex-col">
-            <div className="mx-auto w-full px-24">
+        <div className="mt-10 flex flex-col">
+            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
                 <div className="mb-6 flex items-center justify-between">
                     <span className="rounded-full bg-white px-5 py-2 text-sm font-bold text-black">
                         Sport center
@@ -143,7 +109,6 @@ export default function ReelsSection({
             </div>
 
             <div className="flex items-stretch">
-
                 <div className="relative z-10 hidden w-48 flex-shrink-0 flex-col justify-between pb-2 pl-8 md:flex lg:pl-24">
                     <span className="text-xl font-semibold text-white">
                         Sorotan
@@ -173,7 +138,7 @@ export default function ReelsSection({
                 </div>
             </div>
 
-            <div className="mx-auto mt-16 w-full max-w-7xl  px-8 pt-6">
+            <div className="mx-auto mt-2 w-full px-8 pt-6">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex gap-3 md:hidden">
                         <NavBtn onClick={scrollPrev} label="Previous reel">
@@ -184,7 +149,7 @@ export default function ReelsSection({
                         </NavBtn>
                     </div>
 
-                    <span className="flex-1 text-center text-sm font-medium text-white">
+                    <span className="flex-1 text-center text-sm font-medium text-white overflow-hidden">
                         Welcome Sport Center.
                     </span>
 

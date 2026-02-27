@@ -62,7 +62,6 @@ const DUMMY_NEWS: NewsItem[] = [
     },
 ];
 
-
 interface NewsSectionProps {
     news?: NewsItem[];
 }
@@ -79,7 +78,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
     const [linkHovered, setLinkHovered] = useState(false);
 
     return (
-        <div className="mx-auto mt-32 flex max-w-[95%] flex-col px-0 lg:px-0">
+        <div className="mx-auto mt-16 flex max-w-[95%] flex-col px-0 lg:px-0">
             <div className="px-8">
                 <SectionDivider
                     number="04"
@@ -89,12 +88,23 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                 />
             </div>
 
-            <h2 className="mt-12 px-8 font-bdo text-4xl font-semibold text-white lg:text-5xl">
+            <h2 className="px-8 font-bdo text-4xl font-semibold text-white lg:text-5xl">
                 Berita & Artikel
             </h2>
 
-            <div className="mt-10 mb-12 grid grid-cols-1 items-end gap-8 px-8 md:grid-cols-12">
-                <div className="md:col-span-3">
+            {/* Mobile-first: stack title, then komitmen, then row of button/nav; desktop: grid */}
+            <div className="mt-8 mb-12 flex flex-col gap-6 px-8 md:mt-32 md:grid md:grid-cols-12 md:items-end md:gap-8">
+                {/* Komitmen text */}
+                <div className="order-1 md:order-none md:col-span-6">
+                    <p className="font-bdo font-light text-base sm:text-lg leading-relaxed text-white">
+                        Komitmen kami adalah menghadirkan{" "}
+                        <strong className="font-medium text-white">
+                            ekosistem olahraga yang inklusif.
+                        </strong>
+                    </p>
+                </div>
+                {/* Button + nav row */}
+                <div className="order-2 flex items-center justify-between gap-4 md:order-none md:col-span-6 md:justify-end">
                     <a
                         href="#"
                         className="relative block w-full max-w-[220px] cursor-pointer select-none overflow-hidden border-b border-gray-500 pb-3 transition-colors hover:border-white"
@@ -134,35 +144,24 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                             </span>
                         </span>
                     </a>
-                </div>
-
-                <div className="md:col-span-6">
-                    <p className="font-bdo font-light text-lg leading-relaxed text-white">
-                        Komitmen kami adalah menghadirkan{" "}
-                        <strong className="font-medium text-white">
-                            ekosistem <br />
-                            olahraga yang inklusif.
-                        </strong>
-                    </p>
-                </div>
-
-                <div className="flex items-center justify-start gap-3 md:col-span-3 md:justify-end">
-                    <button
-                        type="button"
-                        onClick={scrollPrev}
-                        aria-label="Previous articles"
-                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 text-white transition hover:bg-white hover:text-black"
-                    >
-                        <ChevronLeft size={18} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={scrollNext}
-                        aria-label="Next articles"
-                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-gray-200"
-                    >
-                        <ChevronRight size={18} />
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={scrollPrev}
+                            aria-label="Previous articles"
+                            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 text-white transition hover:bg-white hover:text-black"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={scrollNext}
+                            aria-label="Next articles"
+                            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-gray-200"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
