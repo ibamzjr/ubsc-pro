@@ -22,8 +22,8 @@ export default function HeroContent() {
     const [hovered, setHovered] = useState(false);
 
     return (
-        <div className="flex max-w-sm flex-col items-end gap-6 text-right lg:max-w-md">
-            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-24">
+        <div className="flex max-w-sm flex-col items-end gap-6 text-right lg:max-w-md lg:pt-10 lg:mt-24">
+            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 mt-12 lg:mt-0">
                 <img
                     src="/assets/hero/star.png"
                     alt="Decorative mesh"
@@ -44,7 +44,7 @@ export default function HeroContent() {
 
             <a
                 href="#booking"
-                className="relative w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
+                className="relative lg:w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
             >
@@ -66,7 +66,7 @@ export default function HeroContent() {
                 />
 
                 <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                    <span className="font-bdo text-xl font-extrabold leading-tight tracking-tight text-white lg:text-2xl">
+                    <span className="font-bdo text-lg font-extrabold leading-tight tracking-tight text-white lg:text-2xl">
                         Booking sekarang juga!
                     </span>
 

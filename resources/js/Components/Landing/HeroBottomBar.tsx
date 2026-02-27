@@ -5,7 +5,7 @@ export default function HeroBottomBar() {
         <div className="relative w-full overflow-hidden">
             <video
                 className="absolute inset-0 h-full w-full object-cover"
-                src="/reels/vintage.mp4"
+                src="/reels/footer.mp4"
                 autoPlay
                 loop
                 muted
@@ -48,7 +48,6 @@ export default function HeroBottomBar() {
                     </div>
                 </div>
 
-                
                 <div className="flex items-start justify-between gap-4 lg:hidden">
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-1">
