@@ -22,8 +22,8 @@ export default function HeroContent() {
     const [hovered, setHovered] = useState(false);
 
     return (
-        <div className="flex max-w-sm flex-col items-end gap-6 text-right lg:max-w-md lg:pt-10 lg:mt-24">
-            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 mt-12 lg:mt-0">
+        <div className="flex max-w-sm flex-col items-end gap-0 lg:max-w-xl lg:pt-10 lg:mt-24">
+             <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 self-end mt-12 lg:mt-0">
                 <img
                     src="/assets/hero/star.png"
                     alt="Decorative mesh"
@@ -31,20 +31,29 @@ export default function HeroContent() {
                 />
             </div>
 
-            <p className="font-bdo text-base leading-relaxed text-white/80 lg:text-2xl">
-                Selamat Datang di UB Sport Center,{" "}
-                <br className="hidden lg:block" />
-                pusat fasilitas{" "}
-                <span className="font-semibold text-white">
-                    olahraga modern
-                </span>{" "}
-                <br />
-                untuk gaya hidup aktif Anda.
-            </p>
+            {/* Staircase text block */}
+            <div className="flex w-full flex-col gap-1">
+
+                {/* Baris 1 — paling kanan */}
+                <p className="font-bdo leading-relaxed text-white/70 lg:text-2xl pl-[80px] lg:pl-[110px]">
+                    Selamat Datang di UB Sport Center,
+                </p>
+
+                {/* Baris 2 */}
+                <p className="font-bdo leading-relaxed text-white/70 lg:text-2xl pl-[44px] lg:pl-[60px]">
+                    pusat fasilitas{" "}
+                    <span className="font-semibold text-white">olahraga modern</span>
+                </p>
+
+                {/* Baris 3 */}
+                <p className="font-bdo font-semibold leading-relaxed text-white lg:text-2xl pl-[14px] lg:pl-[20px]">
+                    untuk gaya hidup aktif Anda.
+                </p>
+                </div>
 
             <a
                 href="#booking"
-                className="relative lg:w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
+                className="relative lg:w-full cursor-pointer select-none overflow-hidden border-b  border-white/35 py-1"
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
             >
@@ -65,8 +74,8 @@ export default function HeroContent() {
                     }}
                 />
 
-                <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                    <span className="font-bdo text-lg font-extrabold leading-tight tracking-tight text-white lg:text-2xl">
+                <span className="pointer-events-none relative z-10 flex w-full items-center mr-36 lg:mr-0 justify-between">
+                    <span className="font-bdo text-lg font-medium leading-tight tracking-tight text-white lg:text-2xl">
                         Booking sekarang juga!
                     </span>
 

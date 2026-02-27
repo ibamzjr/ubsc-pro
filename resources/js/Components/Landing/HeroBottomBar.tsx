@@ -27,11 +27,11 @@ export default function HeroBottomBar() {
                         </span>
                     </div>
 
-                    <p className="max-w-lg text-center font-bdo text-lg font-light leading-relaxed text-white">
-                        <span className="font-bold text-white">
+                    <p className="max-w-lg text-left font-bdo text-lg font-light leading-relaxed text-white">
+                        <span className="font-medium text-white">
                             UB Sport Center –
                         </span>{" "}
-                        Temukan fasilitas olahraga modern untuk berlatih,
+                        Temukan fasilitas olahraga modern <br/>untuk berlatih,
                         berprestasi, dan berkembang bersama.
                     </p>
 
