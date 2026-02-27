@@ -1,40 +1,40 @@
-<svg width="121" height="121" viewBox="0 0 121 121" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<mask id="mask0_775_435" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="121" height="121">
-<circle cx="60.5" cy="60.5" r="60.5" fill="url(#paint0_linear_775_435)"/>
-<circle cx="60.5" cy="60.5" r="60.5" fill="white"/>
+<svg width="143" height="143" viewBox="0 0 143 143" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<mask id="mask0_775_435" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="143" height="143">
+<circle cx="71.5" cy="71.5" r="71.5" fill="url(#paint0_linear_775_435)"/>
+<circle cx="71.5" cy="71.5" r="71.5" fill="white"/>
 </mask>
 <g mask="url(#mask0_775_435)">
-<circle cx="60.5" cy="60.5" r="60.5" fill="url(#paint1_linear_775_435)"/>
-<circle cx="60.5" cy="60.5" r="60.5" fill="white"/>
+<circle cx="71.5" cy="71.5" r="71.5" fill="url(#paint1_linear_775_435)"/>
+<circle cx="71.5" cy="71.5" r="71.5" fill="white"/>
 <g filter="url(#filter0_f_775_435)">
-<circle cx="134.235" cy="142.553" r="45.7531" fill="#003263"/>
+<circle cx="158.641" cy="168.472" r="54.0719" fill="#003263"/>
 </g>
 <g filter="url(#filter1_f_775_435)">
-<circle cx="-6.42803" cy="161.459" r="45.7531" fill="#003263"/>
+<circle cx="-7.59658" cy="190.816" r="54.0719" fill="#003263"/>
 </g>
 </g>
-<rect x="18.9062" y="18.9062" width="84.7" height="84.7" fill="url(#pattern0_775_435)"/>
+<rect x="37" y="37" width="71" height="70" fill="url(#pattern0_775_435)"/>
 <defs>
-<filter id="filter0_f_775_435" x="9.83144" y="18.15" width="248.806" height="248.806" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter0_f_775_435" x="11.6189" y="21.45" width="294.044" height="294.044" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="39.325" result="effect1_foregroundBlur_775_435"/>
+<feGaussianBlur stdDeviation="46.475" result="effect1_foregroundBlur_775_435"/>
 </filter>
-<filter id="filter1_f_775_435" x="-130.831" y="37.0562" width="248.806" height="248.806" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter1_f_775_435" x="-154.618" y="43.7937" width="294.044" height="294.044" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="39.325" result="effect1_foregroundBlur_775_435"/>
+<feGaussianBlur stdDeviation="46.475" result="effect1_foregroundBlur_775_435"/>
 </filter>
 <pattern id="pattern0_775_435" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use xlink:href="#image0_775_435" transform="scale(0.0010142)"/>
+<use xlink:href="#image0_775_435" transform="matrix(0.00152317 0 0 0.00154493 -0.255025 -0.0968045)"/>
 </pattern>
-<linearGradient id="paint0_linear_775_435" x1="60.5" y1="0" x2="60.5" y2="121" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint0_linear_775_435" x1="71.5" y1="0" x2="71.5" y2="143" gradientUnits="userSpaceOnUse">
 <stop stop-color="#313131"/>
 <stop offset="0.682692" stop-color="#836359"/>
 <stop offset="0.860577" stop-color="#945A44"/>
 <stop offset="1" stop-color="#462D23"/>
 </linearGradient>
-<linearGradient id="paint1_linear_775_435" x1="60.5" y1="0" x2="60.5" y2="121" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint1_linear_775_435" x1="71.5" y1="0" x2="71.5" y2="143" gradientUnits="userSpaceOnUse">
 <stop stop-color="#313131"/>
 <stop offset="0.682692" stop-color="#836359"/>
 <stop offset="0.860577" stop-color="#945A44"/>
