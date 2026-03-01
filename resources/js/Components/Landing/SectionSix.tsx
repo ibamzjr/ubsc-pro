@@ -100,7 +100,7 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
 
     return (
         <section id="pricing" className="w-full bg-white  pt-12 pb-24">
-            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
+            <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
                 <SectionDivider
                     number="04"
                     title="Daftar harga"
@@ -108,8 +108,8 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
                     theme="light"
                 />
 
-                <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
-                    <div className="col-span-1 flex flex-col lg:col-span-5">
+                <div className="mt-16 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8">
+                    <div className="col-span-1 flex flex-col xl:col-span-5">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
                             <span className="text-sm font-semibold text-gray-800">
@@ -117,7 +117,7 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
                             </span>
                         </div>
 
-                        <h2 className="mb-4 mt-6 max-w-sm text-4xl font-bold leading-[1.1] tracking-tight text-gray-900 lg:text-5xl">
+                        <h2 className="mb-4 mt-6 max-w-sm text-4xl font-bold leading-[1.1] tracking-tight text-gray-900 md:text-4xl xl:text-5xl">
                             Raih Performa Terbaik Dengan Paket Fasilitas
                             Unggulan
                         </h2>
@@ -160,7 +160,7 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
                         </div>
                     </div>
 
-                    <div className="col-span-1 flex flex-col gap-4 lg:col-span-7">
+                    <div className="col-span-1 grid grid-cols-1 gap-4 md:grid-cols-2 xl:col-span-7 xl:grid-cols-1">
                         {visiblePrices.map((item) => (
                             <PriceCard key={item.id} item={item} />
                         ))}

@@ -54,7 +54,7 @@ export default function SectionFive() {
                     "linear-gradient(180deg, #000000 0%, #09172B 50%, #173859 100%)",
             }}
         >
-            <div className="mx-auto max-w px-6 sm:px-10 lg:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 xl:px-24">
                 <SectionDivider
                     number="03"
                     title="Dampak"
@@ -62,9 +62,9 @@ export default function SectionFive() {
                     theme="dark"
                 />
 
-                <div className="lg:mt-4 grid grid-cols-1 gap-12 lg:grid-cols-12">
-                    <div className="col-span-1 lg:col-span-8">
-                        <h2 className="text-3xl font-clash font-medium leading-[1.1] tracking-tight lg:text-7xl">
+                <div className="xl:mt-4 grid grid-cols-1 gap-12 xl:grid-cols-12">
+                    <div className="col-span-1 xl:col-span-8">
+                        <h2 className="text-3xl font-clash font-medium leading-[1.1] tracking-tight md:text-5xl xl:text-7xl">
                             Standar baru berolahraga
                             <br />
                             hanya di{" "}
@@ -74,7 +74,7 @@ export default function SectionFive() {
                         </h2>
                     </div>
 
-                    <div className="col-span-1 flex flex-col justify-end lg:col-span-4">
+                    <div className="col-span-1 flex flex-col justify-end xl:col-span-4">
                         <p className="mb-8 text-lg leading-relaxed text-gray-300">
                             Komitmen kami adalah menghadirkan{" "}
                             <strong className="text-white font-semibold">
@@ -83,7 +83,7 @@ export default function SectionFive() {
                         </p>
 
                         <Link
-                            href="#"
+                            href="/coming-soon"
                             className="relative w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                             onMouseEnter={() => setHovered(true)}
                             onMouseLeave={() => setHovered(false)}
@@ -128,10 +128,10 @@ export default function SectionFive() {
                     </div>
                 </div>
 
-                <div className="mt-32 grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                <div className="mt-16 md:mt-24 xl:mt-32 grid grid-cols-2 gap-8 md:grid-cols-4 xl:gap-8">
                     {STATS.map((stat) => (
                         <div key={stat.value} className="flex flex-col">
-                            <span className="mb-6 text-6xl font-regular tracking-tighter lg:text-8xl">
+                            <span className="mb-6 text-5xl md:text-6xl xl:text-8xl font-regular tracking-tighter">
                                 {stat.value}
                             </span>
                             <p className="max-w-[250px] font-light text-sm leading-relaxed text-gray-400">

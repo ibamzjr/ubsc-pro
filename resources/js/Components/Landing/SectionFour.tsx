@@ -126,40 +126,40 @@ export default function SectionFour() {
 
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
-            <div className="mx-auto max-w px-6 sm:px-10 lg:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24">
                 <SectionDivider
                     number="02"
                     title="Fasilitas"
                     subtitle="01 homepage"
                 />
 
-                <div className="mb-16 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-                    <div className="lg:col-span-3">
+                <div className="mb-10 xl:mb-16 grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+                    <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm lg:text-2xl font-regular text-gray-800">
+                            <span className="text-sm md:text-base xl:text-2xl font-regular text-gray-800">
                                 Fasilitas Kami
                             </span>
                         </div>
-                        <div className="mt-6 hidden lg:block">
+                        <div className="mt-6 hidden xl:block">
                             <ReservasiButton label="Mulai Reservasi" />
                         </div>
                     </div>
 
-                    <div className="lg:col-span-6">
-                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 sm:text-4xl lg:text-5xl lg:text-center items-center">
+                    <div className="xl:col-span-6">
+                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl xl:text-5xl xl:text-center xl:max-w-none">
                             Dukungan Penuh Untuk Setiap Cabang Olahraga
                         </h2>
                     </div>
 
-                    <div className="flex h-full flex-col lg:col-span-3 lg:pt-2">
-                        <div className="flex flex-col gap-2 lg:block">
-                            <p className="text-sm lg:text-xl font-regular leading-relaxed text-black opacity-50 lg:opacity-100">
+                    <div className="flex h-full flex-col xl:col-span-3 xl:pt-2">
+                        <div className="flex flex-col gap-2 xl:block">
+                            <p className="text-sm md:text-base xl:text-xl font-regular leading-relaxed text-black opacity-70 xl:opacity-100">
                                 Kami menghadirkan berbagai pilihan fasilitas
                                 olahraga indoor dan fitness untuk kenyamanan
                                 latihan Anda.
                             </p>
-                            <div className="mt-4 flex items-center gap-2 lg:hidden">
+                            <div className="mt-4 flex items-center gap-4 xl:hidden">
                                 <ReservasiButton label="Mulai Reservasi" />
                                 <span className="text-sm font-regular text-gray-900">
                                     {String(facilities.length).padStart(2, "0")}
@@ -171,7 +171,7 @@ export default function SectionFour() {
                                 </span>
                             </div>
                         </div>
-                        <p className="mt-12 text-right text-sm font-regular text-gray-900 lg:text-left hidden lg:block">
+                        <p className="mt-12 text-right text-sm font-regular text-gray-900 xl:text-left hidden xl:block">
                             {String(facilities.length).padStart(2, "0")}/
                             {String(facilities.length + 14).padStart(2, "0")}
                         </p>
@@ -191,7 +191,7 @@ export default function SectionFour() {
                 ))}
             </div>
 
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid w-full grid-cols-2 md:grid-cols-4">
                 {DUMMY_ARENAS.map((item) => (
                     <ArenaCard key={item.id} item={item} />
                 ))}
