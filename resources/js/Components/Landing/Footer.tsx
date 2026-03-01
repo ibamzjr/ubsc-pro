@@ -44,12 +44,12 @@ export default function Footer() {
                 background: "linear-gradient(180deg, #000000 0%, #173859 100%)",
             }}
         >
-            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
-                <div className="mb-16 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
-                    <div className="lg:col-span-7">
-                        <h2 className="font-semibold mb-12 text-4xl leading-tight tracking-tight lg:text-5xl">
+            <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
+                <div className="mb-16 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8">
+                    <div className="xl:col-span-7">
+                        <h2 className="font-semibold mb-12 text-4xl leading-tight tracking-tight md:text-5xl xl:text-5xl">
                             Ingin Menjalin Kemitraan?{" "}
-                            <br className="hidden lg:block" />
+                            <br className="hidden xl:block" />
                             Mari Terhubung dengan Kami
                             <span className="inline-block h-3 w-3 translate-y-[-0.15em] rounded-sm bg-blue-500 ml-2 align-bottom" />
                         </h2>
@@ -96,11 +96,11 @@ export default function Footer() {
                         </a>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-5">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:col-span-5">
                         <div>
                             <h3 className="font-bdo mb-4 text-lg font-semibold">
-                                <span className="lg:hidden">Lokasi</span>
-                                <span className="hidden lg:inline">Alamat</span>
+                                <span className="xl:hidden">Lokasi</span>
+                                <span className="hidden xl:inline">Alamat</span>
                             </h3>
                             <p className="font-bdo max-w-[220px] text-sm leading-relaxed text-white font-regular">
                                 Jl. Terusan Cibogo No.1, <br />
@@ -139,7 +139,7 @@ export default function Footer() {
                             <h3 className="font-bdo mb-4 text-lg font-semibold">
                                 Sosial Media
                             </h3>
-                            <div className="flex flex-wrap items-center gap-20">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-wrap xl:items-center xl:gap-20">
                                 {SOCIAL_LINKS.map((s) => (
                                     <a
                                         key={s.label}
@@ -169,7 +169,7 @@ export default function Footer() {
 
                 <nav aria-label="Footer navigation" className="mb-12">
                     {/* Desktop */}
-                    <div className="hidden items-center justify-between lg:flex">
+                    <div className="hidden items-center justify-between xl:flex">
                         {NAV_LINKS.map((link) => (
                             <a
                                 key={link.label}
@@ -184,7 +184,7 @@ export default function Footer() {
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-x-2 gap-y-6 lg:hidden">
+                    <div className="grid grid-cols-3 gap-x-2 gap-y-6 xl:hidden">
                         {NAV_LINKS.map((link) => (
                             <a
                                 key={link.label}
@@ -202,7 +202,7 @@ export default function Footer() {
 
                 <hr className="mb-8 border-gray-800" />
 
-                <div className="mb-12 hidden items-center justify-between lg:flex">
+                <div className="xl:mb-12 hidden items-center justify-between xl:flex">
                     <span className="font-clash text-sm text-gray-400">
                         02/{" "}
                         <span className="font-medium text-white">homepage</span>
@@ -216,7 +216,7 @@ export default function Footer() {
                     <ScrollUpButton onClick={scrollToTop} />
                 </div>
 
-                <div className="mb-12 flex flex-col gap-4 lg:hidden">
+                <div className="mb-12 flex flex-col gap-4 xl:hidden">
                     <p className="font-bdo text-sm text-gray-400">
                         <span className="mr-1 text-red-500">©</span>
                         2026 PT. Brawijaya Multi Usaha.
@@ -234,7 +234,7 @@ export default function Footer() {
             </div>
 
             <div className="mt-auto w-full relative">
-                <div className="w-full aspect-[6/1] relative md:p-[0vw] overflow-hidden rounded-[1vw]">
+                <div className="w-full relative px-6 py-3 xl:px-24 xl:py-12 overflow-hidden ">
                     {/* Video Layer */}
                     <video
                         autoPlay
@@ -243,29 +243,8 @@ export default function Footer() {
                         playsInline
                         className="w-full h-full select-none object-cover object-center"
                     >
-                        <source src="/reels/footer.mp4" type="video/mp4" />
-                        
+                        <source src="/reels/Footer.mp4" type="video/mp4" />
                     </video>
-                    {/* Blue Color Dodge Overlay */}
-                    <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                            background: "rgba(0,120,255,0.75)",
-                            mixBlendMode: "screen",
-                        }}
-                    />
-                    {/* Large UBSC Text Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                        <span
-                            className="font-archivo font-semibold uppercase text-black opacity-50 leading-none w-full h-full flex items-center justify-center text-[min(30vw,43vh)] tracking-[-0.04em]"
-                            style={{
-                                textShadow: "0 2px 32px #0008",
-                                lineHeight: 1,
-                            }}
-                        >
-                            UBSC
-                        </span>
-                    </div>
                 </div>
             </div>
         </footer>
