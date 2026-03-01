@@ -78,7 +78,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
     const [linkHovered, setLinkHovered] = useState(false);
 
     return (
-        <div className="mx-auto mt-16 flex max-w-[95%] flex-col px-0 lg:px-0">
+        <div className="mx-auto mt-16 flex max-w-[95%] flex-col px-0 xl:px-0">
             <div className="px-8">
                 <SectionDivider
                     number="04"
@@ -88,13 +88,11 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                 />
             </div>
 
-            <h2 className="px-8 font-bdo text-4xl font-semibold text-white lg:text-5xl">
+            <h2 className="px-8 font-bdo text-4xl font-semibold text-white md:text-4xl xl:text-5xl">
                 Berita & Artikel
             </h2>
 
-            {/* Mobile-first: stack title, then komitmen, then row of button/nav; desktop: grid */}
             <div className="mt-8 mb-12 flex flex-col gap-6 px-8 md:mt-32 md:grid md:grid-cols-12 md:items-end md:gap-8">
-                {/* Komitmen text */}
                 <div className="order-1 md:order-none md:col-span-6">
                     <p className="font-bdo font-light text-base sm:text-lg leading-relaxed text-white">
                         Komitmen kami adalah menghadirkan{" "}
@@ -103,10 +101,9 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                         </strong>
                     </p>
                 </div>
-                {/* Button + nav row */}
                 <div className="order-2 flex items-center justify-between gap-4 md:order-none md:col-span-6 md:justify-end">
                     <a
-                        href="#"
+                        href="/coming-soon"
                         className="relative block w-full max-w-[220px] cursor-pointer select-none overflow-hidden border-b border-gray-500 pb-3 transition-colors hover:border-white"
                         onMouseEnter={() => setLinkHovered(true)}
                         onMouseLeave={() => setLinkHovered(false)}
@@ -128,7 +125,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                             }}
                         />
                         <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                            <span className="font-clash text-sm lg:text-xl font-medium text-white">
+                            <span className="font-clash text-sm xl:text-xl font-medium text-white">
                                 Lihat Selengkapnya
                             </span>
                             <span

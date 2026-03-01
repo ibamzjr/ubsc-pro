@@ -16,14 +16,18 @@ const ArrowIcon: React.FC = () => (
     </svg>
 );
 
+import { Link } from "@inertiajs/react";
+
 interface ReservasiButtonProps {
     onClick?: () => void;
     label?: string;
+    href?: string;
 }
 
 export default function ReservasiButton({
     onClick,
     label = "Mulai Reservasi",
+    href = "/coming-soon",
 }: ReservasiButtonProps) {
     return (
         <>
@@ -129,8 +133,8 @@ export default function ReservasiButton({
                 .reservasi-text-2 { color: #FFFFFF; }
             `}</style>
 
-            <button
-                type="button"
+            <Link
+                href={href}
                 onClick={onClick}
                 className="reservasi-btn"
                 aria-label={label}
@@ -158,7 +162,7 @@ export default function ReservasiButton({
                         </div>
                     </div>
                 </div>
-            </button>
+            </Link>
         </>
     );
 }

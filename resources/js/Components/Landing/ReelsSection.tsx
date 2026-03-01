@@ -86,7 +86,7 @@ export default function ReelsSection({
 
     return (
         <div className="mt-10 flex flex-col">
-            <div className="mx-auto w-full px-6 sm:px-10 lg:px-24">
+            <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
                 <div className="mb-6 flex items-center justify-between">
                     <span className="rounded-full bg-white px-5 py-2 text-sm font-bold text-black">
                         Sport center
@@ -96,9 +96,8 @@ export default function ReelsSection({
                     </span>
                 </div>
 
-                {/* Row 2: title + description */}
                 <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-                    <h3 className="text-4xl font-bold text-white lg:text-5xl">
+                    <h3 className="text-4xl font-bold text-white md:text-4xl xl:text-5xl">
                         Reels UB Sport Center
                     </h3>
                     <p className="text-lg leading-relaxed text-gray-400 md:ml-auto md:max-w-md md:text-left">
@@ -109,7 +108,7 @@ export default function ReelsSection({
             </div>
 
             <div className="flex items-stretch">
-                <div className="relative z-10 hidden w-48 flex-shrink-0 flex-col justify-between pb-2 pl-8 md:flex lg:pl-24">
+                <div className="relative z-10 hidden w-48 flex-shrink-0 flex-col justify-between pb-2 pl-8 xl:flex xl:pl-24">
                     <span className="text-xl font-semibold text-white">
                         Sorotan
                         <br />
@@ -126,7 +125,7 @@ export default function ReelsSection({
                 </div>
 
                 <div className="min-w-0 flex-1 overflow-hidden" ref={emblaRef}>
-                    <div className="flex items-end gap-4 pl-8 lg:pl-20">
+                    <div className="flex items-end gap-4 pl-8 xl:pl-20">
                         {reels.map((reel, index) => (
                             <ReelCard
                                 key={reel.id}
@@ -140,7 +139,7 @@ export default function ReelsSection({
 
             <div className="mx-auto mt-2 w-full px-8 pt-6">
                 <div className="flex items-center justify-between gap-4">
-                    <div className="flex gap-3 md:hidden">
+                    <div className="flex gap-3 xl:hidden">
                         <NavBtn onClick={scrollPrev} label="Previous reel">
                             <ChevronLeft size={20} />
                         </NavBtn>
@@ -153,7 +152,8 @@ export default function ReelsSection({
                         Welcome Sport Center.
                     </span>
 
-                    <div
+                    <a
+                        href="/coming-soon"
                         className="relative w-64 cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                         onMouseEnter={() => setLinkHovered(true)}
                         onMouseLeave={() => setLinkHovered(false)}
@@ -193,7 +193,7 @@ export default function ReelsSection({
                                 <SlideArrow size={16} />
                             </span>
                         </span>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>

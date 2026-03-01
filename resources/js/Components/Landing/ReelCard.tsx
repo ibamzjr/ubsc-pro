@@ -73,8 +73,8 @@ export default function ReelCard({
             className={[
                 "group relative flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-neutral-800",
                 featured || isActive
-                    ? "aspect-[9/16] w-[260px] self-stretch sm:w-[340px] lg:w-[380px]"
-                    : "aspect-[9/16] w-[200px] sm:w-[230px] lg:w-[320px]",
+                    ? "aspect-[9/16] w-[260px] self-stretch sm:w-[300px] md:w-[320px] xl:w-[380px]"
+                    : "aspect-[9/16] w-[200px] sm:w-[230px] md:w-[260px] xl:w-[320px]",
             ].join(" ")}
             onClick={item.videoUrl ? togglePlay : undefined}
         >
