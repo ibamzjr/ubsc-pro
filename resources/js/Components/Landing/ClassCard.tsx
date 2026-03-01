@@ -35,8 +35,8 @@ export default function ClassCard({ item }: ClassCardProps) {
                     {item.id}
                 </span>
 
-                <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-semibold">
-                    <span className="flex items-center gap-1 bg-black px-3 py-1.5 text-white">
+                <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-semibold border-2 border-[#323232]">
+                    <span className="flex items-center gap-1 bg-[#323232] px-3 py-1.5 text-white">
                         <MapPin
                             size={10}
                             className="flex-shrink-0 opacity-75"
@@ -47,7 +47,7 @@ export default function ClassCard({ item }: ClassCardProps) {
                         className="flex items-center px-3 py-1.5 text-white"
                         style={{
                             background:
-                                "linear-gradient(135deg, #E8190A 0%, #b91c1c 100%)",
+                                "linear-gradient(135deg, #FF0000 0%, #153359  100%)",
                         }}
                     >
                         {item.category}
@@ -55,7 +55,7 @@ export default function ClassCard({ item }: ClassCardProps) {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between border border-t-0 border-neutral-700/50 bg-neutral-800 p-6 md:p-8">
+            <div className="flex items-center justify-between border border-t-0 border-neutral-700/50 bg-[#323232] p-6 md:p-8">
                 <span className="text-3xl font-bold tracking-tight text-white md:text-4xl">
                     {item.title}
                 </span>

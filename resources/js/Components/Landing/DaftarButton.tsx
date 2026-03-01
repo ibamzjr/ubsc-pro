@@ -19,11 +19,13 @@ const ArrowIcon: React.FC = () => (
 interface DaftarButtonProps {
     onClick?: () => void;
     label?: string;
+    disabled?: boolean;
 }
 
 export default function DaftarButton({
     onClick,
     label = "Daftar Sekarang",
+    disabled = false,
 }: DaftarButtonProps) {
     return (
         <>
@@ -131,11 +133,21 @@ export default function DaftarButton({
 
                 .daftar-text-1 { color: #111111; }
                 .daftar-text-2 { color: #FFFFFF; }
+                .daftar-btn:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.55;
+                }
+                .daftar-btn:disabled .daftar-btn-fill,
+                .daftar-btn:disabled .daftar-arrow-track,
+                .daftar-btn:disabled .daftar-text-track {
+                    transition: none;
+                }
             `}</style>
 
             <button
                 type="button"
-                onClick={onClick}
+                onClick={disabled ? undefined : onClick}
+                disabled={disabled}
                 className="daftar-btn"
                 aria-label={label}
             >

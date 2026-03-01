@@ -19,9 +19,9 @@ export default function ArenaCard({ item }: ArenaCardProps) {
     return (
         <Link
             href={item.href}
-            className="group flex w-full cursor-pointer flex-col overflow-hidden border-b border-neutral-700 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+            className="group flex w-full cursor-pointer flex-col overflow-hidden border-b border-r border-neutral-700 even:border-r-0 md:border-b-0 md:border-r md:last:border-r-0 md:even:border-r"
         >
-            <div className="relative h-[220px] w-full overflow-hidden md:h-[260px]">
+            <div className="relative h-[200px] w-full overflow-hidden md:h-[220px] xl:h-[260px]">
                 <img
                     src={item.image}
                     alt={item.title}
@@ -50,8 +50,8 @@ export default function ArenaCard({ item }: ArenaCardProps) {
                 </div>
             </div>
 
-            <div className="flex items-center bg-neutral-800 p-5">
-                <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+            <div className="flex items-center bg-[#323232] p-5">
+                <span className="text-xl font-bold tracking-tight text-white md:text-2xl xl:text-3xl">
                     {item.title}
                 </span>
             </div>

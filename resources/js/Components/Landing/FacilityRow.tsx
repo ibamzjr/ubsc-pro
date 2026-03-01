@@ -21,7 +21,7 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
         <Link
             href={facility.href}
             className="group relative block w-full overflow-hidden text-white transition-all duration-300 hover:brightness-110"
-            style={{ height: "clamp(96px, 14vw, 160px)" }}
+            style={{ height: "clamp(150px, 14vw, 160px)" }}
         >
             <img
                 src={facility.bgImage}
@@ -32,25 +32,45 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
 
             <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />
 
-            <div className="relative z-20 mx-auto flex h-full max-w-7xl items-center px-4 sm:px-8">
-                <span className="hidden w-36 flex-shrink-0 text-xs font-medium tracking-widest text-white/70 sm:block">
+            <div className="relative z-20 flex h-full flex-col justify-between px-5 py-3 xl:hidden">
+                <div className="flex items-start justify-between">
+                    <span className="text-[10px] md:text-[14px] font-medium tracking-widest text-white/70">
+                        /Tertutup {facility.id}/
+                    </span>
+                    <FacilityBadge
+                        location={facility.location}
+                        category={facility.category}
+                    />
+                </div>
+                <div className="flex items-end justify-between">
+                    <span className="text-2xl font-bold tracking-tight leading-none sm:text-3xl md:text-4xl">
+                        /{facility.name}.
+                    </span>
+                    <div className="ml-3 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1 sm:h-10 sm:w-10">
+                        <ArrowUpRight size={16} className="sm:hidden" />
+                        <ArrowUpRight size={18} className="hidden sm:block" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="relative z-20 mx-auto hidden h-full max-w items-center px-12 xl:flex">
+                <span className="w-36 flex-shrink-0 text-xs font-medium tracking-widest text-white/70">
                     /Tertutup {facility.id}/
                 </span>
 
-                <div className="hidden flex-shrink-0 md:block">
+                <div className="flex-shrink-0">
                     <FacilityBadge
                         location={facility.location}
                         category={facility.category}
                     />
                 </div>
 
-                <span className="ml-0 flex-1 truncate text-2xl font-bold tracking-tight sm:ml-6 sm:text-3xl md:ml-10 md:text-4xl lg:text-5xl">
+                <span className="ml-10 flex-1 truncate text-5xl font-bold tracking-tight">
                     /{facility.name}.
                 </span>
 
-                <div className="ml-4 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1 sm:h-11 sm:w-11 md:h-12 md:w-12">
-                    <ArrowUpRight size={16} className="sm:hidden" />
-                    <ArrowUpRight size={20} className="hidden sm:block" />
+                <div className="ml-4 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1">
+                    <ArrowUpRight size={20} />
                 </div>
             </div>
         </Link>
