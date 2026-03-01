@@ -5,6 +5,8 @@ import HeroTitle from "@/Components/Landing/HeroTitle";
 import { motion, AnimatePresence } from "framer-motion";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
+// Remove FluidGlassCursor import, add FluidGlass from library
+// import FluidGlass from "@/Components/Landing/FluidGlass";
 
 export default function Hero() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -49,13 +51,23 @@ export default function Hero() {
                     loading="eager"
                     style={{ transitionProperty: "opacity, transform" }}
                 />
+                {/* FluidGlass lens effect (desktop only) */}
+                {/* <div
+                    className="hidden xl:block absolute inset-0 z-40"
+                    style={{
+                        height: "100vh",
+                        position: "absolute",
+                        width: "100vw",
+                    }}
+                >
+                </div> */}
                 <motion.div
                     className="absolute inset-0 z-0 bg-slate-500"
                     animate={{ opacity: isLoaded ? 0 : 1 }}
                     transition={{ duration: 0.5, delay: isLoaded ? 0.1 : 0 }}
                 />
 
-                <div className="relative z-10 hidden lg:flex flex-col items-stretch h-screen max-h-screen overflow-hidden">
+                <div className="relative z-10 hidden xl:flex flex-col items-stretch h-screen max-h-screen overflow-hidden">
                     <div className="flex flex-1 items-end justify-between pb-32 px-16 pt-32 min-h-0">
                         <motion.div
                             initial={{ opacity: 0, x: -32 }}
@@ -106,16 +118,22 @@ export default function Hero() {
                         }}
                     >
                         <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
-                            <img
+                            <motion.img
                                 src="/BMU.svg"
                                 alt="Brawijaya Multi Usaha"
                                 className="h-full w-full object-contain"
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                    duration: 8,
+                                    repeat: Infinity,
+                                    ease: "linear",
+                                }}
                             />
                         </div>
                     </motion.div>
                 </div>
 
-                <div className="relative z-10 flex h-screen flex-col px-8 pt-28 lg:hidden">
+                <div className="relative z-10 flex h-screen flex-col px-8 pt-28 xl:hidden">
                     <motion.div
                         className="flex-shrink-0"
                         initial={{ opacity: 0, x: -32 }}
@@ -154,10 +172,16 @@ export default function Hero() {
                             }}
                         >
                             <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
-                                <img
+                                <motion.img
                                     src="/BMU.svg"
                                     alt="Brawijaya Multi Usaha"
                                     className="h-full w-full object-contain"
+                                    animate={{ rotate: 360 }}
+                                    transition={{
+                                        duration: 8,
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                    }}
                                 />
                             </div>
                         </motion.div>

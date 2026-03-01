@@ -7,12 +7,9 @@ export default function HeroTitle() {
                 </span>
             </div>
 
-            <h1 className="font-archivo font-bold text-[clamp(3.5rem,12vw,13rem)] uppercase leading-[0.8] tracking-[-0.02em] text-white lg:text-[clamp(8rem,8vw,13rem)] max-w-full break-words">
+            <h1 className="font-archivo font-bold text-[clamp(3.5rem,12vw,13rem)] uppercase leading-[0.8] tracking-[-0.02em] text-white xl:text-[clamp(8rem,8vw,13rem)] max-w-full break-words">
                 <span className="block">SPORT</span>
-                <span className="relative block">
-                    CENTER UB
-                    <span className="ml-3 inline-block h-[clamp(12px,1.5vw,24px)] w-[clamp(12px,1.5vw,24px)] translate-y-[-30%] bg-accent-red lg:ml-6 lg:h-[clamp(16px,1.8vw,32px)] lg:w-[clamp(16px,1.8vw,32px)]" />
-                </span>
+                <span className="block">CENTER UB<span className="ml-2 inline-block h-[clamp(12px,1.5vw,24px)] w-[clamp(12px,1.5vw,24px)] translate-y-[-15%] bg-accent-red xl:ml-6 xl:h-[clamp(16px,1.8vw,32px)] xl:w-[clamp(16px,1.8vw,32px)]" /></span>
             </h1>
         </div>
     );
