@@ -35,7 +35,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     />
                 </div>
 
-                <ul className="hidden items-center gap-12 lg:flex">
+                <ul className="hidden items-center gap-12 xl:flex">
                     {NAV_ITEMS.map((item) => (
                         <li key={item.number}>
                             <a
@@ -56,8 +56,8 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 </ul>
 
                 <a
-                    href="#booking"
-                    className="group hidden items-stretch overflow-hidden rounded-md bg-white transition-shadow hover:shadow-lg lg:flex"
+                    href="/coming-soon"
+                    className="group hidden items-stretch overflow-hidden rounded-md bg-white transition-shadow hover:shadow-lg xl:flex"
                 >
                     <div className="mt-1 ml-1 h-full w-14 flex-shrink-0 self-stretch">
                         <img
@@ -90,7 +90,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 <button
                     type="button"
                     onClick={() => setMobileOpen((v) => !v)}
-                    className="flex flex-col items-end justify-center gap-[6px] p-1 lg:hidden"
+                    className="flex flex-col items-end justify-center gap-[6px] p-1 xl:hidden"
                     aria-label="Toggle menu"
                 >
                     <span
@@ -107,7 +107,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
             </nav>
 
             <div
-                className={`fixed inset-0 z-40 flex flex-col bg-navy-900/95 px-8 pt-28 pb-12 backdrop-blur-sm transition-all duration-300 lg:hidden ${
+                className={`fixed inset-0 z-40 flex flex-col bg-navy-900/95 px-8 pt-28 pb-12 backdrop-blur-sm transition-all duration-300 xl:hidden ${
                     mobileOpen
                         ? "pointer-events-auto opacity-100"
                         : "pointer-events-none opacity-0"
@@ -136,7 +136,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
 
                 <div className="mt-auto">
                     <a
-                        href="#booking"
+                        href="/coming-soon"
                         onClick={() => setMobileOpen(false)}
                         className="group flex items-stretch overflow-hidden rounded-md bg-white"
                     >
