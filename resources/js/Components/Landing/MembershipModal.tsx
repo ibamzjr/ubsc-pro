@@ -63,7 +63,7 @@ export default function MembershipModal({
                             className="h-10 w-auto"
                         />
 
-                        <h2 className="mt-6 text-2xl font-semibold leading-tight text-gray-900">
+                        <h2 className="mt-6 text-lg lg:text-2xl font-semibold leading-tight text-gray-900">
                             Bergabung Sekarang Juga Untuk <br />
                             Menjadi Member Resmi Kami
                         </h2>
