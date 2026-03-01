@@ -9,6 +9,10 @@ Route::get('/', function () {
     return Inertia::render('HomePage');
 });
 
+Route::get('/coming-soon', function () {
+    return Inertia::render('ComingSoon');
+})->name('coming-soon');
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
