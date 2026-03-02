@@ -96,8 +96,8 @@ export default function SectionTwo() {
                                 </div>
                             </div>
 
-                            <div className="mt-6 flex items-end justify-between gap-6 md:mt-8">
-                                <GymTrafficBadge variant="reversed" />
+                            <div className="flex items-end justify-between gap-6">
+                                <GymTrafficBadge />
 
                                 <div className="flex-1 hidden xl:flex items-end justify-end">
                                     <div className="w-64 h-64 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
@@ -113,21 +113,28 @@ export default function SectionTwo() {
                     </div>
                 </div>
 
-                <div className="mt-0 px-6 py-6 sm:px-10 lg:px-0 lg:pl-16 xl:pl-24">
+                <div className="mt-0 px-6 py-6 sm:px-10 lg:px-0 lg:pl-16 xl:px-24">
                     <ImageCarousel images={DUMMY_IMAGES} />
 
-                    <div className="mx-auto max-w px-0 sm:px-10 lg:px-16 xl:px-24">
-                        <div className="mt-10 grid grid-cols-2 gap-6 md:gap-8 xl:gap-12">
+                    <div className="mx-auto max-w px-0 sm:px-10">
+                        <div className="mt-10 grid grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-48">
                             <div>
-                                <h2 className="text-2xl sm:text-2xl md:text-3xl xl:text-5xl font-medium tracking-tight text-gray-900">
+                                <h2 className="text-2xl sm:text-2xl md:text-3xl xl:text-4xl font-medium tracking-tight text-gray-900">
                                     Jelajahi Program Kami
                                 </h2>
                             </div>
                             <div>
-                                <p className="text-xs sm:text-base xl:text-lg leading-relaxed font-regular text-gray-600">
+                                <p className="text-xs sm:text-base xl:text-xl leading-relaxed font-regular text-gray-600">
                                     Jelajahi berbagai program pilihan dan
                                     aktivitas menarik yang dirancang khusus
                                     untuk anda.
+                                </p>
+                            </div>
+                            <div className="hidden xl:block">
+                                <p className="text-xs xl:text-lg leading-relaxed font-regular text-gray-600">
+                                    Jangan lewatkan kesempatan untuk bergabung
+                                    dalam berbagai agenda rutin dan penawaran
+                                    spesial.
                                 </p>
                             </div>
                         </div>

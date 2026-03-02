@@ -23,7 +23,7 @@ export default function HeroContent() {
 
     return (
         <div className="flex max-w-sm flex-col items-end gap-0 lg:max-w-xl lg:pt-10 lg:mt-24">
-            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 self-end mt-12 lg:mt-0">
+            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 self-end mt-6 lg:mt-0">
                 <img
                     src="/assets/hero/star.png"
                     alt="Decorative mesh"
@@ -32,18 +32,18 @@ export default function HeroContent() {
             </div>
 
             <div className="flex w-full flex-col gap-1">
-                <p className="font-bdo leading-relaxed text-white/70 lg:text-2xl pl-[70px] lg:pl-[110px]">
+                <p className="font-bdo leading-relaxed text-white/70 text-base md:text-lg lg:text-2xl pl-6 md:pl-10 lg:pl-[110px]">
                     Selamat Datang di UB Sport Center,
                 </p>
 
-                <p className="font-bdo leading-relaxed text-white/70 lg:text-2xl pl-[44px] lg:pl-[60px]">
+                <p className="font-bdo leading-relaxed text-white/70 text-base md:text-lg lg:text-2xl pl-3 md:pl-6 lg:pl-[60px]">
                     pusat fasilitas{" "}
                     <span className="font-semibold text-white">
                         olahraga modern
                     </span>
                 </p>
 
-                <p className="font-bdo font-semibold leading-relaxed text-white lg:text-2xl pl-[14px] lg:pl-[20px]">
+                <p className="font-bdo font-semibold leading-relaxed text-white text-base md:text-lg lg:text-2xl pl-1 md:pl-2 lg:pl-[20px]">
                     untuk gaya hidup aktif Anda.
                 </p>
             </div>

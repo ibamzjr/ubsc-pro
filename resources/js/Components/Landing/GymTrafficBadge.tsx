@@ -9,9 +9,9 @@ export default function GymTrafficBadge({
 }: GymTrafficBadgeProps) {
     if (variant === "reversed") {
         return (
-            <div className="flex items-stretch overflow-hidden rounded-lg mt-5 xl:mt-0">
+            <div className="flex items-stretch overflow-hidden rounded-lg border-4 border-black  mt-5 xl:mt-0">
                 <div className="flex items-center bg-red-600 px-8 py-4 md:px-8 md:py-5 xl:px-12 xl:py-8">
-                    <span className="font-clash text-sm xl:text-xl font-semibold text-white">
+                    <span className="font-clash text-sm xl:text-xl font-semibold text-white whitespace-nowrap">
                         High Occupancy
                     </span>
                 </div>
@@ -21,7 +21,7 @@ export default function GymTrafficBadge({
                         alt="Gym Traffic"
                         className="h-4 w-4 opacity-70"
                     />
-                    <span className="font-clash xl:text-xl font-medium text-black">
+                    <span className="font-clash xl:text-xl font-medium text-black whitespace-nowrap">
                         Gym Traffic
                     </span>
                 </div>
@@ -37,12 +37,12 @@ export default function GymTrafficBadge({
                     alt="Gym Traffic"
                     className="h-4 w-4 text-white/70"
                 />
-                <span className="font-bdo text-sm xl:text-xl font-medium text-white/90">
+                <span className="font-bdo text-sm xl:text-xl font-medium text-white/90 whitespace-nowrap">
                     Gym Traffic
                 </span>
             </div>
             <div className="flex items-center bg-accent-red px-8 py-3 md:px-8 md:py-5 xl:px-10 xl:py-3">
-                <span className="font-clash text-sm xl:text-xl font-bold text-white">
+                <span className="font-clash text-sm xl:text-xl font-bold text-white whitespace-nowrap">
                     High Occupancy
                 </span>
             </div>

@@ -38,6 +38,58 @@ const DUMMY_PRICES: PriceItem[] = [
         rating: 4.5,
         image: futsal,
     },
+    {
+        id: 5,
+        title: "Ruang Beladiri",
+        price: "75.000 - 100.000 / Jam",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+    },
+    {
+        id: 6,
+        title: "Yoga",
+        price: "25.000 - 35.000 / Jam",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+    },
+    {
+        id: 7,
+        title: "Aerobik",
+        price: "23.000 - 28.000 / Jam",
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+    },
+    {
+        id: 8,
+        title: "Zumba",
+        price: "28.000 - 33.000 / Jam",
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+    },
+
+        {
+        id: 9,
+        title: "BMU Karate",
+        price: "100.000 - 175.000 / Jam",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+    },
+     {
+        id: 10,
+        title: "Zona Akurasi",
+        price: "Klik Disini",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+    },
+    {
+        id: 11,
+        title: "Pilates",
+        price: "Coming Soon",
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+    }
+
+
 ];
 
 function FeatureItem({ label }: { label: string }) {
