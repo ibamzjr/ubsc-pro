@@ -3,7 +3,7 @@ export default function HeroTitle() {
         <div className="pointer-events-none select-none max-w-full w-full">
             <div className="mb-6 flex items-center gap-2 lg:mb-8">
                 <span className="font-bdo text-sm font-medium tracking-wide text-red-600 lg:text-xl">
-                    © <span className="font-bold text-white">2026</span>
+                    © <span className="font-medium text-white">2026</span>
                 </span>
             </div>
 
