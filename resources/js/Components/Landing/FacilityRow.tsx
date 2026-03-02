@@ -43,10 +43,10 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
                     />
                 </div>
                 <div className="flex items-end justify-between">
-                    <span className="text-2xl font-bold tracking-tight leading-none sm:text-3xl md:text-4xl">
+                    <span className="text-2xl font-medium tracking-tight leading-none sm:text-3xl md:text-4xl mb-4">
                         /{facility.name}.
                     </span>
-                    <div className="ml-3 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1 sm:h-10 sm:w-10">
+                    <div className="ml-3 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1 sm:h-10 sm:w-10 mb-2">
                         <ArrowUpRight size={16} className="sm:hidden" />
                         <ArrowUpRight size={18} className="hidden sm:block" />
                     </div>
