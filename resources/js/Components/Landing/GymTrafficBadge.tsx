@@ -11,7 +11,7 @@ export default function GymTrafficBadge({
         return (
             <div className="flex items-stretch overflow-hidden rounded-lg mt-5 xl:mt-0">
                 <div className="flex items-center bg-red-600 px-8 py-4 md:px-8 md:py-5 xl:px-12 xl:py-8">
-                    <span className="font-clash text-sm xl:text-xl font-bold text-white">
+                    <span className="font-clash text-sm xl:text-xl font-semibold text-white">
                         High Occupancy
                     </span>
                 </div>

@@ -35,7 +35,7 @@ export default function ComingSoon() {
                                 y: { duration: 0.5, delay: 2.5 },
                                 opacity: { duration: 1.5, delay: 2.5 },
                             }}
-                            className="z-10 -mb-[7vw] font-monument text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
+                            className="z-10 -mb-[7vw] font-clash text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
                         >
                             COMING
                         </motion.h1>
@@ -48,7 +48,7 @@ export default function ComingSoon() {
                                     y: { duration: 0.5, delay: 2 },
                                     opacity: { duration: 1.5, delay: 2 },
                                 }}
-                                className="z-10 -me-[2.5%] font-monument text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
+                                className="z-100 -me-[0.5%] font-clash text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
                             >
                                 SO
                             </motion.h1>
@@ -66,7 +66,7 @@ export default function ComingSoon() {
                                 }}
                                 src={bola}
                                 alt="UB Sport Center"
-                                className="w-[24%] md:w-[23%] lg:w-[15%]"
+                                className="w-[15%] md:w-[12%] lg:w-[8%]"
                                 draggable={false}
                             />
 
@@ -77,7 +77,7 @@ export default function ComingSoon() {
                                     y: { duration: 0.5, delay: 2 },
                                     opacity: { duration: 1.5, delay: 2 },
                                 }}
-                                className="z-10 ms-[-3%] font-monument text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
+                                className="z-10 ms-[-1%] font-clash text-[9vh] font-extrabold text-white md:text-[13vh] lg:text-[12vw]"
                             >
                                 N!
                             </motion.h1>

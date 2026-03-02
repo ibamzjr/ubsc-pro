@@ -31,7 +31,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     <img
                         src="/UBSC.svg"
                         alt="UB Sport Center Logo"
-                        className="h-12 w-auto"
+                        className="h-8 w-auto md:h-12 transition-all duration-200"
                     />
                 </div>
 
@@ -91,16 +91,21 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     type="button"
                     onClick={() => setMobileOpen((v) => !v)}
                     className="flex flex-col items-end justify-center gap-[6px] p-1 xl:hidden"
-                    aria-label="Toggle menu"
+                    aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={mobileOpen}
                 >
                     <span
                         className={`block h-[2px] bg-white transition-all duration-300 ${
-                            mobileOpen ? "w-6 translate-y-2 rotate-45" : "w-7"
+                            mobileOpen
+                                ? "w-6 translate-y-[7px] rotate-45"
+                                : "w-7"
                         }`}
                     />
                     <span
                         className={`block h-[2px] bg-white transition-all duration-300 ${
-                            mobileOpen ? "w-6 -translate-y-2 -rotate-45" : "w-5"
+                            mobileOpen
+                                ? "w-6 -translate-y-[1px] -rotate-45"
+                                : "w-5"
                         }`}
                     />
                 </button>

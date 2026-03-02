@@ -23,7 +23,7 @@ export default {
     				'sans-serif'
     			],
     			clash: [
-    				'Clash Display"',
+    				'Clash Display',
     				'sans-serif'
     			],
     			bdo: [
