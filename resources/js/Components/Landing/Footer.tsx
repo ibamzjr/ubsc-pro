@@ -4,6 +4,7 @@ import ig from "../../../assets/icons/ig.svg";
 import x from "../../../assets/icons/x.svg";
 import tiktok from "../../../assets/icons/tiktok.svg";
 import facebook from "../../../assets/icons/fb.svg";
+import UpRight from "@/../assets/icons/UpRight.svg";
 
 const NAV_LINKS = [
     { label: "Home", number: "01", href: "#home" },
@@ -151,7 +152,7 @@ export default function Footer() {
                                         <img
                                             src={s.icon}
                                             alt={s.label}
-                                            className="h-4 w-4 object-contain"
+                                            className="h-4 w-4 object-contain transition duration-200 ease-in-out hover:[filter:grayscale(1)_brightness(0)]"
                                             onError={(e) => {
                                                 // hide broken icon gracefully
                                                 (
@@ -216,7 +217,7 @@ export default function Footer() {
                     <ScrollUpButton onClick={scrollToTop} />
                 </div>
 
-                <div className="mb-12 flex flex-col gap-4 xl:hidden">
+                <div className="mb-3 lg:mb-12 flex flex-col gap-4 xl:hidden">
                     <p className="font-bdo text-sm text-gray-400">
                         <span className="mr-1 text-red-500">©</span>
                         2026 PT. Brawijaya Multi Usaha.
@@ -234,7 +235,7 @@ export default function Footer() {
             </div>
 
             <div className="mt-auto w-full relative">
-                <div className="w-full relative px-6 py-3 xl:px-24 xl:py-12 overflow-hidden ">
+                <div className="w-full relative px-6 pb-3 xl:px-24 xl:pb-12 overflow-hidden ">
                     {/* Video Layer */}
                     <video
                         autoPlay
@@ -280,9 +281,11 @@ function ScrollUpButton({ onClick }: { onClick: () => void }) {
             className="group flex cursor-pointer items-center gap-2 rounded-full border border-gray-600 py-2 pl-6 pr-2 text-sm font-medium text-white transition hover:bg-white hover:text-black"
         >
             <span className="font-clash">Scroll up</span>
-            {/* Circle with arrow inside */}
             <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 transition group-hover:border-black">
-                <ArrowUp size={14} />
+                <img
+                    src={UpRight}
+                    className="transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
+                />
             </span>
         </button>
     );

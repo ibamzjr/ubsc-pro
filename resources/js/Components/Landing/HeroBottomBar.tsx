@@ -1,6 +1,13 @@
-import { ChevronRight } from "lucide-react";
+import DownRight from "@/../assets/icons/DownRight.svg";
 
 export default function HeroBottomBar() {
+    // Scroll to SectionTwo
+    const scrollToSectionTwo = () => {
+        const el = document.getElementById("about");
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+        }
+    };
     return (
         <div className="relative w-full overflow-hidden">
             <video
@@ -31,19 +38,25 @@ export default function HeroBottomBar() {
                         <span className="font-medium text-white">
                             UB Sport Center –
                         </span>{" "}
-                        Temukan fasilitas olahraga modern <br/>untuk berlatih,
-                        berprestasi, dan berkembang bersama.
+                        Temukan fasilitas olahraga modern <br />
+                        untuk berlatih, berprestasi, dan berkembang bersama.
                     </p>
 
                     <div className="flex items-center gap-3">
-                        <span className="rounded-full border border-white/20 px-8 py-2.5 font-bdo text-lg font-light text-white transition-colors hover:border-white/40">
-                            Scroll down
-                        </span>
                         <button
                             type="button"
-                            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-all hover:border-white/40 hover:text-white"
+                            aria-label="Scroll to section two"
+                            className="group flex items-center gap-2 rounded-full border border-white/20 px-8 py-2.5 font-bdo text-lg font-light text-white transition hover:bg-gray-300 hover:text-black hover:border-gray-300"
+                            onClick={scrollToSectionTwo}
                         >
-                            <ChevronRight size={24} />
+                            <span className="font-bdo">Scroll down</span>
+                            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 transition group-hover:border-black">
+                                <img
+                                    src={DownRight}
+                                    alt="Scroll down"
+                                    className="transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
+                                />
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -59,17 +72,17 @@ export default function HeroBottomBar() {
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <span className="rounded-full border border-white/20 px-5 py-2 font-bdo text-sm font-light text-white">
-                                Scroll down
-                            </span>
-                            <button
-                                type="button"
-                                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-white/20 text-white/60"
-                            >
-                                <ChevronRight size={16} />
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            aria-label="Scroll to section two"
+                            className="group flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 font-bdo text-sm font-light text-white transition hover:bg-white hover:text-black hover:border-white"
+                            onClick={scrollToSectionTwo}
+                        >
+                            <span className="font-bdo">Scroll down</span>
+                            {/* <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white transition group-hover:border-black">
+                                <FooterArrow />
+                            </span> */}
+                        </button>
                     </div>
 
                     <p className="max-w-[55%] font-bdo text-sm font-light leading-relaxed text-white/80">
