@@ -1,51 +1,156 @@
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import gym from "../../../assets/hero/gym.svg";
 
 interface GymTrafficBadgeProps {
     variant?: "default" | "reversed";
 }
 
+type StatusType =
+    | "High Occupancy"
+    | "Medium Occupancy"
+    | "Low Occupancy"
+    | "Coming Soon"
+    | "Just a Test"
+    | "Stay Tune";
+
+const STATUSES: StatusType[] = [
+    "High Occupancy",
+    "Coming Soon",
+    "Medium Occupancy",
+    "Just a Test",
+    "Low Occupancy",
+    "Stay Tune",
+];
+
+function getStatusStyles(status: StatusType) {
+    switch (status) {
+        case "High Occupancy":
+            return {
+                bg: "from-red-600 via-red-500 to-red-700",
+                glow: "shadow-[0_0_40px_rgba(239,68,68,0.6)]",
+            };
+        case "Medium Occupancy":
+            return {
+                bg: "from-yellow-400 via-orange-400 to-orange-500",
+                glow: "shadow-[0_0_40px_rgba(251,146,60,0.6)]",
+            };
+        case "Low Occupancy":
+            return {
+                bg: "from-green-500 via-emerald-500 to-green-600",
+                glow: "shadow-[0_0_40px_rgba(34,197,94,0.6)]",
+            };
+        default:
+            return {
+                bg: "bg-gradient-to-r from-[#15678D] to-[#153359]",
+                glow: "shadow-[0_0_40px_rgba(59,130,246,0.6)]",
+            };
+    }
+}
+
 export default function GymTrafficBadge({
     variant = "default",
 }: GymTrafficBadgeProps) {
+    const [index, setIndex] = useState(0);
+    const status = STATUSES[index];
+    const styles = getStatusStyles(status);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % STATUSES.length);
+        }, 3500);
+        return () => clearInterval(interval);
+    }, []);
+
+    const StatusSection = (
+        <motion.div
+            key={status}
+            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className={`relative flex items-center bg-gradient-to-r ${styles.bg} px-8 py-3 md:px-8 md:py-5 xl:px-10 xl:py-3 overflow-hidden`}
+        >
+            {/* Glow */}
+            <motion.div
+                className={`absolute inset-0 ${styles.glow}`}
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity }}
+            />
+
+            {/* Shimmer Sweep */}
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                initial={{ x: "-100%" }}
+                animate={{ x: "200%" }}
+                transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear",
+                }}
+            />
+
+            <span className="relative font-clash text-sm xl:text-xl font-bold text-white whitespace-nowrap">
+                {status}
+            </span>
+        </motion.div>
+    );
+
     if (variant === "reversed") {
         return (
-            <div className="flex items-stretch overflow-hidden rounded-lg border-4 border-black  mt-5 xl:mt-0">
-                <div className="flex items-center bg-red-600 px-8 py-4 md:px-8 md:py-5 xl:px-12 xl:py-8">
-                    <span className="font-clash text-sm xl:text-xl font-semibold text-white whitespace-nowrap">
-                        High Occupancy
-                    </span>
-                </div>
+            <motion.div
+                whileHover={{ scale: 1.05, rotateX: 3 }}
+                className="flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-5 xl:mt-0 perspective-[1000px]"
+            >
+                <AnimatePresence mode="wait">
+                    {StatusSection}
+                </AnimatePresence>
+
                 <div className="flex items-center gap-2 bg-gray-200 px-5 py-4 md:px-8 md:py-5 xl:px-12 xl:py-3">
-                    <img
+                    <motion.img
                         src={gym}
                         alt="Gym Traffic"
                         className="h-4 w-4 opacity-70"
+                        animate={{ rotate: [0, 360] }}
+                        transition={{
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "linear",
+                        }}
                     />
                     <span className="font-clash xl:text-xl font-medium text-black whitespace-nowrap">
                         Gym Traffic
                     </span>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="inline-flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-16 xl:mt-0">
+        <motion.div
+            whileHover={{ scale: 1.05, rotateX: 3 }}
+            className="inline-flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-16 xl:mt-0 perspective-[1000px]"
+        >
             <div className="flex items-center gap-2 bg-black px-5 py-3 md:px-8 md:py-5 xl:px-10 xl:py-5">
-                <img
+                <motion.img
                     src={gym}
                     alt="Gym Traffic"
                     className="h-4 w-4 text-white/70"
+                    animate={{ rotate: [0, 360] }}
+                    transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "linear",
+                    }}
                 />
                 <span className="font-bdo text-sm xl:text-xl font-medium text-white/90 whitespace-nowrap">
                     Gym Traffic
                 </span>
             </div>
-            <div className="flex items-center bg-accent-red px-8 py-3 md:px-8 md:py-5 xl:px-10 xl:py-3">
-                <span className="font-clash text-sm xl:text-xl font-bold text-white whitespace-nowrap">
-                    High Occupancy
-                </span>
-            </div>
-        </div>
+
+            <AnimatePresence mode="wait">
+                {StatusSection}
+            </AnimatePresence>
+        </motion.div>
     );
 }

@@ -1,19 +1,39 @@
 export default function HeroTitle() {
     return (
-        <div className="pointer-events-none select-none max-w-full w-full">
-            <div className="mb-6 flex items-center gap-2 lg:mb-8">
-                <span className="font-bdo text-sm font-medium tracking-wide text-red-600 lg:text-xl">
+        <div className="pointer-events-none select-none max-w-full w-full px-0 md:px-0">
+            {/* Header Year */}
+            <div className="mb-4 flex items-center gap-2 lg:mb-8">
+                <span className="font-bdo text-xs font-medium tracking-wide text-red-600 sm:text-sm lg:text-xl">
                     © <span className="font-medium text-white">2026</span>
                 </span>
             </div>
 
-            <h1 className="font-archivo font-bold text-[clamp(2.5rem,8vw,6rem)] sm:text-[clamp(3rem,10vw,8rem)] md:text-[clamp(3.5rem,12vw,10rem)] xl:text-[clamp(8rem,8vw,13rem)] uppercase leading-[0.9] tracking-[-0.02em] text-white max-w-full break-words whitespace-nowrap">
-                <span className="block">SPORT</span>
-                <span className="block">
-                    CENTER UB
-                    <span className="ml-2 inline-block h-[clamp(10px,2vw,18px)] w-[clamp(10px,2vw,18px)] translate-y-[-15%] bg-accent-red xl:ml-6 xl:h-[clamp(16px,1.8vw,32px)] xl:w-[clamp(16px,1.8vw,32px)]" />
-                </span>
-            </h1>
+            {/* Main Title */}
+            <h1 className="font-archivo font-bold uppercase tracking-[-0.03em] text-white leading-[0.8] 
+    text-[clamp(2.8rem,14vw,4.5rem)]   /* Mobile */
+    md:text-[clamp(4.5rem,10vw,7rem)]   /* Tablet */
+    lg:text-[clamp(6rem,8vw,8.5rem)]    /* Resolusi 1125px - 1180px (Titik Aman) */
+    xl:text-[clamp(8rem,9vw,11.5rem)]   /* Desktop (Max diturunkan dari 13rem ke 11.5rem) */
+    max-w-full break-words">
+    
+    <span className="block">SPORT</span>
+    
+    <span className="flex flex-wrap items-baseline gap-x-4 md:gap-x-6 lg:block">
+    <span className="mr-2 md:mr-4 lg:mr-6">CENTER</span>
+    <span className="inline-flex items-baseline">
+        UB
+        {/* Square Decorator */}
+        <span className="ml-3 inline-block bg-accent-red
+            h-[clamp(10px,2vw,14px)] w-[clamp(10px,2vw,14px)] 
+            md:h-[18px] md:w-[18px] 
+            lg:h-[22px] lg:w-[22px]
+            xl:ml-8 xl:h-[28px] xl:w-[28px] 
+            translate-y-[-10%]" 
+        />
+    </span>
+</span>
+</h1>
+
         </div>
     );
 }

@@ -1,7 +1,8 @@
 import DownRight from "@/../assets/icons/DownRight.svg";
+import { useState } from "react";
 
 export default function HeroBottomBar() {
-    // Scroll to SectionTwo
+    const [rotated, setRotated] = useState(false);
     const scrollToSectionTwo = () => {
         const el = document.getElementById("about");
         if (el) {
@@ -43,26 +44,45 @@ export default function HeroBottomBar() {
                     </p>
 
                     <div className="flex items-center gap-3">
-                        <button
-                            type="button"
-                            aria-label="Scroll to section two"
-                            className="group flex items-center gap-2 rounded-full border border-white/20 px-8 py-2.5 font-bdo text-lg font-light text-white transition hover:bg-gray-300 hover:text-black hover:border-gray-300"
-                            onClick={scrollToSectionTwo}
-                        >
-                            <span className="font-bdo">Scroll down</span>
-                            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 transition group-hover:border-black">
-                                <img
-                                    src={DownRight}
-                                    alt="Scroll down"
-                                    className="transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
-                                />
-                            </span>
-                        </button>
+
+                   <button
+    type="button"
+    aria-label="Scroll to section two"
+    onClick={() => {
+        setRotated(true);
+        scrollToSectionTwo();
+    }}
+    onMouseEnter={() => setRotated(true)}
+    onMouseLeave={() => setRotated(false)}
+    className="group flex items-center"
+>
+    {/* Capsule */}
+    <div className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black">
+        <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
+            Scroll down
+        </span>
+    </div>
+
+    {/* Circle Arrow (NO GAP) */}
+    <div className="-ml-[1px] flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
+        <img
+            src={DownRight}
+            alt="Scroll down"
+            className={`
+                w-3.5 xs:w-4
+                transition-transform duration-500 ease-in-out
+                ${rotated ? "rotate-[5deg]" : "rotate-[-85deg]"}
+                group-hover:[filter:grayscale(1)_brightness(0)]
+            `}
+        />
+    </div>
+</button>
+
                     </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-4 lg:hidden">
-                    <div className="flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-12 lg:hidden">
+                    <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-1">
                             <span className="font-bdo text-sm font-medium text-white/40">
                                 01/
@@ -75,23 +95,28 @@ export default function HeroBottomBar() {
                         <button
                             type="button"
                             aria-label="Scroll to section two"
-                            className="group flex items-center gap-2 rounded-full border border-white/20 px-5 py-2 font-bdo text-sm font-light text-white transition hover:bg-white hover:text-black hover:border-white"
+    className="group flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-1 font-bdo text-[12px] font-light text-white transition hover:bg-white hover:text-black hover:border-white w-fit mx-auto"
                             onClick={scrollToSectionTwo}
                         >
                             <span className="font-bdo">Scroll down</span>
-                            {/* <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white transition group-hover:border-black">
-                                <FooterArrow />
-                            </span> */}
+
                         </button>
                     </div>
 
-                    <p className="max-w-[55%] font-bdo text-sm font-light leading-relaxed text-white/80">
-                        <span className="font-bold text-white">
-                            UB Sport Center –
-                        </span>{" "}
-                        Temukan fasilitas olahraga modern untuk berlatih,
-                        berprestasi, dan berkembang bersama.
-                    </p>
+                    <p className="w-full max-w-[95%] lg:max-w-[55%] font-bdo font-light leading-relaxed text-white/80 
+    /* 
+       Clamp: 
+       Min: 0.75rem (12px) 
+       Ideal: 1.5vw 
+       Max: 1rem (16px) 
+    */
+    text-[clamp(0.75rem,1.5vw,1rem)]">
+    <span className="font-bold text-white">
+        UB Sport Center –
+    </span>{" "}
+    Temukan fasilitas olahraga modern untuk berlatih,
+    berprestasi, dan berkembang bersama.
+</p>
                 </div>
             </div>
         </div>

@@ -205,7 +205,7 @@ export default function Footer() {
 
                 <div className="xl:mb-12 hidden items-center justify-between xl:flex">
                     <span className="font-clash text-sm text-gray-400">
-                        02/{" "}
+                        01/{" "}
                         <span className="font-medium text-white">homepage</span>
                     </span>
 

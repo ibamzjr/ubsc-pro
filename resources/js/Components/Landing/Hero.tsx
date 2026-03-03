@@ -2,14 +2,20 @@ import GymTrafficBadge from "@/Components/Landing/GymTrafficBadge";
 import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import HeroContent from "@/Components/Landing/HeroContent";
 import HeroTitle from "@/Components/Landing/HeroTitle";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from "framer-motion";
+import { useAnimationControls } from "framer-motion";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
-// Remove FluidGlassCursor import, add FluidGlass from library
-// import FluidGlass from "@/Components/Landing/FluidGlass";
+
 
 export default function Hero() {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const rotate = useMotionValue(0);
+    useAnimationFrame((t, delta) => {
+        const speed = isHovered ? -0.012 : -0.045; 
+        rotate.set(rotate.get() + delta * speed);
+    });
     return (
         <>
             <Head>
@@ -51,16 +57,7 @@ export default function Hero() {
                     loading="eager"
                     style={{ transitionProperty: "opacity, transform" }}
                 />
-                {/* FluidGlass lens effect (desktop only) */}
-                {/* <div
-                    className="hidden xl:block absolute inset-0 z-40"
-                    style={{
-                        height: "100vh",
-                        position: "absolute",
-                        width: "100vw",
-                    }}
-                >
-                </div> */}
+                
                 <motion.div
                     className="absolute inset-0 z-0 bg-slate-500"
                     animate={{ opacity: isLoaded ? 0 : 1 }}
@@ -117,17 +114,18 @@ export default function Hero() {
                             ease: [0.4, 0, 0.2, 1],
                         }}
                     >
-                        <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
+                        <div
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            onMouseDown={() => setIsHovered(true)}
+                            onMouseUp={() => setIsHovered(false)}
+                            className="flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white shadow-xl"
+                        >
                             <motion.img
                                 src="/BMU.svg"
                                 alt="Brawijaya Multi Usaha"
                                 className="h-full w-full object-contain"
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                    duration: 8,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                }}
+                                style={{ rotate }}
                             />
                         </div>
                     </motion.div>
@@ -176,7 +174,7 @@ export default function Hero() {
                                     src="/BMU.svg"
                                     alt="Brawijaya Multi Usaha"
                                     className="h-full w-full object-contain"
-                                    animate={{ rotate: 360 }}
+                                    animate={{ rotate: -360 }}
                                     transition={{
                                         duration: 8,
                                         repeat: Infinity,

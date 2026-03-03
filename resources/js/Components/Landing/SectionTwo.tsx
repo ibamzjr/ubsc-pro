@@ -47,17 +47,19 @@ export default function SectionTwo() {
                                 </span>
                             </div>
 
-                            <h2 className="mt-4 text-[2.2rem] font-semibold leading-[1.1] tracking-tight text-black md:text-[2.75rem] xl:text-6xl">
-                                Latihan Kekuatan dan Kebugaran Untukmu
-                            </h2>
+                            <h2 className="mt-4 text-[clamp(1.75rem,5vw,3.25rem)] font-bold leading-[1.1] tracking-tight text-black max-w-[95%]">
+                            Latihan Kekuatan dan Kebugaran Untukmu
+                        </h2>
 
-                            <div className="mt-8 sm:aspect-[6/5] md:aspect-[/5] xl:aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 md:mt-10">
-                                <img
-                                    src={left}
-                                    className="h-full w-full object-cover"
-                                    alt="Gym"
-                                />
-                            </div>
+                           <div className="mt-8 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] xl:max-w-[560px] self-start md:mt-10">
+    <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
+        <img
+            src={left}
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            alt="Gym"
+        />
+    </div>
+</div>
                         </div>
 
                         <div className="flex flex-col xl:col-span-7 xl:pt-2 xl:pl-12">
