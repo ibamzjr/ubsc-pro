@@ -6,6 +6,7 @@ export interface PriceItem {
     title: string;
     price: string;
     rating?: number; // 1–5, default 5
+    href?: string;
 }
 
 interface PriceCardProps {
@@ -84,4 +85,19 @@ export default function PriceCard({ item }: PriceCardProps) {
             </div>
         </div>
     );
+
+    //     if (item.href && item.href !== "#") {
+    //         return (
+    //             <a
+    //                 href={item.href}
+    //                 target="_blank"
+    //                 rel="noopener noreferrer"
+    //                 className="block"
+    //             >
+    //                 {inner}
+    //             </a>
+    //         );
+    //     }
+
+    //     return inner;
 }

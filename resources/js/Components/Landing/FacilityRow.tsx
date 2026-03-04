@@ -1,4 +1,3 @@
-import { Link } from "@inertiajs/react";
 import { ArrowUpRight } from "lucide-react";
 import FacilityBadge from "@/Components/Landing/FacilityBadge";
 
@@ -18,8 +17,10 @@ interface FacilityRowProps {
 
 export default function FacilityRow({ facility }: FacilityRowProps) {
     return (
-        <Link
+        <a
             href={facility.href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group relative block w-full overflow-hidden text-white transition-all duration-300 hover:brightness-110"
             style={{ height: "clamp(150px, 14vw, 160px)" }}
         >
@@ -74,6 +75,6 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
                     <ArrowUpRight size={20} />
                 </div>
             </div>
-        </Link>
+        </a>
     );
 }

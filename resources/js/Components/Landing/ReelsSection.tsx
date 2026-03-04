@@ -179,7 +179,9 @@ export default function ReelsSection({
                     </span>
 
                     <a
-                        href="/coming-soon"
+                        href="https://www.instagram.com/ubsportcenter/?hl=en"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="relative w-64 cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                         onMouseEnter={() => setLinkHovered(true)}
                         onMouseLeave={() => setLinkHovered(false)}

@@ -1,9 +1,8 @@
-import { Link } from "@inertiajs/react";
 import { ArrowUpRight, MapPin } from "lucide-react";
 
 export interface ArenaItem {
-    id: string; // e.g. "/Terbuka 001/"
-    title: string; // e.g. "/Sepak Bola"
+    id: string;
+    title: string;
     location: string;
     category: string;
     image: string;
@@ -17,8 +16,10 @@ interface ArenaCardProps {
 
 export default function ArenaCard({ item }: ArenaCardProps) {
     return (
-        <Link
+        <a
             href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group flex w-full cursor-pointer flex-col overflow-hidden border-b border-r border-neutral-700 even:border-r-0 md:border-b-0 md:border-r md:last:border-r-0 md:even:border-r"
         >
             <div className="relative h-[200px] w-full overflow-hidden md:h-[220px] xl:h-[260px]">
@@ -56,6 +57,6 @@ export default function ArenaCard({ item }: ArenaCardProps) {
                     {item.title}
                 </span>
             </div>
-        </Link>
+        </a>
     );
 }

@@ -39,21 +39,19 @@ export default function ReservasiButton({
                     background-color: #E8E8E8;
                     border: none;
                     border-radius: 9999px;
-                    padding: 4px 24px 4px 4px;
+                    padding: 6px 32px 6px 6px;
                     cursor: pointer;
                     overflow: hidden;
-                    height: 44px;
+                    height: 64px;
                     outline: none;
                     -webkit-tap-highlight-color: transparent;
                 }
-
-                /* Expanding red fill */
                 .reservasi-btn-fill {
                     position: absolute;
-                    left: 4px;
-                    top: 4px;
-                    bottom: 4px;
-                    width: 36px;
+                    left: 6px;
+                    top: 6px;
+                    bottom: 6px;
+                    width: 52px;
                     border-radius: 9999px;
                     background-color: #E8190A;
                     z-index: 0;
@@ -61,52 +59,43 @@ export default function ReservasiButton({
                     pointer-events: none;
                 }
                 .reservasi-btn:hover .reservasi-btn-fill {
-                    width: calc(100% - 8px);
+                    width: calc(100% - 12px);
                 }
-
-                /* Icon wrapper */
                 .reservasi-icon-wrap {
                     position: relative;
                     z-index: 1;
-                    width: 36px;
-                    height: 36px;
+                    width: 52px;
+                    height: 52px;
                     overflow: hidden;
                     flex-shrink: 0;
                     border-radius: 9999px;
                 }
-
-                /* Arrow track: [arrow-new | arrow-old] */
                 .reservasi-arrow-track {
                     display: flex;
-                    width: 72px;
+                    width: 104px;
                     height: 100%;
-                    transform: translateX(-36px);
+                    transform: translateX(-52px);
                     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
                 }
                 .reservasi-btn:hover .reservasi-arrow-track {
                     transform: translateX(0px);
                 }
-
                 .reservasi-arrow-slot {
-                    width: 36px;
+                    width: 52px;
                     height: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     flex-shrink: 0;
                 }
-
-                /* Text wrapper */
                 .reservasi-text-wrap {
                     position: relative;
                     z-index: 1;
                     overflow: hidden;
-                    height: 36px;
-                    padding-left: 12px;
+                    height: 52px;
+                    padding-left: 16px;
                     padding-right: 4px;
                 }
-
-                /* Text track */
                 .reservasi-text-track {
                     display: flex;
                     flex-direction: column;
@@ -114,28 +103,29 @@ export default function ReservasiButton({
                     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
                 }
                 .reservasi-btn:hover .reservasi-text-track {
-                    transform: translateY(-36px);
+                    transform: translateY(-52px);
                 }
-
                 .reservasi-text-slot {
-                    height: 36px;
+                    height: 52px;
                     display: flex;
                     align-items: center;
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: 600;
-                    letter-spacing: -0.2px;
+                    letter-spacing: -0.3px;
                     white-space: nowrap;
                     line-height: 1;
                     font-family: inherit;
                 }
-
                 .reservasi-text-1 { color: #111111; }
                 .reservasi-text-2 { color: #FFFFFF; }
             `}</style>
 
-            <Link
+            <a
                 href={href}
-                onClick={onClick}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                    href.startsWith("http") ? "noopener noreferrer" : undefined
+                }
                 className="reservasi-btn"
                 aria-label={label}
             >
@@ -143,10 +133,10 @@ export default function ReservasiButton({
 
                 <div className="reservasi-icon-wrap">
                     <div className="reservasi-arrow-track">
-                        <div className="reservasi-arrow-slot">
+                        <div className="daftar-arrow-slot">
                             <ArrowIcon />
                         </div>
-                        <div className="reservasi-arrow-slot">
+                        <div className="daftar-arrow-slot">
                             <ArrowIcon />
                         </div>
                     </div>
@@ -162,7 +152,7 @@ export default function ReservasiButton({
                         </div>
                     </div>
                 </div>
-            </Link>
+            </a>
         </>
     );
 }

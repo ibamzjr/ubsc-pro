@@ -1,9 +1,8 @@
-import { Link } from "@inertiajs/react";
 import { ArrowUpRight, MapPin } from "lucide-react";
 
 export interface ClassItem {
-    id: string; // e.g. "/Kelas 001/"
-    title: string; // e.g. "/Yoga"
+    id: string;
+    title: string;
     location: string;
     category: string;
     image: string;
@@ -17,8 +16,10 @@ interface ClassCardProps {
 
 export default function ClassCard({ item }: ClassCardProps) {
     return (
-        <Link
+        <a
             href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group flex w-full cursor-pointer flex-col overflow-hidden"
         >
             <div className="relative h-[280px] w-full overflow-hidden md:h-[380px]">
@@ -64,6 +65,6 @@ export default function ClassCard({ item }: ClassCardProps) {
                     <ArrowUpRight size={18} className="text-white" />
                 </div>
             </div>
-        </Link>
+        </a>
     );
 }

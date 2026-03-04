@@ -20,11 +20,13 @@ interface DaftarButtonProps {
     onClick?: () => void;
     label?: string;
     disabled?: boolean;
+    href?: string;
 }
 
 export default function DaftarButton({
     onClick,
     label = "Daftar Sekarang",
+    href = "https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%92%AA%0A%0ASaya+tertarik+untuk+mendaftar+%2AMembership+Gym%2A.+Mohon+informasi+mengenai+paket+yang+tersedia%2C+prosedur+pendaftaran%2C+dan+langkah+aktivasi+membership.%0A%0ATerima+kasih+%F0%9F%98%8A&type=phone_number&app_absent=0",
     disabled = false,
 }: DaftarButtonProps) {
     return (
@@ -44,8 +46,6 @@ export default function DaftarButton({
                     outline: none;
                     -webkit-tap-highlight-color: transparent;
                 }
-
-                /* Expanding red fill */
                 .daftar-btn-fill {
                     position: absolute;
                     left: 6px;
@@ -61,8 +61,6 @@ export default function DaftarButton({
                 .daftar-btn:hover .daftar-btn-fill {
                     width: calc(100% - 12px);
                 }
-
-                /* Icon wrapper — clips two arrows horizontally */
                 .daftar-icon-wrap {
                     position: relative;
                     z-index: 1;
@@ -72,10 +70,6 @@ export default function DaftarButton({
                     flex-shrink: 0;
                     border-radius: 9999px;
                 }
-
-                /* Arrow track: [arrow-new | arrow-old]
-                   Default → shows arrow-old (right slot, translateX(-52px))
-                   Hover   → arrow-new enters from left (translateX(0)) */
                 .daftar-arrow-track {
                     display: flex;
                     width: 104px;
@@ -86,7 +80,6 @@ export default function DaftarButton({
                 .daftar-btn:hover .daftar-arrow-track {
                     transform: translateX(0px);
                 }
-
                 .daftar-arrow-slot {
                     width: 52px;
                     height: 100%;
@@ -95,8 +88,6 @@ export default function DaftarButton({
                     justify-content: center;
                     flex-shrink: 0;
                 }
-
-                /* Text wrapper — clips two labels vertically */
                 .daftar-text-wrap {
                     position: relative;
                     z-index: 1;
@@ -105,10 +96,6 @@ export default function DaftarButton({
                     padding-left: 16px;
                     padding-right: 4px;
                 }
-
-                /* Text track: [text-1 black] on top, [text-2 white] below
-                   Default → text-1 visible
-                   Hover   → text-2 slides up into view */
                 .daftar-text-track {
                     display: flex;
                     flex-direction: column;
@@ -118,7 +105,6 @@ export default function DaftarButton({
                 .daftar-btn:hover .daftar-text-track {
                     transform: translateY(-52px);
                 }
-
                 .daftar-text-slot {
                     height: 52px;
                     display: flex;
@@ -130,7 +116,6 @@ export default function DaftarButton({
                     line-height: 1;
                     font-family: inherit;
                 }
-
                 .daftar-text-1 { color: #111111; }
                 .daftar-text-2 { color: #FFFFFF; }
                 .daftar-btn:disabled {
@@ -144,10 +129,10 @@ export default function DaftarButton({
                 }
             `}</style>
 
-            <button
-                type="button"
-                onClick={disabled ? undefined : onClick}
-                disabled={disabled}
+            <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="daftar-btn"
                 aria-label={label}
             >
@@ -174,7 +159,7 @@ export default function DaftarButton({
                         </div>
                     </div>
                 </div>
-            </button>
+            </a>
         </>
     );
 }
