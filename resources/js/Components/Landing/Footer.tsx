@@ -277,19 +277,23 @@ function FooterArrow() {
 // ─────────────────────────────────────────────────────────────
 function ScrollUpButton({ onClick }: { onClick: () => void }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            aria-label="Scroll to top"
-            className="group flex cursor-pointer items-center gap-2 rounded-full border border-gray-600 py-2 pl-6 pr-2 text-sm font-medium text-white transition hover:bg-white hover:text-black"
-        >
-            <span className="font-light lg:text-lg ">Scroll up</span>
-            <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 transition group-hover:border-black">
+        <div className="group flex items-center">
+            <button
+                type="button"
+                onClick={onClick}
+                aria-label="Scroll to top"
+                className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
+            >
+                <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
+                    Scroll up
+                </span>
+            </button>
+            <span className="-ml-[1px] flex h-10 w-10 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
                 <img
                     src={UpRight}
-                    className="transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
+                    className="w-4 transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
                 />
             </span>
-        </button>
+        </div>
     );
 }
