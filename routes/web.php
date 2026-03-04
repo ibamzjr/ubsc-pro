@@ -23,4 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+// Auth routes are disabled — redirect to coming-soon
+Route::get('/login', fn() => redirect()->route('coming-soon'))->name('login');
+Route::get('/register', fn() => redirect()->route('coming-soon'))->name('register');
+Route::get('/forgot-password', fn() => redirect()->route('coming-soon'))->name('password.request');
+
+// require __DIR__.'/auth.php';

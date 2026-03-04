@@ -54,7 +54,7 @@ const STATS = [
 ];
 
 function formatStatValue(value: number, suffix: string) {
-    if (suffix === '+') {
+    if (suffix === "+") {
         if (value >= 1000000) return `${Math.round(value / 1000000)}M+`;
         if (value >= 1000) return `${Math.round(value / 1000)}K+`;
         return `${Math.round(value)}+`;
@@ -173,9 +173,12 @@ export default function SectionFive() {
                     {STATS.map((stat, i) => {
                         const animated = useCountUp(stat.value, 1.2);
                         let displayValue;
-                        if (stat.suffix === '+') {
-                            displayValue = formatStatValue(animated, stat.suffix);
-                        } else if (stat.suffix === '%') {
+                        if (stat.suffix === "+") {
+                            displayValue = formatStatValue(
+                                animated,
+                                stat.suffix,
+                            );
+                        } else if (stat.suffix === "%") {
                             displayValue = `${animated.toFixed(1)}%`;
                         } else {
                             displayValue = `${Math.round(animated)}${stat.suffix}`;
