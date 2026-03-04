@@ -23,6 +23,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
                             alt={location.title}
                             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-xl"
                             draggable={false}
+                            loading="lazy"
                         />
                     </picture>
                 ) : (
@@ -30,7 +31,8 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
                 )}
             </div>
 
-            <div className="flex flex-col p-5 gap-4">
+            {/* Mobile: stacked, Desktop: flex-row */}
+            <div className="flex flex-col gap-4 p-5 xl:flex-row xl:items-center xl:justify-between">
                 <div>
                     <p className="text-base md:text-lg font-semibold text-black">
                         {location.title}
@@ -43,7 +45,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
                 <button
                     type="button"
                     onClick={() => onViewDetail?.(location)}
-                    className="self-start rounded-full bg-[#FF0000] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 border border-red-400"
+                    className="self-start xl:self-auto xl:ml-auto rounded-full bg-[#FF0000] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 border border-red-400"
                 >
                     Lihat Detail
                 </button>

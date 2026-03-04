@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
+import { useEffect } from "react";
 import { Link } from "@inertiajs/react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReelsSection from "@/Components/Landing/ReelsSection";
@@ -24,24 +26,63 @@ const Arrow: React.FC<{ size?: number }> = ({ size = 32 }) => (
 
 const STATS = [
     {
-        value: "99.9%",
+        value: 99.9,
+        suffix: "%",
+        decimals: 1,
         description:
             "Akurasi standar layanan kami yang selalu terjaga setiap saat.",
     },
     {
-        value: "1M+",
+        value: 1000,
+        suffix: "+",
+        decimals: 0,
         description: "Kunjungan pengguna yang telah berlatih bersama kami.",
     },
     {
-        value: "3X",
+        value: 3,
+        suffix: "X",
+        decimals: 0,
         description: "Peningkatan fasilitas dan layanan jadi lebih optimal",
     },
     {
-        value: "24/7",
+        value: 24,
+        suffix: "/7",
+        decimals: 0,
         description:
             "Akses informasi dan sistem booking online aktif setiap saat.",
     },
 ];
+
+function formatStatValue(value: number, suffix: string) {
+    if (suffix === '+') {
+        if (value >= 1000000) return `${Math.round(value / 1000000)}M+`;
+        if (value >= 1000) return `${Math.round(value / 1000)}K+`;
+        return `${Math.round(value)}+`;
+    }
+    return `${value}${suffix}`;
+}
+
+function useCountUp(target: number, duration: number = 2.3) {
+    const motionValue = useMotionValue(0);
+    const [value, setValue] = useState(0);
+    useEffect(() => {
+        const start = performance.now();
+        function animate(now: number) {
+            const elapsed = (now - start) / 1000;
+            const progress = Math.min(elapsed / duration, 1);
+            const current = target * progress;
+            motionValue.set(current);
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+        requestAnimationFrame(animate);
+    }, [target, duration, motionValue]);
+    useAnimationFrame(() => {
+        setValue(motionValue.get());
+    });
+    return value;
+}
 
 export default function SectionFive() {
     const [hovered, setHovered] = useState(false);
@@ -129,16 +170,32 @@ export default function SectionFive() {
                 </div>
 
                 <div className="mt-16 md:mt-24 xl:mt-32 grid grid-cols-2 gap-8 md:grid-cols-4 xl:gap-8">
-                    {STATS.map((stat) => (
-                        <div key={stat.value} className="flex flex-col">
-                            <span className="mb-6 text-5xl md:text-6xl xl:text-8xl font-regular tracking-tighter">
-                                {stat.value}
-                            </span>
-                            <p className="max-w-[250px] font-light text-sm leading-relaxed text-gray-400">
-                                {stat.description}
-                            </p>
-                        </div>
-                    ))}
+                    {STATS.map((stat, i) => {
+                        const animated = useCountUp(stat.value, 1.2);
+                        let displayValue;
+                        if (stat.suffix === '+') {
+                            displayValue = formatStatValue(animated, stat.suffix);
+                        } else if (stat.suffix === '%') {
+                            displayValue = `${animated.toFixed(1)}%`;
+                        } else {
+                            displayValue = `${Math.round(animated)}${stat.suffix}`;
+                        }
+                        return (
+                            <div key={i} className="flex flex-col">
+                                <motion.span
+                                    className="mb-6 text-5xl md:text-6xl xl:text-8xl font-regular tracking-tighter"
+                                    initial={{ opacity: 0, y: 40 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.5 }}
+                                >
+                                    {displayValue}
+                                </motion.span>
+                                <p className="max-w-[250px] font-light text-sm leading-relaxed text-gray-400">
+                                    {stat.description}
+                                </p>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <div className="mt-24 border-t border-white/10" />

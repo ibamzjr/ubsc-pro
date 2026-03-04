@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import type { EmblaCarouselType } from "embla-carousel";
 import SectionDivider from "@/Components/Landing/SectionDivider";
-
+import author1 from "@/../assets/icons/ulasan-malang-tennis-academy-ubsc.avif";
+import gambar1 from "@/../assets/icons/testimonial-ub-sport-center.avif";
 interface Testimonial {
     id: string | number;
     image: string;
@@ -16,26 +17,11 @@ interface Testimonial {
 const DUMMY_TESTIMONIALS: Testimonial[] = [
     {
         id: 1,
-        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",
-        quote: "Fasilitas gym di UB Sport Center peralatan lengkap, dan suasana latihan yang mendukung, sehingga performa tim kami meningkat sangat pesat berkat layanan yang profesional.",
-        authorName: "Arema FC",
+        image: gambar1,
+        quote: "Malang Tenis Academy mengapresiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
+        authorName: "Malang Tennis Academy",
         authorRole: "Footbal Club",
-    },
-    {
-        id: 2,
-        image: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80",
-        quote: "Lapangan yang selalu terjaga kebersihannya, staff yang ramah, dan sistem booking online yang sangat memudahkan tim kami dalam merencanakan sesi latihan.",
-        authorName: "Komunitas Basket",
-        authorRole: "Sport Community",
-        authorLogo:
-            "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80",
-    },
-    {
-        id: 3,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
-        quote: "Program kelas kebugaran di sini benar-benar terstruktur dan dipandu oleh instruktur berpengalaman. Saya sudah merasakan manfaatnya dalam waktu singkat.",
-        authorName: "Sarah Wijaya",
-        authorRole: "Member Gym",
+        authorLogo: author1,
     },
 ];
 
@@ -100,6 +86,7 @@ export default function SectionSeven({
                             alt={activeItem.authorName}
                             className="h-full w-full object-cover"
                             draggable={false}
+                            loading="lazy"
                         />
                     </div>
                     <div className="flex flex-row gap-8">
@@ -154,13 +141,13 @@ export default function SectionSeven({
                                 className="h-full object-contain"
                             />
                         ) : (
-                            <span className="text-xl font-bold text-gray-400">
+                            <span className="text-sm lg:text-xl font-bold text-gray-400">
                                 {activeItem.authorName.charAt(0).toUpperCase()}
                             </span>
                         )}
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-clash text-base font-medium leading-tight text-gray-900">
+                        <span className="font-clash text-xs lg:text-base font-medium leading-tight text-gray-900">
                             {activeItem.authorName}
                         </span>
                         <span className="mt-0.5 font-clash text-xs font-regular text-gray-500">
@@ -179,22 +166,25 @@ export default function SectionSeven({
                                 className="min-w-0 flex-[0_0_100%]"
                             >
                                 <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-                                    <div className="lg:col-span-4">
-                                        <div className="aspect-[3/4] w-2/3 overflow-hidden rounded-2xl bg-gray-200">
+                                    <div className="lg:col-span-4 pt-16">
+                                        <div className="aspect-[5/6] w-2/3 overflow-hidden rounded-2xl bg-gray-200">
                                             <img
                                                 src={item.image}
                                                 alt={item.authorName}
                                                 className="h-full w-full object-cover"
                                                 draggable={false}
+                                                loading="lazy"
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex flex-col justify-center lg:col-span-8">
-                                        <blockquote>
-                                            <p className="font-bdo text-3xl font-semibold leading-[1.15] tracking-tight text-gray-900 lg:text-4xl xl:text-5xl 2xl:text-6xl">
+                                    <div className="relative flex flex-col lg:col-span-8">
+                                        <blockquote className="absolute top-0 left-0 w-full mb-4 z-10">
+                                            <p className="font-bdo text-3xl font-semibold leading-[1.15] tracking-tight text-gray-900 lg:text-3xl xl:text-5xl 2xl:text-6xl">
                                                 &ldquo;{item.quote}&rdquo;
                                             </p>
                                         </blockquote>
+                                        {/* <div className="pt-24" /> */}
+                                        {/* ...existing content below quote (if any) ... */}
                                     </div>
                                 </div>
                             </div>
@@ -223,8 +213,8 @@ export default function SectionSeven({
                     <div className="lg:col-span-8">
                         <div className="mb-8 border-t border-gray-200" />
                         <div className="flex flex-nowrap items-center gap-6 lg:gap-8 xl:gap-14">
-                            <div className="inline-flex items-center gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm">
-                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 xl:h-14 xl:w-14">
+                            <div className="inline-flex items-center gap-4 rounded-2xl bg-[#F7F7F7] px-4 py-3 shadow-sm">
+                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl xl:h-14 xl:w-14">
                                     {activeItem.authorLogo ? (
                                         <img
                                             src={activeItem.authorLogo}
@@ -240,16 +230,19 @@ export default function SectionSeven({
                                     )}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-clash text-base font-medium leading-tight text-gray-900">
+                                    <span className="font-clash text-base xl:text-xl font-medium leading-tight text-gray-900">
                                         {activeItem.authorName}
                                     </span>
-                                    <span className="mt-0.5 font-clash text-sm font-regular text-gray-500">
+                                    <span className="mt-0.5 font-clash text-sm xl:text-base font-regular text-gray-500">
                                         {activeItem.authorRole}
                                     </span>
                                 </div>
                             </div>
                             {FIXED_STATS.map((stat) => (
-                                <div key={stat.label} className="flex flex-col">
+                                <div
+                                    key={stat.label}
+                                    className="flex flex-col ml-0 lg:ml-0 xl:ml-36"
+                                >
                                     <span className="font-bdo text-2xl font-regular tracking-tight text-gray-900 lg:text-3xl xl:text-4xl">
                                         {stat.value}
                                     </span>

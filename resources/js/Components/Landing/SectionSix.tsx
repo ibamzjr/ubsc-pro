@@ -5,7 +5,6 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import PriceCard from "@/Components/Landing/PriceCard";
 import type { PriceItem } from "@/Components/Landing/PriceCard";
-import futsal from "@/../assets/images/futsal.png";
 
 const PAGE_SIZE = 4;
 

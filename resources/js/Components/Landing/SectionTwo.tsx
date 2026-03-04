@@ -66,6 +66,7 @@ export default function SectionTwo() {
                                             src={left}
                                             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                             alt="Gym"
+                                            loading="lazy"
                                         />
                                     </div>
                                 </div>
@@ -78,6 +79,7 @@ export default function SectionTwo() {
                                         src={left}
                                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                         alt="Gym"
+                                        loading="lazy"
                                     />
                                 </div>
                             </div>
@@ -124,11 +126,12 @@ export default function SectionTwo() {
                                 <GymTrafficBadge />
 
                                 <div className="flex-1 hidden xl:flex items-end justify-end">
-                                    <div className="w-64 h-64 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
+                                    <div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
                                         <img
                                             src={right}
                                             className="h-full w-full object-cover"
                                             alt="Athlete"
+                                            loading="lazy"
                                         />
                                     </div>
                                 </div>

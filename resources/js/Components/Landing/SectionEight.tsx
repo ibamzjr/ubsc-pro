@@ -11,7 +11,7 @@ import { Star, Navigation, Clock, ExternalLink } from "lucide-react";
 const places = [
     {
         id: 1,
-        name: "Lapangan Sepak Bola",
+        name: "Lapangan Sepak Bola UB",
         label: "Football Field",
         category: "Football Field",
         rating: 4.5,
@@ -58,6 +58,7 @@ export default function SectionEight() {
                             alt="UB Sport Center gym"
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                             draggable={false}
+                            loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/55" />
                         <div className="absolute inset-0 flex flex-col justify-start p-8">
