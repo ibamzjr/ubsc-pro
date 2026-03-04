@@ -21,6 +21,27 @@
             title: "SPORT CENTER UB.",
             videoUrl: "/reels/reels ubsc 2.mp4",
         },
+        {
+            id: 3,
+            date: "10/12 2025",
+            subtitle: "Keseruan Latihan Bersama Arema FC di SPORT CENTER UB.",
+            title: "SPORT CENTER UB.",
+            videoUrl: "/reels/reels ubsc 3.mp4",
+        },
+         {
+             id: 4,
+             date: "05/12 2025",
+             subtitle: "Latihan Futsal Seru di SPORT CENTER UB.",
+             title: "SPORT CENTER UB.",
+             videoUrl: "/reels/reels ubsc 4.mp4",
+         },
+         {
+                id: 5,
+                date: "01/12 2025",
+                subtitle: "Latihan Futsal Seru di SPORT CENTER UB.",
+                title: "SPORT CENTER UB.",
+                videoUrl: "/reels/reels ubsc 5.mp4",
+         }
     ];
 
     const SlideArrow: React.FC<{ size?: number; color?: string }> = ({

@@ -13,7 +13,7 @@ export default function HeroBottomBar() {
         <div className="relative w-full overflow-hidden">
             <video
                 className="absolute inset-0 h-full w-full object-cover"
-                src="/reels/footer.mp4"
+                src="/reels/Hero.mp4"
                 autoPlay
                 loop
                 muted
@@ -44,40 +44,38 @@ export default function HeroBottomBar() {
                     </p>
 
                     <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            aria-label="Scroll to section two"
+                            onClick={() => {
+                                setRotated(true);
+                                scrollToSectionTwo();
+                            }}
+                            onMouseEnter={() => setRotated(true)}
+                            onMouseLeave={() => setRotated(false)}
+                            className="group flex items-center"
+                        >
+                            {/* Capsule */}
+                            <div className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black">
+                                <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
+                                    Scroll down
+                                </span>
+                            </div>
 
-                   <button
-    type="button"
-    aria-label="Scroll to section two"
-    onClick={() => {
-        setRotated(true);
-        scrollToSectionTwo();
-    }}
-    onMouseEnter={() => setRotated(true)}
-    onMouseLeave={() => setRotated(false)}
-    className="group flex items-center"
->
-    {/* Capsule */}
-    <div className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black">
-        <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
-            Scroll down
-        </span>
-    </div>
-
-    {/* Circle Arrow (NO GAP) */}
-    <div className="-ml-[1px] flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
-        <img
-            src={DownRight}
-            alt="Scroll down"
-            className={`
+                            {/* Circle Arrow (NO GAP) */}
+                            <div className="-ml-[1px] flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
+                                <img
+                                    src={DownRight}
+                                    alt="Scroll down"
+                                    className={`
                 w-3.5 xs:w-4
                 transition-transform duration-500 ease-in-out
                 ${rotated ? "rotate-[5deg]" : "rotate-[-85deg]"}
                 group-hover:[filter:grayscale(1)_brightness(0)]
             `}
-        />
-    </div>
-</button>
-
+                                />
+                            </div>
+                        </button>
                     </div>
                 </div>
 
@@ -95,28 +93,29 @@ export default function HeroBottomBar() {
                         <button
                             type="button"
                             aria-label="Scroll to section two"
-    className="group flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-1 font-bdo text-[12px] font-light text-white transition hover:bg-white hover:text-black hover:border-white w-fit mx-auto"
+                            className="group flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-1 font-bdo text-[12px] font-light text-white transition hover:bg-white hover:text-black hover:border-white w-fit mx-auto"
                             onClick={scrollToSectionTwo}
                         >
                             <span className="font-bdo">Scroll down</span>
-
                         </button>
                     </div>
 
-                    <p className="w-full max-w-[95%] lg:max-w-[55%] font-bdo font-light leading-relaxed text-white/80 
+                    <p
+                        className="w-full max-w-[95%] lg:max-w-[55%] font-bdo font-light leading-relaxed text-white/80 
     /* 
        Clamp: 
        Min: 0.75rem (12px) 
        Ideal: 1.5vw 
        Max: 1rem (16px) 
     */
-    text-[clamp(0.75rem,1.5vw,1rem)]">
-    <span className="font-bold text-white">
-        UB Sport Center –
-    </span>{" "}
-    Temukan fasilitas olahraga modern untuk berlatih,
-    berprestasi, dan berkembang bersama.
-</p>
+    text-[clamp(0.75rem,1.5vw,1rem)]"
+                    >
+                        <span className="font-bold text-white">
+                            UB Sport Center –
+                        </span>{" "}
+                        Temukan fasilitas olahraga modern untuk berlatih,
+                        berprestasi, dan berkembang bersama.
+                    </p>
                 </div>
             </div>
         </div>
