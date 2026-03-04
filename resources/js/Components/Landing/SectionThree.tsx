@@ -17,12 +17,14 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
         <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white">
             <div className="aspect-[4/3] w-full overflow-hidden p-2">
                 {location.image ? (
-                    <img
-                        src={location.image}
-                        alt={location.title}
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-xl"
-                        draggable={false}
-                    />
+                    <picture>
+                        <img
+                            src={location.image}
+                            alt={location.title}
+                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-xl"
+                            draggable={false}
+                        />
+                    </picture>
                 ) : (
                     <div className="h-full w-full bg-gray-200" />
                 )}
@@ -53,21 +55,21 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
 const DUMMY_LOCATIONS: Location[] = [
     {
         id: "1",
-        image: "/assets/images/Kantor Pusat.avif",
+        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
         title: "UB Sport Center Veteran",
         subtitle: "Pusat Kebugaran Utama",
         slug: "veteran",
     },
     {
         id: "2",
-        image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=800&q=80",
+        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
         title: "UB Sport Center Dieng",
         subtitle: "Cabang Eksklusif",
         slug: "dieng",
     },
     {
         id: "3",
-        image: "/assets/images/Kantor Pusat.avif",
+        image: "/assets/images/cabang-eksklusif-transmart-ub-sport-center-malang.avif",
         title: "UB Sport Center Transmart",
         subtitle: "Cabang Modern & Lifestyle",
         slug: "transmart",

@@ -12,84 +12,82 @@ const PAGE_SIZE = 4;
 const DUMMY_PRICES: PriceItem[] = [
     {
         id: 1,
-        title: "Tennis Reborn",
+        title: "Lapangan Tennis",
         price: "105.000 - 115.000 / Jam",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=600&q=80",
+        image: "/assets/images/fasilitas-tenis-ub-sport-center.avif",
     },
     {
         id: 2,
-        title: "Badminton",
+        title: "Lapangan Badminton",
         price: "50.000 - 65.000 / Jam",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=600&q=80",
+        image: "/assets/images/fasilitas-bulutangkis-ub-sport-center.avif",
     },
     {
         id: 3,
-        title: "Table Tennis",
+        title: "Lapangan Tenis Meja",
         price: "50.000 - 55.000 / Jam",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+        image: "/assets/images/fasilitas-tennis-meja-ub-sport-center.avif",
     },
     {
         id: 4,
-        title: "Futsal",
+        title: "Lapangan Futsal",
         price: "45.000 - 50.000 / Jam",
         rating: 4.5,
-        image: futsal,
+        image: "/assets/images/fasilitas-futsal-ub-sport-center.avif",
     },
     {
         id: 5,
         title: "Ruang Beladiri",
         price: "75.000 - 100.000 / Jam",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+        image: "/assets/images/fasilitas-beladiri-ub-sport-center.avif",
     },
     {
         id: 6,
         title: "Yoga",
         price: "25.000 - 35.000 / Jam",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+        image: "/assets/images/fasilitas-yoga-ub-sport-center.avif",
     },
     {
         id: 7,
         title: "Aerobik",
         price: "23.000 - 28.000 / Jam",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+        image: "/assets/images/fasilitas-aerobik-ub-sport-center.avif",
     },
     {
         id: 8,
         title: "Zumba",
         price: "28.000 - 33.000 / Jam",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
+        image: "/assets/images/fasilitas-zumba-ub-sport-center.avif",
     },
 
-        {
+    {
         id: 9,
         title: "BMU Karate",
         price: "100.000 - 175.000 / Jam",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+        image: "/assets/images/fasilitas-beladiri-ub-sport-center.avif",
     },
-     {
+    {
         id: 10,
         title: "Zona Akurasi",
         price: "Klik Disini",
         rating: 5,
-        image: "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80",
+        image: "/assets/images/fasilitas-zona-akurasi-ub-sport-center.avif",
     },
     {
         id: 11,
         title: "Pilates",
         price: "Coming Soon",
         rating: 4.5,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80",
-    }
-
-
+        image: "/assets/images/comingsoon.avif",
+    },
 ];
 
 function FeatureItem({ label }: { label: string }) {

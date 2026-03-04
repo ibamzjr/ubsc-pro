@@ -11,22 +11,22 @@ import right from "../../../assets/images/sec2-1.png";
 const DUMMY_IMAGES: CarouselImage[] = [
     {
         id: "1",
-        src: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80",
+        src: "/assets/images/poster-gym-konten-program-ub-sport-center.avif",
         alt: "Gym training area",
     },
     {
         id: "3",
-        src: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&q=80",
+        src: "/assets/images/poster-sepakbola-konten-program-ub-sport-center.avif",
         alt: "Weight training",
     },
     {
         id: "5",
-        src: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&q=80",
+        src: "/assets/images/poster-basket-konten-program-ub-sport-center.avif",
         alt: "Sports facility",
     },
     {
         id: "6",
-        src: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&q=80",
+        src: "/assets/images/poster-mahal-konten-program-ub-sport-center.avif",
         alt: "Group fitness class",
     },
 ];
@@ -48,22 +48,44 @@ export default function SectionTwo() {
                             </div>
 
                             <h2 className="mt-4 text-[clamp(1.75rem,5vw,3.25rem)] font-bold leading-[1.1] tracking-tight text-black max-w-[95%]">
-                            Latihan Kekuatan dan Kebugaran Untukmu
-                        </h2>
+                                Latihan Kekuatan dan Kebugaran Untukmu
+                            </h2>
 
-                           <div className="mt-8 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] xl:max-w-[560px] self-start md:mt-10">
-    <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
-        <img
-            src={left}
-            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-            alt="Gym"
-        />
-    </div>
-</div>
+                            {/* Mobile: Area gym paragraph first, then image */}
+                            <div className="block xl:hidden">
+                                <p className="mt-6 text-lg font-bdo font-regular md:text-2xl leading-relaxed text-black opacity-70">
+                                    Area gym ini dirancang sebagai ruang latihan
+                                    yang nyaman dan fungsional untuk mendukung
+                                    aktivitas kebugaran, latihan kekuatan, dan
+                                    kardio bagi seluruh pengguna UB Sport
+                                    Center.
+                                </p>
+                                <div className="mt-8 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] self-start md:mt-10">
+                                    <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
+                                        <img
+                                            src={left}
+                                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                                            alt="Gym"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: image only, paragraph is in right column */}
+                            <div className="hidden xl:block mt-8 xl:mt-10 w-full max-w-[560px] self-start">
+                                <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
+                                    <img
+                                        src={left}
+                                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                                        alt="Gym"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex flex-col xl:col-span-7 xl:pt-2 xl:pl-12">
-                            <p className="text-lg font-bdo font-regular md:text-2xl xl:text-5xl leading-relaxed text-black">
+                            {/* Desktop: Area gym paragraph here */}
+                            <p className="hidden xl:block text-lg font-bdo font-regular md:text-2xl xl:text-4xl leading-relaxed text-black opacity-70">
                                 Area gym ini dirancang sebagai ruang latihan
                                 yang nyaman dan fungsional untuk mendukung
                                 aktivitas kebugaran, latihan kekuatan, dan

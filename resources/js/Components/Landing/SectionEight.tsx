@@ -11,13 +11,13 @@ import { Star, Navigation, Clock, ExternalLink } from "lucide-react";
 const places = [
     {
         id: 1,
-        name: "Lapangan Sepak Bola Universitas Brawijaya",
+        name: "Lapangan Sepak Bola",
         label: "Football Field",
         category: "Football Field",
         rating: 4.5,
         reviews: 54,
         hours: "06:00 AM - 10:00 PM",
-        image: "https://images.unsplash.com/photo-1575223970966-76ae61ee7838?w=300&h=200&fit=crop",
+        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
         lng: 112.59151096357927,
         lat: -7.9691905411073645,
     },
@@ -29,7 +29,7 @@ const places = [
         rating: 4.4,
         reviews: 1570,
         hours: "9:00 AM - 10:00 PM",
-        image: "https://images.unsplash.com/photo-1496588152823-86ff7695e68f?w=300&h=200&fit=crop",
+        image: "/assets/images/cabang-eksklusif-transmart-ub-sport-center-malang.avif",
         lng: 112.61788923503353,
         lat: -7.956800793398481,
     },
@@ -41,7 +41,7 @@ const places = [
         rating: 4.4,
         reviews: 1189,
         hours: "6:00 AM - 10:00 PM",
-        image: "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=300&h=200&fit=crop",
+        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
         lng: 112.61843891490952,
         lat: -7.955087591403217,
     },
@@ -54,7 +54,7 @@ export default function SectionEight() {
                 <div className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-12">
                     <div className="group relative h-[280px] w-full overflow-hidden rounded-3xl md:h-[320px] xl:col-span-4 xl:h-[450px]">
                         <img
-                            src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80"
+                            src="/assets/images/ub-sport-center-gym-footer.avif"
                             alt="UB Sport Center gym"
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                             draggable={false}
@@ -90,7 +90,7 @@ export default function SectionEight() {
                                             </MarkerLabel>
                                         </MarkerContent>
                                         <MarkerPopup className="p-0 w-62">
-                                            <div className="relative h-32 overflow-hidden rounded-t-md">
+                                            <div className="relative h-32 w-48 overflow-hidden rounded-t-md">
                                                 <img
                                                     src={place.image}
                                                     alt={place.name}

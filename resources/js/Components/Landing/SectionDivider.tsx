@@ -29,7 +29,9 @@ export default function SectionDivider({
                     ({number})
                 </span>
                 <span className="font-bdo font-medium">({title})</span>
-                <span className="font-bdo font-medium">/{subtitle}</span>
+                <span className="font-bdo font-medium hidden lg:block">
+                    /{subtitle}
+                </span>
             </div>
         </div>
     );

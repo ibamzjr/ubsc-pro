@@ -6,7 +6,6 @@ import ArenaCard from "@/Components/Landing/ArenaCard";
 import type { Facility } from "@/Components/Landing/FacilityRow";
 import type { ClassItem } from "@/Components/Landing/ClassCard";
 import type { ArenaItem } from "@/Components/Landing/ArenaCard";
-import futsal from "@/../assets/images/futsal.png";
 
 const DUMMY_FACILITIES: Facility[] = [
     {
@@ -14,8 +13,7 @@ const DUMMY_FACILITIES: Facility[] = [
         name: "Lapangan Tenis",
         location: "Veteran",
         category: "Arena Dalam",
-        bgImage:
-            "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=1400&q=80",
+        bgImage: "/assets/images/fasilitas-tenis-ub-sport-center.avif",
         href: "#",
         slug: "lapangan-tenis",
     },
@@ -24,8 +22,7 @@ const DUMMY_FACILITIES: Facility[] = [
         name: "Lapangan Bulutangkis",
         location: "Veteran",
         category: "Arena Dalam",
-        bgImage:
-            "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=1400&q=80",
+        bgImage: "/assets/images/fasilitas-bulutangkis-ub-sport-center.avif",
         href: "#",
         slug: "lapangan-bulutangkis",
     },
@@ -34,8 +31,7 @@ const DUMMY_FACILITIES: Facility[] = [
         name: "Tenis Meja",
         location: "Veteran",
         category: "Ruang Olahraga",
-        bgImage:
-            "https://images.unsplash.com/photo-1611251135345-18c56206b863?w=1400&q=80",
+        bgImage: "/assets/images/fasilitas-tennis-meja-ub-sport-center.avif",
         href: "#",
         slug: "tenis-meja",
     },
@@ -44,7 +40,7 @@ const DUMMY_FACILITIES: Facility[] = [
         name: "Lapangan Futsal",
         location: "Veteran",
         category: "Arena Dalam",
-        bgImage: futsal,
+        bgImage: "/assets/images/fasilitas-futsal-ub-sport-center.avif",
         href: "#",
         slug: "lapangan-futsal",
     },
@@ -56,7 +52,7 @@ const DUMMY_CLASSES: ClassItem[] = [
         title: "/Yoga",
         location: "Veteran",
         category: "Kebugaran",
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80",
+        image: "/assets/images/fasilitas-yoga-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -64,7 +60,7 @@ const DUMMY_CLASSES: ClassItem[] = [
         title: "/Aerobik",
         location: "Veteran",
         category: "Kebugaran",
-        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80",
+        image: "/assets/images/fasilitas-aerobik-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -72,7 +68,7 @@ const DUMMY_CLASSES: ClassItem[] = [
         title: "/Zumba",
         location: "Veteran",
         category: "Olah Tubuh",
-        image: "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=800&q=80",
+        image: "/assets/images/fasilitas-zumba-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -80,7 +76,7 @@ const DUMMY_CLASSES: ClassItem[] = [
         title: "/BMU Karate",
         location: "Veteran",
         category: "Kelas Intens",
-        image: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&q=80",
+        image: "/assets/images/fasilitas-beladiri-ub-sport-center.avif",
         href: "#",
     },
 ];
@@ -91,7 +87,7 @@ const DUMMY_ARENAS: ArenaItem[] = [
         title: "/Sepak Bola",
         location: "Dieng",
         category: "Arena Lapangan",
-        image: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=80",
+        image: "/assets/images/fasilitas-sepak-bola-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -99,7 +95,7 @@ const DUMMY_ARENAS: ArenaItem[] = [
         title: "/Basket",
         location: "Dieng",
         category: "Arena Lapangan",
-        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80",
+        image: "/assets/images/fasilitas-basket-akurasi-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -107,7 +103,7 @@ const DUMMY_ARENAS: ArenaItem[] = [
         title: "/Volly",
         location: "Dieng",
         category: "Arena Lapangan",
-        image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&q=80",
+        image: "/assets/images/fasilitas-voli-ub-sport-center.avif",
         href: "#",
     },
     {
@@ -115,7 +111,7 @@ const DUMMY_ARENAS: ArenaItem[] = [
         title: "/Futsal Dieng",
         location: "Dieng",
         category: "Arena Lapangan",
-        image: futsal,
+        image: "/assets/images/fasilitas-futsal-dieng-ub-sport-center.avif",
         href: "#",
     },
 ];
@@ -148,7 +144,9 @@ export default function SectionFour() {
 
                     <div className="xl:col-span-6">
                         <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl xl:text-5xl xl:text-center xl:max-w-none">
-                            Dukungan Penuh Untuk Setiap Cabang Olahraga
+                            Dukungan Penuh Untuk
+                            <br />
+                            Setiap Cabang Olahraga
                         </h2>
                     </div>
 
