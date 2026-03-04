@@ -216,7 +216,7 @@ export default function Footer() {
                     <ScrollUpButton onClick={scrollToTop} />
                 </div>
 
-                <div className="mb-3 lg:mb-12 flex flex-col gap-4 xl:hidden">
+                <div className="mb-3 lg:mb-12 flex flex-col gap-1 xl:hidden">
                     <p className="font-bdo text-sm text-gray-400">
                         <span className="mr-1 text-red-500">©</span>
                         2026 PT. Brawijaya Multi Usaha.
@@ -255,9 +255,7 @@ export default function Footer() {
     );
 }
 
-// ─────────────────────────────────────────────────────────────
-// FooterArrow — same arrow SVG as HeroContent
-// ─────────────────────────────────────────────────────────────
+
 function FooterArrow() {
     return (
         <svg width={28} height={28} viewBox="0 0 64 64" fill="none">
@@ -272,28 +270,29 @@ function FooterArrow() {
     );
 }
 
-// ─────────────────────────────────────────────────────────────
-// ScrollUpButton — pill-shaped outline button with circle arrow
-// ─────────────────────────────────────────────────────────────
+
 function ScrollUpButton({ onClick }: { onClick: () => void }) {
     return (
         <div className="group flex items-center">
-            <button
-                type="button"
-                onClick={onClick}
-                aria-label="Scroll to top"
-                className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
-            >
-                <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
-                    Scroll up
-                </span>
-            </button>
-            <span className="-ml-[1px] flex h-10 w-10 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
-                <img
-                    src={UpRight}
-                    className="w-4 transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
-                />
-            </span>
-        </div>
+    <button
+        type="button"
+        onClick={onClick}
+        aria-label="Scroll to top"
+        className="flex items-center justify-center rounded-full border border-white/40 px-5 py-1.5 sm:px-8 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
+    >
+        <span className="font-bdo text-[0.75rem] sm:text-lg font-light tracking-wide whitespace-nowrap">
+            Scroll up
+        </span>
+    </button>
+    
+    <span className="-ml-[1px] flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
+        <img
+            src={UpRight}
+            alt="Scroll Up"
+            className="w-2.5 sm:w-3.5 transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
+        />
+    </span>
+</div>
+
     );
 }
