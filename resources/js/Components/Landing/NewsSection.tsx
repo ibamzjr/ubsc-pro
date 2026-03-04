@@ -99,10 +99,80 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                 Berita & Artikel
             </h2>
 
-            <div className="mt-8 mb-12 flex flex-col gap-6 px-8 md:mt-32 md:grid md:grid-cols-12 md:items-end md:gap-8">
-                <div className="order-1 md:order-none md:col-span-6">
-                    <p className="font-bdo font-light text-base sm:text-lg leading-relaxed text-white">
+            {/* Desktop layout: left link, right text, nav buttons */}
+            <div className="mt-8 mb-12 px-8 hidden xl:flex md:mt-32 items-center justify-between gap-8">
+                <a
+                    href="/coming-soon"
+                    className="relative block w-80 cursor-pointer select-none overflow-hidden border-b border-white pb-3 transition-colors hover:border-white"
+                    onMouseEnter={() => setLinkHovered(true)}
+                    onMouseLeave={() => setLinkHovered(false)}
+                >
+                    <span
+                        aria-hidden
+                        className="pointer-events-none absolute bg-accent-red"
+                        style={{
+                            top: "-50%",
+                            left: "-5%",
+                            right: "-5%",
+                            bottom: "-50%",
+                            transform: linkHovered
+                                ? "skewY(-5deg) translateY(0%)"
+                                : "skewY(-5deg) translateY(130%)",
+                            transition:
+                                "transform 0.55s cubic-bezier(0.76, 0, 0.24, 1)",
+                            zIndex: 0,
+                        }}
+                    />
+                    <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
+                        <span className="text-xl font-medium text-white">
+                            Lihat Selengkapnya
+                        </span>
+                        <span
+                            style={{
+                                transform: linkHovered
+                                    ? "rotate(0deg)"
+                                    : "rotate(-45deg)",
+                                transition:
+                                    "transform 0.55s cubic-bezier(0.76, 0, 0.24, 1)",
+                            }}
+                        >
+                            <Arrow size={20} />
+                        </span>
+                    </span>
+                </a>
+                <div className="flex-1 flex items-center justify-center">
+                    <p className="font-bdo text-left font-light text-2xl leading-relaxed text-white max-w-2xl">
                         Komitmen kami adalah menghadirkan{" "}
+                        <span className="font-semibold text-white">
+                            ekosistem <br />olahraga yang inklusif.
+                        </span>
+                    </p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button
+                        type="button"
+                        onClick={scrollPrev}
+                        aria-label="Previous articles"
+                        className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border border-white text-white transition hover:bg-white hover:text-black"
+                    >
+                        <ChevronLeft size={22} />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={scrollNext}
+                        aria-label="Next articles"
+                        className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-gray-200"
+                    >
+                        <ChevronRight size={22} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile/tablet: keep previous stacked/grid layout */}
+            <div className="mt-8 mb-12 flex flex-col gap-6 px-8 md:mt-32 md:grid md:grid-cols-12 md:items-end md:gap-8 xl:hidden">
+                <div className="order-1 md:order-none md:col-span-6">
+                    <p className="font-bdo text-left font-light text-base sm:text-lg leading-relaxed text-white">
+                        Komitmen kami adalah menghadirkan<br/>
                         <strong className="font-medium text-white">
                             ekosistem olahraga yang inklusif.
                         </strong>
@@ -132,7 +202,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                             }}
                         />
                         <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                            <span className="font-clash text-sm xl:text-xl font-medium text-white">
+                            <span className="text-sm xl:text-xl font-medium text-white">
                                 Lihat Selengkapnya
                             </span>
                             <span

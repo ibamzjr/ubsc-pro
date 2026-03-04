@@ -2,18 +2,21 @@ import GymTrafficBadge from "@/Components/Landing/GymTrafficBadge";
 import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import HeroContent from "@/Components/Landing/HeroContent";
 import HeroTitle from "@/Components/Landing/HeroTitle";
-import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from "framer-motion";
-import { useAnimationControls } from "framer-motion";
+import {
+    motion,
+    AnimatePresence,
+    useMotionValue,
+    useAnimationFrame,
+} from "framer-motion";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
-
 
 export default function Hero() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const rotate = useMotionValue(0);
     useAnimationFrame((t, delta) => {
-        const speed = isHovered ? -0.012 : -0.045; 
+        const speed = isHovered ? -0.012 : -0.045;
         rotate.set(rotate.get() + delta * speed);
     });
     return (
@@ -57,15 +60,15 @@ export default function Hero() {
                     loading="eager"
                     style={{ transitionProperty: "opacity, transform" }}
                 />
-                
+
                 <motion.div
                     className="absolute inset-0 z-0 bg-slate-500"
                     animate={{ opacity: isLoaded ? 0 : 1 }}
                     transition={{ duration: 0.5, delay: isLoaded ? 0.1 : 0 }}
                 />
 
-                <div className="relative z-10 hidden xl:flex flex-col items-stretch h-screen max-h-screen overflow-hidden">
-                    <div className="flex flex-1 items-end justify-between pb-32 px-16 pt-32 min-h-0">
+                <div className="relative z-10 hidden xl:flex flex-col items-stretch min-h-screen max-h-[100vh] overflow-y-auto">
+                    <div className="flex flex-1 items-end justify-between xl:pb-32 xl:px-16 xl:pt-32 pb-12 px-6 pt-12 min-h-0">
                         <motion.div
                             initial={{ opacity: 0, x: -32 }}
                             animate={isLoaded ? { opacity: 1, x: 0 } : {}}

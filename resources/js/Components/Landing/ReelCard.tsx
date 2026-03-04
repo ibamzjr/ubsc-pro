@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Play, Pause } from "lucide-react";
 
 export interface ReelItem {
@@ -24,9 +24,7 @@ export default function ReelCard({
 }: ReelCardProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [playing, setPlaying] = useState(false);
-    const [thumbUrl, setThumbUrl] = useState<string | undefined>(
-        item.thumbnail,
-    );
+    const thumbUrl = item.thumbnail;
 
     const togglePlay = () => {
         const vid = videoRef.current;
@@ -41,26 +39,6 @@ export default function ReelCard({
             vid.volume = 1;
         }
     };
-
-    // Generate thumbnail from video if missing
-    useEffect(() => {
-        if (!item.thumbnail && item.videoUrl) {
-            const vid = document.createElement("video");
-            vid.src = item.videoUrl;
-            vid.currentTime = 0;
-            vid.muted = true;
-            vid.playsInline = true;
-            vid.addEventListener("loadeddata", () => {
-                const canvas = document.createElement("canvas");
-                canvas.width = vid.videoWidth;
-                canvas.height = vid.videoHeight;
-                canvas
-                    .getContext("2d")
-                    ?.drawImage(vid, 0, 0, canvas.width, canvas.height);
-                setThumbUrl(canvas.toDataURL("image/png"));
-            });
-        }
-    }, [item.thumbnail, item.videoUrl]);
 
     // Split trailing dot so we can colour it red
     const titleBody = item.title.endsWith(".")
@@ -87,6 +65,7 @@ export default function ReelCard({
                     loop
                     controls={false}
                     muted={false}
+                    preload="none"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     onEnded={() => setPlaying(false)}
                 />

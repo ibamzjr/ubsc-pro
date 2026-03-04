@@ -27,6 +27,7 @@ export default function ArenaCard({ item }: ArenaCardProps) {
                     alt={item.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     draggable={false}
+                    loading="lazy"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

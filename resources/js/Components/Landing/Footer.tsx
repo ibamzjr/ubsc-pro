@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ArrowUp } from "lucide-react";
 import ig from "../../../assets/icons/ig.svg";
 import x from "../../../assets/icons/x.svg";
 import tiktok from "../../../assets/icons/tiktok.svg";
@@ -140,7 +139,7 @@ export default function Footer() {
                             <h3 className="font-bdo mb-4 text-lg font-semibold">
                                 Sosial Media
                             </h3>
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-wrap xl:items-center xl:gap-20">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-nowrap xl:items-center xl:gap-10">
                                 {SOCIAL_LINKS.map((s) => (
                                     <a
                                         key={s.label}
@@ -204,12 +203,12 @@ export default function Footer() {
                 <hr className="mb-8 border-gray-800" />
 
                 <div className="xl:mb-12 hidden items-center justify-between xl:flex">
-                    <span className="font-clash text-sm text-gray-400">
-                        01/{" "}
+                    <span className="text-sm lg:text-xl font-light text-white">
+                        02/{" "}
                         <span className="font-medium text-white">homepage</span>
                     </span>
 
-                    <p className="font-bdo text-center text-sm text-gray-400">
+                    <p className="font-bdo font-light text-center text-sm lg:text-xl text-white">
                         <span className="mr-1 text-red-500">©</span>
                         2026 PT. Brawijaya Multi Usaha All rights reserved.
                     </p>
@@ -242,9 +241,13 @@ export default function Footer() {
                         loop
                         muted
                         playsInline
+                        preload="none"
                         className="w-full h-full select-none object-cover object-center"
                     >
-                        <source src="/reels/Footer.mp4" type="video/mp4" />
+                        <source
+                            src="/assets/reels/Footer.mp4"
+                            type="video/mp4"
+                        />
                     </video>
                 </div>
             </div>
@@ -280,7 +283,7 @@ function ScrollUpButton({ onClick }: { onClick: () => void }) {
             aria-label="Scroll to top"
             className="group flex cursor-pointer items-center gap-2 rounded-full border border-gray-600 py-2 pl-6 pr-2 text-sm font-medium text-white transition hover:bg-white hover:text-black"
         >
-            <span className="font-clash">Scroll up</span>
+            <span className="font-light lg:text-lg ">Scroll up</span>
             <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-600 transition group-hover:border-black">
                 <img
                     src={UpRight}

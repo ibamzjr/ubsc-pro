@@ -29,6 +29,7 @@ export default function NewsCard({
                             alt={title}
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                             draggable={false}
+                            loading="lazy"
                         />
                         <span className="absolute left-4 top-4 bg-red-600 px-3 py-1 text-xs font-bold text-white">
                             {category}
@@ -61,6 +62,7 @@ export default function NewsCard({
                             alt={title}
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                             draggable={false}
+                            loading="lazy"
                         />
                         <span className="absolute bottom-4 left-4 bg-[#004b79] px-3 py-1 text-xs font-bold text-white">
                             {category}

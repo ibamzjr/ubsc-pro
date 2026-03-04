@@ -18,14 +18,15 @@ export default function PriceCard({ item }: PriceCardProps) {
     const hasHalf = rating % 1 >= 0.5;
 
     return (
-        <div className="flex cursor-pointer items-center gap-3 rounded-2xl bg-gray-100 p-3 transition-colors duration-200 hover:bg-gray-200 xl:gap-6 xl:p-4">
-            <div className="h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl xl:h-20 xl:w-32">
+        <div className="flex cursor-pointer items-center gap-3 rounded-2xl bg-gray-100 p-3 transition-colors duration-200 hover:bg-gray-200 xl:gap-6 xl:p-3">
+            <div className="h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl xl:h-24 xl:w-32">
                 {item.image ? (
                     <img
                         src={item.image}
                         alt={item.title}
                         className="h-full w-full object-cover"
                         draggable={false}
+                        loading="lazy"
                     />
                 ) : (
                     <div className="h-full w-full bg-gray-300" />

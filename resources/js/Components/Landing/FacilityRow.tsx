@@ -28,6 +28,7 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
                 alt={facility.name}
                 className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 draggable={false}
+                loading="lazy"
             />
 
             <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/85 via-black/55 to-black/20" />

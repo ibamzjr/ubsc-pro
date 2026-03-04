@@ -13,11 +13,12 @@ export default function HeroBottomBar() {
         <div className="relative w-full overflow-hidden">
             <video
                 className="absolute inset-0 h-full w-full object-cover"
-                src="/reels/Hero.mp4"
+                src="/assets/reels/Hero.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                preload="none"
             />
 
             <div className="absolute inset-0 bg-[#0B1E3B]/70" />
@@ -43,6 +44,7 @@ export default function HeroBottomBar() {
                         untuk berlatih, berprestasi, dan berkembang bersama.
                     </p>
 
+                    {/* Scroll button: capsule only for md/lg, capsule+arrow for xl+ */}
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
@@ -61,9 +63,8 @@ export default function HeroBottomBar() {
                                     Scroll down
                                 </span>
                             </div>
-
-                            {/* Circle Arrow (NO GAP) */}
-                            <div className="-ml-[1px] flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
+                            {/* Arrow only for xl+ */}
+                            <div className="-ml-[1px] hidden xl:flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
                                 <img
                                     src={DownRight}
                                     alt="Scroll down"
