@@ -1,10 +1,12 @@
 import SectionDivider from "@/Components/Landing/SectionDivider";
+import { router } from "@inertiajs/react";
 export interface Location {
     id: string;
     image: string;
     title: string;
     subtitle: string;
     slug?: string;
+    mapLink?: string;
 }
 
 interface LocationCardProps {
@@ -32,7 +34,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
             </div>
 
             {/* Mobile: stacked, Desktop: flex-row */}
-            <div className="flex flex-col gap-4 p-5 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-row flex-wrap items-center gap-3 p-5 justify-between">
                 <div>
                     <p className="text-base md:text-lg font-semibold text-black">
                         {location.title}
@@ -43,12 +45,25 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
                 </div>
 
                 <button
-                    type="button"
-                    onClick={() => onViewDetail?.(location)}
-                    className="self-start xl:self-auto xl:ml-auto rounded-full bg-[#FF0000] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 border border-red-400"
-                >
-                    Lihat Detail
-                </button>
+    type="button"
+    onClick={() => onViewDetail?.(location)}
+    className="
+        rounded-full 
+        bg-[#FF0000] 
+        px-6 sm:px-5 md:px-6 
+        py-2 
+        text-[12px] sm:text-[13px] md:text-[14px] 
+        font-medium 
+        text-white 
+        border border-red-400
+        flex-shrink-0
+        transition-transform transition-colors duration-200 ease-in-out
+        hover:bg-red-700 hover:scale-105
+        active:scale-95
+    "
+>
+    Lihat Detail
+</button>
             </div>
         </div>
     );
@@ -61,6 +76,7 @@ const DUMMY_LOCATIONS: Location[] = [
         title: "UB Sport Center Veteran",
         subtitle: "Pusat Kebugaran Utama",
         slug: "veteran",
+        mapLink: "https://maps.app.goo.gl/JLc41TfD5TuLfu8h9",
     },
     {
         id: "2",
@@ -68,6 +84,7 @@ const DUMMY_LOCATIONS: Location[] = [
         title: "UB Sport Center Dieng",
         subtitle: "Cabang Eksklusif",
         slug: "dieng",
+        mapLink: "https://maps.app.goo.gl/RNPXp5pW2TqcE2YGA",
     },
     {
         id: "3",
@@ -75,6 +92,7 @@ const DUMMY_LOCATIONS: Location[] = [
         title: "UB Sport Center Transmart",
         subtitle: "Cabang Modern & Lifestyle",
         slug: "transmart",
+        mapLink: "https://maps.app.goo.gl/rNEukCEQAQSZDAga6",
     },
 ];
 
@@ -84,9 +102,10 @@ export default function SectionThree() {
     const total = locations.length;
 
     const handleViewDetail = (location: Location) => {
-        // TODO: navigate to /locations/:slug or open modal
-        console.log("View detail:", location.slug);
-    };
+    if (location.mapLink) {
+        window.open(location.mapLink, "_blank", "noopener,noreferrer");
+    }
+};
 
     return (
         <section id="locations" className="w-full bg-white">
@@ -143,7 +162,7 @@ export default function SectionThree() {
                     ))}
                 </div>
 
-                <div className="mt-5 text-sm md:text-base xl:text-2xl flex items-center justify-between font-regular text-gray-900">
+                <div className="mt-5 text-xs md:text-base xl:text-2xl flex items-center justify-between font-regular text-gray-900">
                     <span>Pengalaman olahraga</span>
                     <span>Demi Kemajuan</span>
                 </div>

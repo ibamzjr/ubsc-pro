@@ -14,7 +14,7 @@ const DUMMY_FACILITIES: Facility[] = [
         location: "Veteran",
         category: "Arena Dalam",
         bgImage: "/assets/images/fasilitas-tenis-ub-sport-center.avif",
-        href: "#",
+        href: "https://ayo.co.id/v/ub-sport-center",
         slug: "lapangan-tenis",
     },
     {
@@ -117,7 +117,6 @@ const DUMMY_ARENAS: ArenaItem[] = [
 ];
 
 export default function SectionFour() {
-    // TODO: Replace with usePage<{ facilities: Facility[] }>().props.facilities
     const facilities = DUMMY_FACILITIES;
 
     return (
