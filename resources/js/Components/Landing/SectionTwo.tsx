@@ -5,8 +5,6 @@ import MembershipModal from "@/Components/Landing/MembershipModal";
 import DaftarButton from "@/Components/Landing/DaftarButton";
 import ImageCarousel from "@/Components/Landing/ImageCarousel";
 import type { CarouselImage } from "@/Components/Landing/ImageCarousel";
-import left from "../../../assets/images/sec2.png";
-import right from "../../../assets/images/sec2-1.png";
 
 const DUMMY_IMAGES: CarouselImage[] = [
     {
@@ -63,7 +61,7 @@ export default function SectionTwo() {
                                 <div className="mt-8 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] self-start md:mt-10">
                                     <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
                                         <img
-                                            src={left}
+                                            src="/assets/images/gym-konten-1-olahraga-ub-sport-center.avif"
                                             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                             alt="Gym"
                                             loading="lazy"
@@ -76,7 +74,7 @@ export default function SectionTwo() {
                             <div className="hidden xl:block mt-8 xl:mt-10 w-full max-w-[560px] self-start">
                                 <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
                                     <img
-                                        src={left}
+                                        src="/assets/images/gym-konten-1-olahraga-ub-sport-center.avif"
                                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                         alt="Gym"
                                         loading="lazy"
@@ -97,6 +95,7 @@ export default function SectionTwo() {
                             <div className="mt-6 md:mt-8">
                                 <DaftarButton
                                     label="Daftar Sekarang"
+                                    href="https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%92%AA%0A%0ASaya+tertarik+untuk+mendaftar+%2AMembership+Gym%2A.+Mohon+informasi+mengenai+paket+yang+tersedia%2C+prosedur+pendaftaran%2C+dan+langkah+aktivasi+membership.%0A%0ATerima+kasih+%F0%9F%98%8A&type=phone_number&app_absent=0"
                                     onClick={() => setIsModalOpen(true)}
                                 />
                             </div>
@@ -128,7 +127,7 @@ export default function SectionTwo() {
                                 <div className="flex-1 hidden xl:flex items-end justify-end">
                                     <div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
                                         <img
-                                            src={right}
+                                            src="/assets/images/gym-konten-2-olahraga-ub-sport-center.avif"
                                             className="h-full w-full object-cover"
                                             alt="Athlete"
                                             loading="lazy"
