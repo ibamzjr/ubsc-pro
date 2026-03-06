@@ -59,9 +59,9 @@ export default function SectionTwo() {
                                     Center.
                                 </p>
                                 <div className="mt-8 w-full max-w-[90%] sm:max-w-[400px] md:max-w-[480px] self-start md:mt-10">
-                                    <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
+                                    <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl">
                                         <img
-                                            src="/assets/images/gym-konten-1-olahraga-ub-sport-center.avif"
+                                            src="/assets/images/gym-konten-1-olahraga-ub-sport-center.webp"
                                             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                             alt="Gym"
                                             loading="lazy"
@@ -72,9 +72,9 @@ export default function SectionTwo() {
 
                             {/* Desktop: image only, paragraph is in right column */}
                             <div className="hidden xl:block mt-8 xl:mt-10 w-full max-w-[560px] self-start">
-                                <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl bg-gray-200 shadow-lg">
+                                <div className="aspect-[6/5] w-full overflow-hidden rounded-2xl">
                                     <img
-                                        src="/assets/images/gym-konten-1-olahraga-ub-sport-center.avif"
+                                        src="/assets/images/gym-konten-1-olahraga-ub-sport-center.webp"
                                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                                         alt="Gym"
                                         loading="lazy"
@@ -125,7 +125,7 @@ export default function SectionTwo() {
                                 <GymTrafficBadge />
 
                                 <div className="flex-1 hidden xl:flex items-end justify-end">
-                                    <div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md bg-gray-200 flex items-end">
+                                    <div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md flex items-end">
                                         <img
                                             src="/assets/images/gym-konten-2-olahraga-ub-sport-center.avif"
                                             className="h-full w-full object-cover"

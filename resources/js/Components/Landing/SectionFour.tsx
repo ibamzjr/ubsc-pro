@@ -156,7 +156,7 @@ export default function SectionFour() {
                                 olahraga indoor dan fitness untuk kenyamanan
                                 latihan Anda.
                             </p>
-                            <div className="mt-4 flex items-center gap-4 xl:hidden">
+                            <div className="mt-4 flex items-center gap-20 xl:hidden">
                                 <ReservasiButton label="Mulai Reservasi" />
                                 <span className="text-sm font-regular text-gray-900">
                                     {String(facilities.length).padStart(2, "0")}

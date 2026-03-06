@@ -162,7 +162,7 @@ export default function SectionThree() {
                     ))}
                 </div>
 
-                <div className="mt-5 text-xs md:text-base xl:text-2xl flex items-center justify-between font-regular text-gray-900">
+                <div className="mt-6 text-xs md:text-base xl:text-xl flex items-center justify-between font-regular text-gray-900">
                     <span>Pengalaman olahraga</span>
                     <span>Demi Kemajuan</span>
                 </div>

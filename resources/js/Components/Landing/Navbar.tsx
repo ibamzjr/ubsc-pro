@@ -164,6 +164,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                             {index < NAV_ITEMS.length - 1 && (
                                 <div className="h-px w-full bg-white/10" />
                             )}
+
                         </li>
                     ))}
                 </ul>
@@ -183,14 +184,14 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                 className="h-full w-full object-cover"
                             />
                         </div>
-                        <div className="flex flex-col justify-center px-3 py-2 text-left">
+                        <div className="flex flex-col justify-center px-3 py-1 text-left">
                             <p className="font-clash text-sm font-semibold text-navy-900">
                                 Lets Get Started
                             </p>
-                            <p className="font-clash text-[12px]  text-navy-900/80">
+                            <p className="font-clash text-[12px] mt-1 text-navy-900/80">
                                 Register Now
                             </p>
-                            <p className="font-clash text-[10px] text-navy-900/40">
+                            <p className="font-clash text-[10px] -mt-1 text-navy-900/40">
                                 Guest
                             </p>
                         </div>
