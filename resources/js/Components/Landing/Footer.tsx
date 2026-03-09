@@ -8,8 +8,8 @@ import UpRight from "@/../assets/icons/UpRight.svg";
 const NAV_LINKS = [
     { label: "Home", number: "01", href: "#home" },
     { label: "About", number: "02", href: "#about" },
-    { label: "Facilities", number: "03", href: "#facilities" },
-    { label: "Services", number: "04", href: "#services" },
+    { label: "News", number: "03", href: "#" },
+    { label: "Facilities", number: "04", href: "#facilities" },
     { label: "Pricing", number: "05", href: "#pricing" },
     { label: "Booking", number: "06", href: "#booking" },
 ];
@@ -36,15 +36,17 @@ const SOCIAL_LINKS = [
 export default function Footer() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
     const [ctaHovered, setCtaHovered] = useState(false);
+    const [rotated, setRotated] = useState(false);
+
 
     return (
         <footer
-            className="relative w-full overflow-hidden pt-20 text-white"
+            className="relative w-full overflow-hidden pt-28 text-white"
             style={{
                 background: "linear-gradient(180deg, #000000 0%, #173859 100%)",
             }}
         >
-            <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
+            <div className="mx-auto w-full px-6 sm:px-10 xl:px-16">
                 <div className="mb-16 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8">
                     <div className="xl:col-span-7">
                         <h2 className="font-semibold mb-12 text-4xl leading-tight tracking-tight md:text-5xl xl:text-5xl">
@@ -55,7 +57,7 @@ export default function Footer() {
                         </h2>
 
                         <a
-                            href="mailto:contact@ubsportcenter.co.id"
+                            href="https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%A4%9D%0A%0APerkenalkan%2C+saya+ingin+mengajukan+kerja+sama%2Fkemitraan+dengan+UB+Sport+Center.+Saya+tertarik+untuk+mendiskusikan+kemungkinan+kolaborasi+yang+dapat+memberikan+manfaat+bagi+kedua+belah+pihak.%0A%0AApakah+saya+bisa+mendapatkan+informasi+mengenai+prosedur+atau+pihak+yang+dapat+dihubungi+untuk+membahas+peluang+kemitraan+tersebut%3F%0A%0ATerima+kasih+atas+perhatian+dan+waktunya.+Saya+menantikan+kesempatan+untuk+berdiskusi+lebih+lanjut+%F0%9F%98%8A&type=phone_number&app_absent=0"
                             className="relative block w-full max-w-xs cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                             onMouseEnter={() => setCtaHovered(true)}
                             onMouseLeave={() => setCtaHovered(false)}
@@ -121,7 +123,7 @@ export default function Footer() {
                                     (0341) 579955
                                 </a>
                                 <a
-                                    href="tel:085280809080"
+                                    href="https://api.whatsapp.com/send/?phone=6285280809080&"
                                     className="font-bdo text-sm transition hover:underline hover:underline-offset-4"
                                 >
                                     0852 8080 9080
@@ -139,19 +141,26 @@ export default function Footer() {
                             <h3 className="font-bdo mb-4 text-lg font-semibold">
                                 Sosial Media
                             </h3>
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-nowrap xl:items-center xl:gap-10">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-nowrap xl:items-center xl:gap-14">
                                 {SOCIAL_LINKS.map((s) => (
                                     <a
                                         key={s.label}
                                         href={s.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        onMouseEnter={() => setRotated(true)}
+                                        onMouseLeave={() => setRotated(false)}
                                         className="font-bdo font-regular flex items-center gap-2 text-sm text-white transition hover:text-gray-300"
                                     >
                                         <img
                                             src={s.icon}
                                             alt={s.label}
-                                            className="h-4 w-4 object-contain transition duration-200 ease-in-out hover:[filter:grayscale(1)_brightness(0)]"
+                                            className={`
+                                                        w-3.5 xs:w-4
+                                                        transition-transform duration-500 ease-in-out
+                                                        ${rotated ? "rotate-[55deg]" : "rotate-[5deg]"}
+                                                        group-hover:[filter:grayscale(1)_brightness(0)]
+                                                        `}
                                             onError={(e) => {
                                                 // hide broken icon gracefully
                                                 (
@@ -200,15 +209,15 @@ export default function Footer() {
                     </div>
                 </nav>
 
-                <hr className="mb-8 border-gray-800" />
+                <hr className="mb-8 border-white/45" />
 
                 <div className="xl:mb-12 hidden items-center justify-between xl:flex">
-                    <span className="text-sm lg:text-xl font-light text-white">
-                        02/{" "}
+                    <span className="text-sm lg:text-base font-light text-white">
+                        01/{" "}
                         <span className="font-medium text-white">homepage</span>
                     </span>
 
-                    <p className="font-bdo font-light text-center text-sm lg:text-xl text-white">
+                    <p className="font-bdo font-light text-center text-sm lg:text-base text-white">
                         <span className="mr-1 text-red-500">©</span>
                         2026 PT. Brawijaya Multi Usaha All rights reserved.
                     </p>
@@ -234,7 +243,7 @@ export default function Footer() {
             </div>
 
             <div className="mt-auto w-full relative">
-                <div className="w-full relative px-6 pb-3 xl:px-24 xl:pb-12 overflow-hidden ">
+                <div className="w-full relative px-6 pb-3 xl:px-16 xl:pb-12 overflow-hidden ">
                     {/* Video Layer */}
                     <video
                         autoPlay
@@ -280,7 +289,7 @@ function ScrollUpButton({ onClick }: { onClick: () => void }) {
         aria-label="Scroll to top"
         className="flex items-center justify-center rounded-full border border-white/40 px-5 py-1.5 sm:px-8 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
     >
-        <span className="font-bdo text-[0.75rem] sm:text-lg font-light tracking-wide whitespace-nowrap">
+        <span className="font-bdo text-[0.75rem] sm:text-base font-light tracking-wide whitespace-nowrap">
             Scroll up
         </span>
     </button>
@@ -289,7 +298,7 @@ function ScrollUpButton({ onClick }: { onClick: () => void }) {
         <img
             src={UpRight}
             alt="Scroll Up"
-            className="w-2.5 sm:w-3.5 transition duration-200 ease-in-out group-hover:[filter:grayscale(1)_brightness(0)]"
+            className="w-3 xs:w-4 transition-transform duration-500 ease-in-out rotate-[5deg] group-hover:rotate-[-55deg] group-hover:[filter:grayscale(1)_brightness(0)]" 
         />
     </span>
 </div>

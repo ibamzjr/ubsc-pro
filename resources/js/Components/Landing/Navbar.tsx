@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import square from "../../../assets/hero/square.png";
 
@@ -11,8 +11,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { label: "Home", number: "01", href: "#home" },
     { label: "About", number: "02", href: "#about" },
-    { label: "Facilities", number: "03", href: "#facilities" },
-    { label: "Services", number: "04", href: "#services" },
+    { label: "News", number: "03", href: "#" },
+    { label: "Facilities", number: "04", href: "#facilities" },
     { label: "Pricing", number: "05", href: "#pricing" },
     { label: "Booking", number: "06", href: "#booking" },
 ];
@@ -22,24 +22,87 @@ interface NavbarProps {
 }
 
 export default function Navbar({ activeSection = "Home" }: NavbarProps) {
+
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    // Fitur Lock-Scroll: Mencegah scroll saat menu mobile terbuka
+    /* =========================
+       NAV VISIBILITY ENGINE
+    ========================= */
+
+    const [navVisible, setNavVisible] = useState(true);
+    const [scrolled, setScrolled] = useState(false);
+
+    const lastScrollY = useRef(0);
+    const ticking = useRef(false);
+
     useEffect(() => {
+
+        const updateNav = () => {
+
+            const currentScroll = window.scrollY;
+
+            /* backdrop blur trigger */
+            if (currentScroll > 20) {
+                setScrolled(true);
+            } else {
+                setScrolled(false);
+            }
+
+            /* hide / show navbar */
+            if (currentScroll > lastScrollY.current && currentScroll > 120) {
+                setNavVisible(false);
+            } else {
+                setNavVisible(true);
+            }
+
+            lastScrollY.current = currentScroll;
+            ticking.current = false;
+        };
+
+        const onScroll = () => {
+
+            if (!ticking.current) {
+                window.requestAnimationFrame(updateNav);
+                ticking.current = true;
+            }
+
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        return () => window.removeEventListener("scroll", onScroll);
+
+    }, []);
+
+    /* =========================
+       LOCK BODY SCROLL MOBILE
+    ========================= */
+
+    useEffect(() => {
+
         if (mobileOpen) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "unset";
         }
+
         return () => {
             document.body.style.overflow = "unset";
         };
+
     }, [mobileOpen]);
 
     return (
         <>
-            {/* --- NAVBAR UTAMA --- */}
-            <nav className="absolute left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12">
+            {/* NAVBAR */}
+            <nav
+                className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12
+                transition-all duration-500 ease-out
+                ${navVisible ? "translate-y-0" : "-translate-y-full"}
+                ${scrolled ? "backdrop-blur-xl bg-black/30 border-b border-white/10" : "bg-transparent"}
+                `}
+            >
+
                 {/* Logo */}
                 <div className="flex items-center gap-2">
                     <img
@@ -49,7 +112,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     />
                 </div>
 
-                {/* DESKTOP NAV: Muncul hanya di atas 1100px agar tidak tabrakan di 1099px */}
+                {/* DESKTOP NAV */}
                 <ul className="hidden items-center gap-6 min-[1100px]:flex xl:gap-12">
                     {NAV_ITEMS.map((item) => (
                         <li key={item.number}>
@@ -70,7 +133,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     ))}
                 </ul>
 
-                {/* DESKTOP CTA: Muncul hanya di atas 1100px */}
+                {/* DESKTOP CTA */}
                 <a
                     href="/coming-soon"
                     className="group hidden items-stretch overflow-hidden rounded-md bg-white transition-shadow hover:shadow-lg min-[1100px]:flex scale-90 xl:scale-100 origin-right"
@@ -82,6 +145,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                             className="h-full w-full object-cover"
                         />
                     </div>
+
                     <div className="flex flex-col justify-center px-3 py-2 text-left">
                         <p className="font-clash text-sm font-semibold leading-tight text-navy-900">
                             Lets Get Started
@@ -93,6 +157,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                             Guest
                         </p>
                     </div>
+
                     <div className="flex items-center pr-3">
                         <ArrowRight
                             size={22}
@@ -101,7 +166,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     </div>
                 </a>
 
-                {/* HAMBURGER (2 GARIS ASLI): Muncul di bawah 1100px (1099px kebawah) */}
+                {/* HAMBURGER */}
                 <button
                     type="button"
                     onClick={() => setMobileOpen((v) => !v)}
@@ -123,8 +188,10 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                         }`}
                     />
                 </button>
+
             </nav>
 
+            {/* OVERLAY */}
             <div
                 onClick={() => setMobileOpen(false)}
                 className={`fixed inset-0 z-30 min-[1100px]:hidden transition-opacity duration-300 ${
@@ -135,12 +202,14 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 style={{ background: "rgba(0,0,0,0.6)" }}
             />
 
+            {/* MOBILE MENU */}
             <div
                 className={`fixed top-0 left-0 right-0 z-40 min-[1100px]:hidden transition-transform duration-500 ease-out ${
                     mobileOpen ? "translate-y-0" : "-translate-y-full"
                 }`}
                 style={{ background: "#111111" }}
             >
+
                 <div className="h-[88px] md:h-[104px]" />
                 <div className="h-px w-full bg-white/10" />
 
@@ -161,10 +230,10 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                     {item.number}
                                 </sup>
                             </a>
+
                             {index < NAV_ITEMS.length - 1 && (
                                 <div className="h-px w-full bg-white/10" />
                             )}
-
                         </li>
                     ))}
                 </ul>
@@ -184,6 +253,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                 className="h-full w-full object-cover"
                             />
                         </div>
+
                         <div className="flex flex-col justify-center px-3 py-1 text-left">
                             <p className="font-clash text-sm font-semibold text-navy-900">
                                 Lets Get Started
@@ -195,11 +265,13 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                 Guest
                             </p>
                         </div>
+
                         <div className="ml-auto flex items-center pr-3">
                             <ArrowRight size={20} className="text-navy-900" />
                         </div>
                     </a>
                 </div>
+
             </div>
         </>
     );

@@ -71,7 +71,7 @@ export default function HeroBottomBar() {
                                     className={`
                 w-3.5 xs:w-4
                 transition-transform duration-500 ease-in-out
-                ${rotated ? "rotate-[5deg]" : "rotate-[-85deg]"}
+                ${rotated ? "rotate-[55deg]" : "rotate-[5deg]"}
                 group-hover:[filter:grayscale(1)_brightness(0)]
             `}
                                 />
@@ -102,14 +102,7 @@ export default function HeroBottomBar() {
                     </div>
 
                     <p
-                        className="w-full max-w-[95%] lg:max-w-[55%] font-bdo font-light leading-relaxed text-white/80 
-    /* 
-       Clamp: 
-       Min: 0.75rem (12px) 
-       Ideal: 1.5vw 
-       Max: 1rem (16px) 
-    */
-    text-[clamp(0.75rem,1.5vw,1rem)]"
+                        className="w-full max-w-[95%] lg:max-w-[55%] font-bdo font-light leading-relaxed text-white/80 /* Clamp: Min: 0.75rem (12px) Ideal: 1.5vw Max: 1rem (16px) */ text-[clamp(0.75rem,1.5vw,1rem)]"
                     >
                         <span className="font-bold text-white">
                             UB Sport Center –

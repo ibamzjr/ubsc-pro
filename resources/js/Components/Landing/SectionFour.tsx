@@ -69,7 +69,7 @@ const DUMMY_CLASSES: ClassItem[] = [
         location: "Veteran",
         category: "Olah Tubuh",
         image: "/assets/images/fasilitas-zumba-ub-sport-center.avif",
-        href: "#",
+        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+mendapatkan+informasi+terkait+layanan+Zumba.%0AMohon+bantuan+untuk+pilihan+berikut%3A%0A%0AJenis+Permintaan%3A%0A%E2%80%A2+Ikut+Kelas+Zumba%0A%E2%80%A2+Reservasi+Ruang+Zumba%0A%0ABerikut+detail+pengajuan+saya%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi+(khusus+reservasi+ruang)%3A%0A%0AMohon+informasi+mengenai+jadwal+yang+tersedia%2C+biaya%2C+serta+ketentuan+yang+berlaku.%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
     },
     {
         id: "/Kelas 004/",
