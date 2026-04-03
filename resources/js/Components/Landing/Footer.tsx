@@ -57,7 +57,7 @@ export default function Footer() {
                         </h2>
 
                         <a
-                            href="https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%A4%9D%0A%0APerkenalkan%2C+saya+ingin+mengajukan+kerja+sama%2Fkemitraan+dengan+UB+Sport+Center.+Saya+tertarik+untuk+mendiskusikan+kemungkinan+kolaborasi+yang+dapat+memberikan+manfaat+bagi+kedua+belah+pihak.%0A%0AApakah+saya+bisa+mendapatkan+informasi+mengenai+prosedur+atau+pihak+yang+dapat+dihubungi+untuk+membahas+peluang+kemitraan+tersebut%3F%0A%0ATerima+kasih+atas+perhatian+dan+waktunya.+Saya+menantikan+kesempatan+untuk+berdiskusi+lebih+lanjut+%F0%9F%98%8A&type=phone_number&app_absent=0"
+                            href="https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%A4%9D%0A%0APerkenalkan%2C+saya+ingin+mengajukan+kerja+sama%2Fkemitraan+dengan+UB+Sport+Center.+Saya+tertarik+untuk+mendiskusikan+kemungkinan+kolaborasi+yang+dapat+memberikanx+manfaat+bagi+kedua+belah+pihak.%0A%0AApakah+saya+bisa+mendapatkan+informasi+mengenai+prosedur+atau+pihak+yang+dapat+dihubungi+untuk+membahas+peluang+kemitraan+tersebut%3F%0A%0ATerima+kasih+atas+perhatian+dan+waktunya.+Saya+menantikan+kesempatan+untuk+berdiskusi+lebih+lanjut+%F0%9F%98%8A&type=phone_number&app_absent=0"
                             className="relative block w-full max-w-xs cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
                             onMouseEnter={() => setCtaHovered(true)}
                             onMouseLeave={() => setCtaHovered(false)}
@@ -87,7 +87,7 @@ export default function Footer() {
                                     style={{
                                         transform: ctaHovered
                                             ? "rotate(0deg)"
-                                            : "rotate(-45deg)",
+                                            : "rotate(-50deg)",
                                         transition:
                                             "transform 0.55s cubic-bezier(0.76, 0, 0.24, 1)",
                                     }}
@@ -298,7 +298,7 @@ function ScrollUpButton({ onClick }: { onClick: () => void }) {
         <img
             src={UpRight}
             alt="Scroll Up"
-            className="w-3 xs:w-4 transition-transform duration-500 ease-in-out rotate-[5deg] group-hover:rotate-[-55deg] group-hover:[filter:grayscale(1)_brightness(0)]" 
+            className="w-2 xs:w-4 transition-transform duration-500 ease-in-out rotate-[5deg] group-hover:rotate-[-55deg] group-hover:[filter:grayscale(1)_brightness(0)]" 
         />
     </span>
 </div>

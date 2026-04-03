@@ -93,7 +93,7 @@ export default function Hero() {
                         </motion.div>
                     </div>
 
-                    <div className="flex flex-col justify-end pb-14 px-16 min-h-0">
+                    <div className="flex flex-col justify-end px-16 min-h-0">
                         <motion.div
                             initial={{ opacity: 0, y: 32 }}
                             animate={isLoaded ? { opacity: 1, y: 0 } : {}}
@@ -134,7 +134,7 @@ export default function Hero() {
                     </motion.div>
                 </div>
 
-                <div className="relative z-10 flex h-screen flex-col px-8 pt-28 xl:hidden">
+                <div className="relative z-10 flex min-h-screen flex-col px-8 pt-28  xl:hidden">
                     <motion.div
                         className="flex-shrink-0"
                         initial={{ opacity: 0, x: -32 }}
@@ -161,7 +161,7 @@ export default function Hero() {
                         <HeroContent />
                     </motion.div>
 
-                    <div className="flex flex-1 flex-col justify-end pb-10">
+                    <div className="flex flex-1 flex-col justify-end pb-5">
                         <motion.div
                             className="mb-6"
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -172,7 +172,7 @@ export default function Hero() {
                                 ease: [0.4, 0, 0.2, 1],
                             }}
                         >
-                            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
+                            <div className="flex h-20 w-20 mt-3 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
                                 <motion.img
                                     src="/BMU.svg"
                                     alt="Brawijaya Multi Usaha"

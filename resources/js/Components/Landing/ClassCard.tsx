@@ -33,11 +33,11 @@ export default function ClassCard({ item }: ClassCardProps) {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-                <span className="absolute left-5 top-5 z-10 text-xs font-medium tracking-widest text-white/90 sm:text-sm">
+                <span className="absolute left-5 top-5 z-10 text-xs tracking-widest text-white/90 sm:text-sm">
                     {item.id}
                 </span>
 
-                <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-semibold border-2 border-[#323232]">
+                <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-clash font-semibold border-2 border-[#323232]">
                     <span className="flex items-center gap-1 bg-[#323232] px-3 py-1.5 text-white">
                         <MapPin
                             size={10}

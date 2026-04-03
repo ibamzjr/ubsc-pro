@@ -124,14 +124,14 @@ export default function SectionTwo() {
                             <div className="flex items-end justify-between gap-6">
                                 <GymTrafficBadge />
 
-                                <div className="flex-1 hidden xl:flex items-end justify-end">
-                                    <div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md flex items-end">
+                               <div className="hidden 2xl:flex flex-1 items-end justify-end transition-all duration-300">
+    <                               div className="w-52 h-52 flex-shrink-0 overflow-hidden rounded-tl-3xl rounded-tr-md rounded-br-3xl rounded-bl-md flex items-end shadow-2xl">
                                         <img
-                                            src="/assets/images/gym-konten-2-olahraga-ub-sport-center.avif"
-                                            className="h-full w-full object-cover"
-                                            alt="Athlete"
-                                            loading="lazy"
-                                        />
+                                        src="/assets/images/gym-konten-2-olahraga-ub-sport-center.avif"
+                                        className="h-full w-full object-cover transform hover:scale-110 transition-transform duration-500"
+                                        alt="Athlete"
+                                        loading="lazy"
+                                    />
                                     </div>
                                 </div>
                             </div>

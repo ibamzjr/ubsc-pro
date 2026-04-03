@@ -94,16 +94,14 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
 
     return (
         <>
-            {/* NAVBAR */}
             <nav
                 className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12
                 transition-all duration-500 ease-out
                 ${navVisible ? "translate-y-0" : "-translate-y-full"}
-                ${scrolled ? "backdrop-blur-xl bg-black/30 border-b border-white/10" : "bg-transparent"}
+                ${scrolled ? "backdrop-blur-xl bg-black/60 border-b border-white/10" : "bg-transparent"}
                 `}
             >
 
-                {/* Logo */}
                 <div className="flex items-center gap-2">
                     <img
                         src="/UBSC.svg"
@@ -112,7 +110,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     />
                 </div>
 
-                {/* DESKTOP NAV */}
                 <ul className="hidden items-center gap-6 min-[1100px]:flex xl:gap-12">
                     {NAV_ITEMS.map((item) => (
                         <li key={item.number}>
@@ -133,12 +130,11 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     ))}
                 </ul>
 
-                {/* DESKTOP CTA */}
                 <a
                     href="/coming-soon"
                     className="group hidden items-stretch overflow-hidden rounded-md bg-white transition-shadow hover:shadow-lg min-[1100px]:flex scale-90 xl:scale-100 origin-right"
                 >
-                    <div className="mt-1 ml-1 h-full w-14 flex-shrink-0 self-stretch">
+                    <div className="mt-1 mb-1 ml-1 h-full w-14 flex-shrink-0 self-stretch">
                         <img
                             src={square}
                             alt=""
@@ -166,7 +162,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     </div>
                 </a>
 
-                {/* HAMBURGER */}
                 <button
                     type="button"
                     onClick={() => setMobileOpen((v) => !v)}
@@ -191,7 +186,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
 
             </nav>
 
-            {/* OVERLAY */}
             <div
                 onClick={() => setMobileOpen(false)}
                 className={`fixed inset-0 z-30 min-[1100px]:hidden transition-opacity duration-300 ${
@@ -202,7 +196,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 style={{ background: "rgba(0,0,0,0.6)" }}
             />
 
-            {/* MOBILE MENU */}
             <div
                 className={`fixed top-0 left-0 right-0 z-40 min-[1100px]:hidden transition-transform duration-500 ease-out ${
                     mobileOpen ? "translate-y-0" : "-translate-y-full"
@@ -210,10 +203,10 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 style={{ background: "#111111" }}
             >
 
-                <div className="h-[88px] md:h-[104px]" />
+                <div className="h-[80px] md:h-[104px]" />
                 <div className="h-px w-full bg-white/10" />
 
-                <ul className="flex flex-col px-8 pt-4">
+                <ul className="flex flex-col px-8 pt-0">
                     {NAV_ITEMS.map((item, index) => (
                         <li key={item.number}>
                             <a
@@ -238,9 +231,9 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                     ))}
                 </ul>
 
-                <div className="mx-8 mt-4 h-px bg-white/10" />
+                <div className="mx-8 mt-0 h-px bg-white/10" />
 
-                <div className="px-8 py-6 mb-4">
+                <div className="px-8 py-6">
                     <a
                         href="/coming-soon"
                         onClick={() => setMobileOpen(false)}

@@ -135,7 +135,7 @@ export default function SectionThree() {
                     </div>
 
                     <div className="xl:col-span-3 xl:pt-2">
-                        <p className="text-sm md:text-lg xl:text-xl leading-relaxed text-black opacity-70 xl:opacity-100">
+                        <p className="text-sm md:text-2xl xl:text-xl leading-relaxed text-black opacity-70 xl:opacity-100">
                             Hadir di tiga lokasi strategis untuk memastikan Anda
                             selalu punya akses ke fasilitas olahraga terbaik
                             kapan saja.

@@ -136,7 +136,7 @@ export default function SectionFour() {
                                 Fasilitas Kami
                             </span>
                         </div>
-                        <div className="mt-6 hidden xl:block">
+                        <div className="mt-24 hidden xl:block">
                             <ReservasiButton label="Mulai Reservasi" />
                         </div>
                     </div>
@@ -151,7 +151,7 @@ export default function SectionFour() {
 
                     <div className="flex h-full flex-col xl:col-span-3 xl:pt-2">
                         <div className="flex flex-col gap-2 xl:block">
-                            <p className="text-sm md:text-base xl:text-xl font-regular leading-relaxed text-black opacity-70 xl:opacity-100">
+                            <p className="text-sm md:text-2xl xl:text-xl font-regular leading-relaxed text-black opacity-70 xl:opacity-100">
                                 Kami menghadirkan berbagai pilihan fasilitas
                                 olahraga indoor dan fitness untuk kenyamanan
                                 latihan Anda.

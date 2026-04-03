@@ -25,7 +25,7 @@ export default function HeroBottomBar() {
 
             <div className="absolute left-0 right-0 top-0 border-t border-white/10" />
 
-            <div className="relative z-10 w-full px-8 py-8 lg:px-16 lg:py-10">
+            <div className="relative z-10 w-full px-6 py-8 lg:px-16 lg:py-10">
                 <div className="hidden items-center justify-between lg:flex">
                     <div className="flex items-center gap-2">
                         <span className="font-bdo text-lg font-medium text-white/40">
@@ -69,7 +69,7 @@ export default function HeroBottomBar() {
                                     src={DownRight}
                                     alt="Scroll down"
                                     className={`
-                w-3.5 xs:w-4
+                w-3 xs:w-4
                 transition-transform duration-500 ease-in-out
                 ${rotated ? "rotate-[55deg]" : "rotate-[5deg]"}
                 group-hover:[filter:grayscale(1)_brightness(0)]
@@ -80,7 +80,7 @@ export default function HeroBottomBar() {
                     </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-12 lg:hidden">
+                <div className="flex items-start justify-between gap-8 lg:hidden">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-1">
                             <span className="font-bdo text-sm font-medium text-white/40">

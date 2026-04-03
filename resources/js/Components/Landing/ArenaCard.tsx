@@ -41,7 +41,7 @@ export default function ArenaCard({ item }: ArenaCardProps) {
                     <ArrowUpRight size={16} className="text-white" />
                 </div>
 
-                <div className="absolute bottom-4 left-4 z-10 flex overflow-hidden rounded-md text-[10px] font-semibold md:text-xs">
+                <div className="absolute bottom-4 left-4 z-10 flex overflow-hidden rounded-md text-[10px] font-clash font-semibold md:text-xs">
                     <span className="flex items-center gap-1 bg-black px-2.5 py-1.5 text-white">
                         <MapPin size={9} className="flex-shrink-0 opacity-75" />
                         {item.location}

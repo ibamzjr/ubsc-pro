@@ -22,7 +22,7 @@ export default function HeroContent() {
     const [hovered, setHovered] = useState(false);
 
     return (
-        <div className="flex max-w-sm flex-col items-end gap-0 lg:max-w-xl lg:pt-10 lg:mt-24">
+        <div className="flex max-w-sm flex-col items-end gap-0 lg:max-w-xl lg:pt-14 lg:mt-1">
             <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 self-end mt-6 lg:mt-0">
                 <img
                     src="/assets/hero/star.png"
