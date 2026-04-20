@@ -9,6 +9,10 @@ Route::get('/', function () {
     return Inertia::render('HomePage');
 });
 
+Route::get('/about', function () {
+    return Inertia::render('AboutPage');
+})->name('about');
+
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');

@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import Lenis from "@studio-freight/lenis";
 import React from "react";
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'UBSC';
 
 function LenisProvider({ children }: { children: React.ReactNode }) {
 

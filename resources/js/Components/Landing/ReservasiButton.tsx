@@ -43,6 +43,7 @@ export default function ReservasiButton({
                     cursor: pointer;
                     overflow: hidden;
                     height: 64px;
+                    width: fit-content;
                     outline: none;
                     -webkit-tap-highlight-color: transparent;
                 }
@@ -133,10 +134,10 @@ export default function ReservasiButton({
 
                 <div className="reservasi-icon-wrap">
                     <div className="reservasi-arrow-track">
-                        <div className="daftar-arrow-slot">
+                        <div className="reservasi-arrow-slot">
                             <ArrowIcon />
                         </div>
-                        <div className="daftar-arrow-slot">
+                        <div className="reservasi-arrow-slot">
                             <ArrowIcon />
                         </div>
                     </div>

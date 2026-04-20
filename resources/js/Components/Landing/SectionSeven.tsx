@@ -1,8 +1,8 @@
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
-import type { EmblaCarouselType } from "embla-carousel";
 import SectionDivider from "@/Components/Landing/SectionDivider";
+import { useEmblaNav } from "@/hooks/useEmblaNav";
 import author1 from "@/../assets/icons/ulasan-malang-tennis-academy-ubsc.avif";
 import gambar1 from "@/../assets/icons/testimonial-ub-sport-center.avif";
 interface Testimonial {
@@ -21,6 +21,14 @@ const DUMMY_TESTIMONIALS: Testimonial[] = [
         quote: "Malang Tenis Academy mengapresiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
         authorName: "Malang Tennis Academy",
         authorRole: "Footbal Club",
+        authorLogo: author1,
+    },
+    {
+        id: 2,
+        image: gambar1,
+        quote: "UB Sport Center menyediakan fasilitas olahraga yang lengkap dan berkualitas.",
+        authorName: "Atlet UB",
+        authorRole: "Atlet",
         authorLogo: author1,
     },
 ];
@@ -52,8 +60,7 @@ export default function SectionSeven({
         };
     }, [emblaApi]);
 
-    const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+    const { scrollPrev, scrollNext } = useEmblaNav(emblaApi);
 
     const activeItem = testimonials[activeIndex % testimonials.length];
 

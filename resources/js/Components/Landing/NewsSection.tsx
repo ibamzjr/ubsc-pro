@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
+import { useEmblaNav } from "@/hooks/useEmblaNav";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import NewsCard from "@/Components/Landing/NewsCard";
 import type { NewsItem } from "@/Components/Landing/NewsCard";
@@ -79,8 +80,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
         dragFree: true,
     });
 
-    const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+    const { scrollPrev, scrollNext } = useEmblaNav(emblaApi);
 
     const [linkHovered, setLinkHovered] = useState(false);
 

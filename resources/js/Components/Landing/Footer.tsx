@@ -6,8 +6,8 @@ import facebook from "../../../assets/icons/fb.svg";
 import UpRight from "@/../assets/icons/UpRight.svg";
 
 const NAV_LINKS = [
-    { label: "Home", number: "01", href: "#home" },
-    { label: "About", number: "02", href: "#about" },
+    { label: "Home", number: "01", href: "/" },
+    { label: "About", number: "02", href: "/about" },
     { label: "News", number: "03", href: "#" },
     { label: "Facilities", number: "04", href: "#facilities" },
     { label: "Pricing", number: "05", href: "#pricing" },

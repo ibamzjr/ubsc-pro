@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { useEmblaNav } from "@/hooks/useEmblaNav";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ReelCard from "@/Components/Landing/ReelCard";
 import type { ReelItem } from "@/Components/Landing/ReelCard";
@@ -97,14 +98,7 @@ export default function ReelsSection({
         dragFree: true,
     });
 
-    const scrollPrev = useCallback(
-        () => emblaApi && emblaApi.scrollPrev(),
-        [emblaApi],
-    );
-    const scrollNext = useCallback(
-        () => emblaApi && emblaApi.scrollNext(),
-        [emblaApi],
-    );
+    const { scrollPrev, scrollNext } = useEmblaNav(emblaApi);
 
     const [linkHovered, setLinkHovered] = useState(false);
 

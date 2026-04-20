@@ -50,7 +50,7 @@ function LocationCard({ location, onViewDetail }: LocationCardProps) {
     className="
         rounded-full 
         bg-[#FF0000] 
-        px-6 sm:px-5 md:px-6 
+        px-6 sm:px-5 md:px-6  
         py-2 
         text-[12px] sm:text-[13px] md:text-[14px] 
         font-medium 
