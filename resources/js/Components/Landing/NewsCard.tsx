@@ -4,10 +4,13 @@ export interface NewsItem {
     date: string;
     category: "Berita" | "Artikel";
     image: string;
+    description?: string;
 }
 
 interface NewsCardProps extends NewsItem {
     index: number;
+    layoutOverride?: "berita" | "artikel" | "alternate";
+    className?: string;
 }
 
 export default function NewsCard({
@@ -15,15 +18,23 @@ export default function NewsCard({
     date,
     category,
     image,
+    description,
     index,
+    layoutOverride,
+    className,
 }: NewsCardProps) {
-    const isImageTop = index % 2 === 0;
+    const isImageTop =
+        layoutOverride === "berita" ? true :
+        layoutOverride === "artikel" ? false :
+        index % 2 === 0;
+
+    const outerClass = className ?? "h-[450px] w-[300px] flex-shrink-0";
 
     return (
-        <article className="group flex h-[450px] w-[300px] flex-shrink-0 cursor-pointer flex-col border border-white/10 sm:w-[320px]">
+        <article className={`group cursor-pointer flex flex-col border border-white/10 ${outerClass}`}>
             {isImageTop ? (
                 <>
-                    <div className="relative h-1/2 overflow-hidden">
+                    <div className="relative flex-[0_0_44%] overflow-hidden">
                         <img
                             src={image}
                             alt={title}
@@ -31,32 +42,49 @@ export default function NewsCard({
                             draggable={false}
                             loading="lazy"
                         />
-                        <span className="absolute left-4 top-4 bg-red-600 px-3 py-1 text-xs font-bold text-white">
+                        <span
+                            className="absolute left-4 top-4 px-3 py-1 text-xs font-bold text-white rounded-[5px]"
+                            style={{ background: "linear-gradient(to right, red, #790a0a)" }}
+                        >
                             {category}
                         </span>
                     </div>
 
-                    <div className="flex h-1/2 flex-col justify-between bg-white p-6">
-                        <p className="line-clamp-3 text-xl font-bold leading-snug tracking-tight text-black">
-                            {title}
-                        </p>
-                        <span className="text-sm font-medium text-gray-500">
+                    <div className="flex flex-1 flex-col justify-between bg-white p-6">
+                        <div className="flex flex-col gap-1">
+                            <p className="line-clamp-3 font-bdo font-medium text-[24px] leading-snug text-black">
+                                {title}
+                            </p>
+                            {description && (
+                                <p className="font-bdo font-normal text-[16px] text-black/70 line-clamp-3 mt-1">
+                                    {description}
+                                </p>
+                            )}
+                        </div>
+                        <span className="font-bdo font-normal text-[20px] text-black/70">
                             {date}
                         </span>
                     </div>
                 </>
             ) : (
                 <>
-                    <div className="flex h-1/2 flex-col justify-between bg-black p-6">
-                        <span className="text-sm font-medium text-gray-400">
+                    <div className="flex flex-[0_0_44%] flex-col justify-between bg-black p-6">
+                        <span className="font-bdo font-normal text-[20px] text-white/70">
                             {date}
                         </span>
-                        <p className="line-clamp-3 text-xl font-bold leading-snug tracking-tight text-white">
-                            {title}
-                        </p>
+                        <div className="flex flex-col gap-1">
+                            <p className="line-clamp-3 font-bdo font-medium text-[24px] leading-snug text-white">
+                                {title}
+                            </p>
+                            {description && (
+                                <p className="font-bdo font-normal text-[16px] text-white/70 line-clamp-3 mt-1">
+                                    {description}
+                                </p>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="relative h-1/2 overflow-hidden">
+                    <div className="relative flex-1 overflow-hidden">
                         <img
                             src={image}
                             alt={title}
@@ -64,7 +92,10 @@ export default function NewsCard({
                             draggable={false}
                             loading="lazy"
                         />
-                        <span className="absolute bottom-4 left-4 bg-[#004b79] px-3 py-1 text-xs font-bold text-white">
+                        <span
+                            className="absolute bottom-4 left-4 px-3 py-1 text-xs font-bold text-white rounded-[5px]"
+                            style={{ background: "linear-gradient(to right, #153359, #15678d)" }}
+                        >
                             {category}
                         </span>
                     </div>

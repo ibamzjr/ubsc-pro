@@ -13,6 +13,10 @@ Route::get('/about', function () {
     return Inertia::render('AboutPage');
 })->name('about');
 
+Route::get('/news', function () {
+    return Inertia::render('NewsPage');
+})->name('news');
+
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');
