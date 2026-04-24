@@ -61,7 +61,7 @@ function StatItem({ value, suffix, label }: { value: number; suffix: string; lab
 export default function AboutHistory() {
     return (
         <section className="w-full bg-white" id="about-history">
-            <div className="mx-auto max-w-8xl px-8 pt-16 pb-0">
+            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-10">
                 <SectionDivider
                     number="02"
                     title="Sejarah Kami"
@@ -95,7 +95,7 @@ export default function AboutHistory() {
                 </div>
             </div>
 
-            <div className="relative bg-[#0B1E3B] py-32 overflow-hidden"
+            <div className="relative bg-[#0B1E3B] py-32 mx-16 overflow-hidden  xl:mb-12"
             style={{ background: `url(${bg}) repeat` }}>
                 <CurvedLoop
                     marqueeText="UB * SPORT CENTER * "

@@ -1,6 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import NewsCard from "@/Components/Landing/NewsCard";
 import type { NewsItem } from "@/Components/Landing/NewsCard";
+import SectionDivider from "@/Components/Landing/SectionDivider";
+import NewsHeroBg from "@/../assets/images/news-hero.avif"
 
 interface DummyArtikelItem extends NewsItem {
     description: string;
@@ -14,7 +16,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/gym-konten-1-olahraga-ub-sport-center.avif",
+        image: NewsHeroBg,
     },
     {
         id: 2,
@@ -23,7 +25,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 3,
@@ -32,7 +34,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 4,
@@ -41,7 +43,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 5,
@@ -50,7 +52,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 6,
@@ -59,7 +61,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 7,
@@ -68,7 +70,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Artikel",
-        image: "/assets/images/gym-konten-1-olahraga-ub-sport-center.avif",
+        image: "/assets/images/comingsoon.avif",
     },
 ];
 
@@ -79,11 +81,16 @@ export default function ServicesSectionArtikel() {
 
     return (
         <section
-            className="bg-[#F5F7F9] overflow-x-clip py-12 xl:py-24"
+            className="bg-[#F5F7F9] overflow-x-clip py-12"
             id="artikel-content"
         >
-            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16">
-
+            <div className="mx-auto max-w px-6 sm:px-10  lg:px-16 xl:px-24 ">
+                <SectionDivider
+                    number="02"
+                    title="Artikel Kami"
+                    subtitle="News page /02"
+                    theme="light"
+                />
                 {/* Header */}
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
@@ -148,7 +155,6 @@ export default function ServicesSectionArtikel() {
                         </div>
                     ))}
                 </div>
-
             </div>
         </section>
     );

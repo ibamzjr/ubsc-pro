@@ -4,6 +4,8 @@ import type { NewsItem } from "@/Components/Landing/NewsCard";
 import CurvedLoop from "@/Components/Landing/CurvedLoop";
 import person from "@/../assets/images/person.avif";
 import bg from "@/../assets/images/bg-about.avif";
+import SectionDivider from "../Landing/SectionDivider";
+import NewsHeroBg from "@/../assets/images/news-hero.avif";
 
 interface DummyNewsItem extends NewsItem {
     description: string;
@@ -17,7 +19,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/gym-konten-1-olahraga-ub-sport-center.avif",
+        image: NewsHeroBg,
     },
     {
         id: 2,
@@ -26,7 +28,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 3,
@@ -35,7 +37,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 4,
@@ -44,7 +46,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 5,
@@ -53,7 +55,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
     {
         id: 6,
@@ -62,7 +64,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
         date: "26.02.2026",
         category: "Berita",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
+        image: "/assets/images/comingsoon.avif",
     },
 ];
 
@@ -73,7 +75,13 @@ export default function ServicesSectionNews() {
 
     return (
         <section className="bg-[#F5F7F9] overflow-x-clip" id="news-content">
-            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pt-12 xl:pt-24">
+            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:py-16 xl:px-24">
+                <SectionDivider
+                    number="01"
+                    title="Berita Kami"
+                    subtitle="Newspage /01"
+                    theme="light"
+                />
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
@@ -95,7 +103,7 @@ export default function ServicesSectionNews() {
                     </a>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8 pb-12 xl:pb-24">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8 pb-12">
                     <div className="col-span-1 sm:col-span-2 xl:col-span-2 order-last sm:order-first xl:order-none">
                         <NewsCard
                             {...featured}
@@ -161,7 +169,7 @@ export default function ServicesSectionNews() {
             </div>
 
             <div
-                className="relative py-24 xl:py-32 overflow-hidden"
+                className="relative py-24 xl:py-32 mx-16 overflow-hidden"
                 style={{ background: `url(${bg}) repeat` }}
             >
                 <CurvedLoop

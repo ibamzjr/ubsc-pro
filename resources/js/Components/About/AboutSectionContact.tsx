@@ -18,8 +18,8 @@ function FeatureItem({ text }: { text: string }) {
 
 export default function AboutSectionContact() {
     return (
-        <section className="w-full bg-white" id="about-contact">
-            <div className="mx-auto max-w-8xl px-8 pt-16 pb-32">
+        <section className="w-full bg-[#F5F7F9]" id="about-contact">
+            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-24">
                 <SectionDivider
                     number="07"
                     title="Informasi"

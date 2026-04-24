@@ -74,8 +74,8 @@ function BranchCard({ branch }: { branch: Branch }) {
 
 export default function AboutBranches() {
     return (
-        <section className="w-full bg-white" id="about-branches">
-            <div className="mx-auto max-w-8xl px-8 pt-16 pb-0">
+        <section className="w-full bg-[#F5F7F9]" id="about-branches">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 lg:pt-16 xl:px-24 xl:pt-10">
                 <SectionDivider
                     number="03"
                     title="Cabang Kami"
@@ -84,7 +84,7 @@ export default function AboutBranches() {
                 />
             </div>
 
-            <div className="mx-auto max-w-8xl px-8 pb-32 mt-12 flex flex-col gap-12 xl:flex-row xl:gap-10 xl:items-start">
+            <div className="mx-auto max-w px-6 pb-8 sm:px-10 sm:py-12 lg:px-16 xl:px-24 xl:py-3 flex flex-col gap-12 xl:flex-row xl:gap-10 xl:items-start">
                 <div className="xl:sticky xl:top-24 xl:w-56 xl:flex-shrink-0 flex flex-col gap-5">
                     <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-xl bg-accent-red flex-shrink-0" />

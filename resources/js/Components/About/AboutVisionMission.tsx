@@ -63,8 +63,8 @@ const DUMMY_VISIONS: VisionItem[] = [
 
 export default function AboutVisionMission() {
     return (
-        <section className="w-full bg-white" id="about-vision">
-            <div className="mx-auto max-w-8xl px-8 pt-16 pb-32">
+        <section className="w-full bg-[#F5F7F9]" id="about-vision">
+            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:pt-16 xl:px-24 xl:pt-24">
                 <SectionDivider
                     number="05"
                     title="Visi & Misi"

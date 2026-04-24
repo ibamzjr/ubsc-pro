@@ -52,7 +52,7 @@ export default function AboutSectionMap() {
     return (
         <section
             id="about-map"
-            className="relative w-full h-[500px] xl:h-[600px] overflow-hidden flex items-center"
+            className="relative w-full h-full xl:h-[600px] overflow-hidden flex items-center"
         >
             <div className="pointer-events-none absolute inset-0 z-0">
                 <img

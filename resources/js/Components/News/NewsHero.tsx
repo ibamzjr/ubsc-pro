@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import AnimatedBookingLink from "@/Components/News/AnimatedBookingLink";
 import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import TopBg from "@/../assets/hero/Top.png";
+import newsHeroBg from "@/../assets/images/news-hero.avif";
 
 const PrevArrow = () => (
     <svg
@@ -57,7 +58,7 @@ const DUMMY_NEWS_SLIDES: NewsSlide[] = [
         description:
             "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including new technologies, content strategies, and viewer habits.",
         date: "26.02.2026",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
+        image: newsHeroBg,
     },
     {
         id: 2,
@@ -66,7 +67,7 @@ const DUMMY_NEWS_SLIDES: NewsSlide[] = [
         description:
             "Konten berita UB Sport Center sedang dalam pengembangan. Nantikan pembaruan terbaru dari kami.",
         date: "26.02.2026",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
+        image: newsHeroBg,
     },
     {
         id: 3,
@@ -75,7 +76,7 @@ const DUMMY_NEWS_SLIDES: NewsSlide[] = [
         description:
             "Tingkatkan performa olahraga Anda bersama instruktur berpengalaman dan fasilitas kelas asia tenggara dunia champion.",
         date: "26.02.2026",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
+        image: newsHeroBg,
     },
 ];
 
@@ -86,22 +87,26 @@ export default function NewsHero() {
 
     return (
         <section className="relative w-full bg-black overflow-x-clip" id="home">
-            <div className="overflow-hidden" ref={emblaRef}>
+            <div className="pointer-events-none absolute inset-0 z-0">
+                <img
+                    src={TopBg}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 h-full w-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/80" />
+            </div>
+
+            {/* Embla carousel — slides sit above the static bg */}
+            <div className="relative z-10 overflow-hidden" ref={emblaRef}>
                 <div className="flex">
                     {DUMMY_NEWS_SLIDES.map((slide, idx) => (
                         <div
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0"
                         >
+                            {/* Top text area: transparent so static TopBg shows through */}
                             <div className="relative">
-                                <img
-                                    src={TopBg}
-                                    alt=""
-                                    aria-hidden
-                                    className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top"
-                                />
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/80" />
-
                                 <div className="h-28 xl:h-36" />
 
                                 <div className="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8 px-8 xl:px-16 pb-10 xl:pb-12 items-end">
@@ -131,6 +136,7 @@ export default function NewsHero() {
                                 </div>
                             </div>
 
+                            {/* Bottom per-slide image */}
                             <div
                                 className="relative w-full bg-neutral-900"
                                 style={{ height: "68vh" }}

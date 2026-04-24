@@ -17,6 +17,10 @@ Route::get('/news', function () {
     return Inertia::render('NewsPage');
 })->name('news');
 
+Route::get('/pricing', function () {
+    return Inertia::render('PricingPage');
+})->name('pricing');
+
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');
