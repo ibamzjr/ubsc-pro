@@ -21,6 +21,10 @@ Route::get('/pricing', function () {
     return Inertia::render('PricingPage');
 })->name('pricing');
 
+Route::get('/facilities', function () {
+    return Inertia::render('FacilityPage');
+})->name('facility');
+
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');

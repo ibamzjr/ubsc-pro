@@ -61,7 +61,6 @@ export default function HeroBottomBar({
                         {description}
                     </p>
 
-                    {/* Scroll button: capsule only for md/lg, capsule+arrow for xl+ */}
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
