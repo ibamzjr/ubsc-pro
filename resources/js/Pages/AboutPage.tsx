@@ -34,7 +34,7 @@ export default function AboutPage() {
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <main className="relative">
-                <Navbar />
+                <Navbar activeSection = "About"/>
                 <AboutHero />
                 <FadeIn>
                     <AboutHistory />

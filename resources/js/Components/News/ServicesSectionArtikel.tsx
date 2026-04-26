@@ -91,7 +91,6 @@ export default function ServicesSectionArtikel() {
                     subtitle="News page /02"
                     theme="light"
                 />
-                {/* Header */}
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">

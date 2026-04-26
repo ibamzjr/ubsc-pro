@@ -25,6 +25,10 @@ Route::get('/facilities', function () {
     return Inertia::render('FacilityPage');
 })->name('facility');
 
+Route::get('/booking', function () {
+    return Inertia::render('BookingPage');
+})->name('booking');
+
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');

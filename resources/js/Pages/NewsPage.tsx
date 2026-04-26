@@ -28,7 +28,7 @@ export default function NewsPage() {
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <main className="relative">
-                <Navbar />
+                <Navbar activeSection = "News"/>
                 <NewsHero />
                 <div id="news-content" />
                 <ServicesSectionNews />

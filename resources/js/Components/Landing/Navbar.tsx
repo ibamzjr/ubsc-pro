@@ -14,7 +14,7 @@ const NAV_ITEMS: NavItem[] = [
     { label: "News", number: "03", href: "/news" },
     { label: "Facilities", number: "04", href: "/facilities" },
     { label: "Pricing", number: "05", href: "/pricing" },
-    { label: "Booking", number: "06", href: "#booking" },
+    { label: "Booking", number: "06", href: "/booking" },
 ];
 
 interface NavbarProps {

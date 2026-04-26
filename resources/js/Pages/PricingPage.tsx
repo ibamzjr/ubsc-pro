@@ -33,7 +33,7 @@ export default function PricingPage() {
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <main className="relative">
-                <Navbar />
+                <Navbar activeSection = "Pricing"/>
                 <PricingHero />
                 <PricingInfo />
                 <PricingFacilityList />

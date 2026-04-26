@@ -36,7 +36,7 @@ export default function FacilityPage() {
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <main className="relative">
-                <Navbar />
+                <Navbar activeSection = "Facilities"/>
                 <FacilityHero />
                 <FacilityMembership />
                 <FacilityListSection />
