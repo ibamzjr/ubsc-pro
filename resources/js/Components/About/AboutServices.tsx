@@ -56,20 +56,20 @@ export default function AboutServices() {
                     <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
                             <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-accent-red" />
-                            <span className="font-bdo text-xl text-black">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Layanan Unggulan
                             </span>
                         </div>
                     </div>
 
                     <div className="xl:col-span-6">
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,3.5vw,3.25rem)] leading-tight text-black xl:text-center">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black xl:text-center">
                             Mendukung Kebutuhan Aktivitas Olahraga Anda
                         </h2>
                     </div>
 
                     <div className="xl:col-span-3 xl:pt-2">
-                        <p className="font-bdo text-lg leading-relaxed text-black/70">
+                        <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70">
                             Beragam layanan pendukung kami hadir untuk memberikan
                             kenyamanan terbaik bagi pengguna.
                         </p>

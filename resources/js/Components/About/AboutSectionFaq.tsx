@@ -60,10 +60,10 @@ export default function AboutSectionFaq() {
 
                 <div className="grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8 xl:items-start">
                     <div className="xl:col-span-4 xl:sticky xl:top-24">
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-black leading-tight">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             General FAQs
                         </h2>
-                        <p className="mt-6 font-bdo font-normal text-[clamp(0.875rem,1.1vw,1.25rem)] leading-relaxed text-black/50">
+                        <p className="mt-6 font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/50">
                             UB Sport Center berkomitmen untuk menghadirkan lingkungan yang profesional dan nyaman melalui.
                         </p>
                     </div>

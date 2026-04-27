@@ -105,7 +105,7 @@ export default function SectionFive() {
 
                 <div className="xl:mt-4 grid grid-cols-1 gap-12 xl:grid-cols-12">
                     <div className="col-span-1 xl:col-span-8">
-                        <h2 className="text-3xl font-clash font-medium leading-[1.1] tracking-tight md:text-5xl xl:text-7xl">
+                        <h2 className="text-[clamp(1.875rem,3.75vw,72px)] font-clash font-medium leading-[1.1] tracking-tight">
                             Standar baru berolahraga
                             <br />
                             hanya di{" "}
@@ -116,7 +116,7 @@ export default function SectionFive() {
                     </div>
 
                     <div className="col-span-1 flex flex-col justify-end xl:col-span-4">
-                        <p className="mb-8 text-lg leading-relaxed text-gray-300">
+                        <p className="mb-8 text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-gray-300">
                             Komitmen kami adalah menghadirkan{" "}
                             <strong className="text-white font-semibold">
                                 ekosistem olahraga yang inklusif.
@@ -147,7 +147,7 @@ export default function SectionFive() {
                             />
 
                             <span className="pointer-events-none relative z-10 flex w-full items-center justify-between py-2">
-                                <span className="text-lg font-medium text-white">
+                                <span className="text-[clamp(0.875rem,0.94vw,18px)] font-medium text-white">
                                     Mulai Reservasi Sekarang
                                 </span>
                                 <span
@@ -186,14 +186,14 @@ export default function SectionFive() {
                         return (
                             <div key={i} className="flex flex-col">
                                 <motion.span
-                                    className="mb-6 text-5xl md:text-6xl xl:text-8xl font-regular tracking-tighter"
+                                    className="mb-6 text-[clamp(3rem,5vw,96px)] font-regular tracking-tighter"
                                     initial={{ opacity: 0, y: 40 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true, amount: 0.5 }}
                                 >
                                     {displayValue}
                                 </motion.span>
-                                <p className="max-w-[250px] font-light text-sm leading-relaxed text-gray-400">
+                                <p className="max-w-[250px] font-light text-[clamp(0.75rem,0.73vw,14px)] leading-relaxed text-gray-400">
                                     {stat.description}
                                 </p>
                             </div>

@@ -130,7 +130,7 @@ export default function AccordionItem({
                                             </span>
                                         </div>
                                         <div className="xl:col-span-9">
-                                            <p className="font-bdo font-regular text-base xl:text-lg leading-relaxed text-black">
+                                            <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black">
                                                 {description}
                                             </p>
                                         </div>

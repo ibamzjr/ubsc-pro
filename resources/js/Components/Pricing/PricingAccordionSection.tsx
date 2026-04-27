@@ -149,14 +149,15 @@ export default function PricingAccordionSection() {
 
     return (
         <section className="bg-[#1a1a1a] overflow-x-clip" id="pricing-accordion">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="01"
                 title="Kelas"
                 subtitle="01 schedulepage"
                 theme="dark"
             />
-
-            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pb-24">
+            </div>
+            <div className="max-w-8xl mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:py-10">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-16">
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">

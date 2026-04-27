@@ -26,14 +26,15 @@ export default function FacilityMembership() {
 
     return (
         <section className="bg-white overflow-x-clip" id="facility-membership">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="01"
                 title="Lokasi Kami"
                 subtitle="/01 homepage"
                 theme="light"
             />
-
-            <div className="x-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:py-16 xl:px-24">
+            </div>
+            <div className="x-auto max-w px-6 pb-16 sm:px-10 xl:px-24">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-16">
                     <div className="lg:col-span-4 flex flex-col gap-8">
                         <div className="flex items-center gap-3">

@@ -115,10 +115,10 @@ export default function ReelsSection({
                 </div>
 
                 <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-                    <h3 className="text-4xl font-bold text-white md:text-4xl xl:text-5xl">
+                    <h3 className="text-[clamp(1.5rem,2.7vw,52px)] font-bold text-white leading-[1.1]">
                         Reels UB Sport Center
                     </h3>
-                    <p className="text-lg leading-relaxed text-gray-400 md:ml-auto md:max-w-md md:text-left">
+                    <p className="text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-gray-400 md:ml-auto md:max-w-md md:text-left">
                         Intip keseruan latihan, tips kebugaran, dan atmosfer
                         energi positif langsung melalui media sosial kami.
                     </p>
@@ -127,7 +127,7 @@ export default function ReelsSection({
 
             <div className="flex items-stretch">
                 <div className="relative z-10 hidden w-48 flex-shrink-0 flex-col justify-between pb-2 pl-8 xl:flex xl:pl-24">
-                    <span className="text-xl font-semibold text-white">
+                    <span className="text-[clamp(1rem,1.04vw,20px)] font-semibold text-white">
                         Sorotan
                         <br />
                         Komunitas
@@ -197,7 +197,7 @@ export default function ReelsSection({
                             }}
                         />
                         <span className="pointer-events-none relative z-10 flex w-full items-center justify-between py-1.5">
-                            <span className="text-sm xl:text-xl font-medium text-white">
+                            <span className="text-[clamp(0.875rem,1.04vw,20px)] font-medium text-white">
                                 Ikuti Keseruan Kami
                             </span>
                             <span

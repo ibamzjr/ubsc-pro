@@ -32,18 +32,18 @@ export default function HeroContent() {
             </div>
 
             <div className="flex w-full flex-col gap-1">
-                <p className="font-bdo leading-relaxed text-white/70 text-base md:text-lg lg:text-2xl pl-6 md:pl-10 lg:pl-[110px]">
+                <p className="font-bdo leading-relaxed text-white/70 text-[clamp(0.875rem,1.25vw,24px)] pl-6 md:pl-10 lg:pl-[110px]">
                     Selamat Datang di UB Sport Center,
                 </p>
 
-                <p className="font-bdo leading-relaxed text-white/70 text-base md:text-lg lg:text-2xl pl-3 md:pl-6 lg:pl-[60px]">
+                <p className="font-bdo leading-relaxed text-white/70 text-[clamp(0.875rem,1.25vw,24px)] pl-3 md:pl-6 lg:pl-[60px]">
                     pusat fasilitas{" "}
-                    <span className="font-semibold text-white">
+                    <span className="font-medium text-white">
                         olahraga modern
                     </span>
                 </p>
 
-                <p className="font-bdo font-semibold leading-relaxed text-white text-base md:text-lg lg:text-2xl pl-1 md:pl-2 lg:pl-[20px]">
+                <p className="font-bdo font-medium leading-relaxed text-white text-[clamp(0.875rem,1.25vw,24px)] pl-1 md:pl-2 lg:pl-[20px]">
                     untuk gaya hidup aktif Anda.
                 </p>
             </div>
@@ -72,7 +72,7 @@ export default function HeroContent() {
                 />
 
                 <span className="pointer-events-none relative z-10 flex w-full items-center mr-36 lg:mr-0 justify-between">
-                    <span className="font-bdo text-lg font-medium leading-tight tracking-tight text-white lg:text-2xl">
+                    <span className="font-bdo text-[clamp(0.875rem,1.25vw,24px)] font-medium leading-tight tracking-tight text-white">
                         Booking sekarang juga!
                     </span>
 

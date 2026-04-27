@@ -49,15 +49,15 @@ export default function HeroBottomBar({
             <div className="relative z-10 w-full px-6 py-8 lg:px-16 lg:py-10">
                 <div className="hidden items-center justify-between lg:flex">
                     <div className="flex items-center gap-2">
-                        <span className="font-bdo text-lg font-medium text-white/40">
+                        <span className="font-bdo text-[clamp(0.875rem,0.94vw,18px)] font-medium text-white/40">
                             {sectionNumber}
                         </span>
-                        <span className="font-bdo text-lg font-medium text-white/80">
+                        <span className="font-bdo text-[clamp(0.875rem,0.94vw,18px)] font-medium text-white/80">
                             {sectionLabel}
                         </span>
                     </div>
 
-                    <p className="max-w-lg text-center font-bdo text-lg font-light leading-relaxed text-white">
+                    <p className="max-w-lg text-center font-bdo text-[clamp(0.875rem,0.94vw,18px)] font-light leading-relaxed text-white">
                         {description}
                     </p>
 
@@ -75,7 +75,7 @@ export default function HeroBottomBar({
                         >
                             {/* Capsule */}
                             <div className="flex items-center justify-center rounded-full border border-white/40 px-6 sm:px-8 py-2 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black">
-                                <span className="font-bdo text-sm sm:text-lg font-light tracking-wide">
+                                <span className="font-bdo text-[clamp(0.75rem,0.94vw,18px)] font-light tracking-wide">
                                     Scroll down
                                 </span>
                             </div>

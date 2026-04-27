@@ -62,7 +62,7 @@ export default function SectionEight() {
                         />
                         <div className="absolute inset-0 bg-black/55" />
                         <div className="absolute inset-0 flex flex-col justify-start p-8">
-                            <h2 className="font-monument text-3xl font-bold leading-tight tracking-tight text-white lg:text-4xl">
+                            <h2 className="font-monument text-[clamp(1.5rem,2.08vw,40px)] font-bold leading-tight tracking-tight text-white">
                                 Lokasi Kami
                             </h2>
                             <p className="mt-2 font-clash text-sm font-medium text-gray-300">

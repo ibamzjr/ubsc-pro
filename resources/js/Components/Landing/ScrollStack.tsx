@@ -4,7 +4,7 @@ export interface ScrollStackItemProps {
 }
 
 export function ScrollStackItem({ children, itemClassName = "" }: ScrollStackItemProps) {
-    return <div className={`w-full overflow-hidden rounded-2xl ${itemClassName}`}>{children}</div>;
+    return <div className={`w-full overflow-hidden rounded-xl ${itemClassName}`}>{children}</div>;
 }
 
 export interface ScrollStackProps {

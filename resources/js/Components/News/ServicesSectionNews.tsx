@@ -86,17 +86,17 @@ export default function ServicesSectionNews() {
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
                             <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[18px] xl:text-[24px] text-black">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Berita Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(1.75rem,4vw,3.25rem)] text-black leading-none">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             Berita Terkini Kami
                         </h2>
                     </div>
                     <a
                         href="#"
-                        className="flex items-center gap-2 font-bdo font-normal text-[18px] xl:text-[24px] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />
@@ -133,12 +133,12 @@ export default function ServicesSectionNews() {
                         >
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                                <p className="font-bdo font-medium text-[14px] text-white">
+                                <p className="font-bdo font-medium text-[clamp(0.75rem,0.73vw,14px)] text-white">
                                     Unggulan Kami
                                 </p>
                             </div>
 
-                            <p className="font-bdo font-medium text-[15px] text-white leading-snug max-w-[200px]">
+                            <p className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-white leading-snug max-w-[200px]">
                                 Dalam Pengembangan: Fitur artikel dan berita
                                 akan Segera Hadir
                             </p>

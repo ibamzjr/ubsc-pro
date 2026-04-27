@@ -58,7 +58,7 @@ export default function ClassCard({ item }: ClassCardProps) {
             </div>
 
             <div className="flex items-center justify-between border border-t-0 border-neutral-700/50 bg-[#323232] p-6 md:p-8">
-                <span className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                <span className="text-[clamp(1.5rem,2.08vw,40px)] font-bold tracking-tight text-white">
                     {item.title}
                 </span>
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-600 transition-transform duration-300 group-hover:translate-x-1">

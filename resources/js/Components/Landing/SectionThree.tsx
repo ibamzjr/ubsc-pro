@@ -1,170 +1,128 @@
 import SectionDivider from "@/Components/Landing/SectionDivider";
-import { router } from "@inertiajs/react";
+import ScrollStack, { ScrollStackItem } from "@/Components/Landing/ScrollStack";
+import { ArrowUpRight } from "lucide-react";
+import gym from "../../../assets/hero/gym.svg";
+
 export interface Location {
     id: string;
+    name: string;
+    category: string;
     image: string;
-    title: string;
-    subtitle: string;
-    slug?: string;
     mapLink?: string;
-}
-
-interface LocationCardProps {
-    location: Location;
-    onViewDetail?: (location: Location) => void;
-}
-
-function LocationCard({ location, onViewDetail }: LocationCardProps) {
-    return (
-        <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white">
-            <div className="aspect-[4/3] w-full overflow-hidden p-2">
-                {location.image ? (
-                    <picture>
-                        <img
-                            src={location.image}
-                            alt={location.title}
-                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105 rounded-xl"
-                            draggable={false}
-                            loading="lazy"
-                        />
-                    </picture>
-                ) : (
-                    <div className="h-full w-full bg-gray-200" />
-                )}
-            </div>
-
-            {/* Mobile: stacked, Desktop: flex-row */}
-            <div className="flex flex-row flex-wrap items-center gap-3 p-5 justify-between">
-                <div>
-                    <p className="text-base md:text-lg font-semibold text-black">
-                        {location.title}
-                    </p>
-                    <p className="mt-1 text-sm font-regular text-black opacity-60">
-                        {location.subtitle}
-                    </p>
-                </div>
-
-                <button
-    type="button"
-    onClick={() => onViewDetail?.(location)}
-    className="
-        rounded-full 
-        bg-[#FF0000] 
-        px-6 sm:px-5 md:px-6  
-        py-2 
-        text-[12px] sm:text-[13px] md:text-[14px] 
-        font-medium 
-        text-white 
-        border border-red-400
-        flex-shrink-0
-        transition-transform transition-colors duration-200 ease-in-out
-        hover:bg-red-700 hover:scale-105
-        active:scale-95
-    "
->
-    Lihat Detail
-</button>
-            </div>
-        </div>
-    );
 }
 
 const DUMMY_LOCATIONS: Location[] = [
     {
         id: "1",
+        name: "UB Sport Center Veteran",
+        category: "Pusat Kebugaran Utama",
         image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
-        title: "UB Sport Center Veteran",
-        subtitle: "Pusat Kebugaran Utama",
-        slug: "veteran",
         mapLink: "https://maps.app.goo.gl/JLc41TfD5TuLfu8h9",
     },
     {
         id: "2",
+        name: "UB Sport Center Dieng",
+        category: "Cabang Arena Terbuka",
         image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-        title: "UB Sport Center Dieng",
-        subtitle: "Cabang Eksklusif",
-        slug: "dieng",
         mapLink: "https://maps.app.goo.gl/RNPXp5pW2TqcE2YGA",
     },
     {
         id: "3",
+        name: "UB Sport Center Transmart",
+        category: "Cabang Eksklusif",
         image: "/assets/images/cabang-eksklusif-transmart-ub-sport-center-malang.avif",
-        title: "UB Sport Center Transmart",
-        subtitle: "Cabang Modern & Lifestyle",
-        slug: "transmart",
         mapLink: "https://maps.app.goo.gl/rNEukCEQAQSZDAga6",
     },
 ];
 
-export default function SectionThree() {
-    // TODO: Replace with usePage / useQuery / fetch from BE
-    const locations = DUMMY_LOCATIONS;
-    const total = locations.length;
-
-    const handleViewDetail = (location: Location) => {
-    if (location.mapLink) {
-        window.open(location.mapLink, "_blank", "noopener,noreferrer");
-    }
-};
+function LocationCard({ location }: { location: Location }) {
+    const handleClick = () => {
+        if (location.mapLink) {
+            window.open(location.mapLink, "_blank", "noopener,noreferrer");
+        }
+    };
 
     return (
-        <section id="locations" className="w-full bg-white">
-            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-24">
-                <SectionDivider
-                    number="01"
-                    title="Lokasi Kami"
-                    subtitle="01 homepage"
+        <div
+            className="flex flex-col w-full bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm cursor-pointer"
+            onClick={handleClick}
+        >
+            <div className="relative w-full aspect-[16/11] overflow-hidden">
+                <img
+                    src={location.image}
+                    alt={location.name}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    draggable={false}
+                    loading="lazy"
                 />
+            </div>
 
-                <div className="mb-8 xl:mb-16 grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
-                    <div className="xl:col-span-3">
-                        <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm md:text-lg xl:text-xl font-semibold text-gray-800">
-                                Eksplorasi Cabang Kami
-                            </span>
+            <div className="flex items-start justify-between p-6">
+                <div className="flex flex-col gap-1">
+                    <h3 className="font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] text-black leading-tight">
+                        {location.name}
+                    </h3>
+                    <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-gray-500">
+                        {location.category}
+                    </p>
+                </div>
+                <ArrowUpRight
+                    size={24}
+                    className="flex-shrink-0 mt-1 text-gray-400 transition-colors hover:text-black"
+                />
+            </div>
+        </div>
+    );
+}
+
+export default function SectionThree() {
+    return (
+        <section id="locations" className="w-full bg-[#F5F7F9]">
+            <div className="mx-auto px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 lg:pt-16 xl:px-24 xl:pt-10">
+                <SectionDivider
+                    number="03"
+                    title="Lokasi Kami"
+                    subtitle="01/ homepage"
+                    theme="light"
+                />
+            </div>
+
+            <div className="mx-auto px-6 pb-8 sm:px-10 sm:py-12 lg:px-16 xl:px-24 xl:py-3 flex flex-col gap-12 xl:flex-row xl:gap-10 xl:items-start">
+                {/* Left sticky sidebar */}
+                <div className="xl:sticky xl:top-24 xl:w-56 xl:flex-shrink-0 flex flex-col gap-5">
+                    <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-xl bg-accent-red flex-shrink-0" />
+                        <span className="font-bdo font-medium text-sm text-black tracking-widest">
+                            Eksplorasi Cabang Kami
+                        </span>
+                    </div>
+
+                    <div className="inline-flex w-fit items-center gap-3 overflow-hidden rounded-md border border-gray-200 bg-white pr-4 shadow-sm">
+                        <div className="flex h-12 w-16 items-center justify-center rounded-md bg-gradient-to-tr from-[#002244] to-[#15678D]">
+                            <img src={gym} alt="Gym Icon" className="h-5 w-5" />
                         </div>
-                    </div>
-
-                    <div className="xl:col-span-6">
-                        <h2 className="text-3xl md:text-5xl xl:text-5xl font-medium leading-tight tracking-tight xl:text-center text-gray-900">
-                            Pusat Olahraga saat ini{" "}
-                            <br className="hidden xl:block" /> ada di Berbagai
-                            Lokasi
-                        </h2>
-                    </div>
-
-                    <div className="xl:col-span-3 xl:pt-2">
-                        <p className="text-sm md:text-2xl xl:text-xl leading-relaxed text-black opacity-70 xl:opacity-100">
-                            Hadir di tiga lokasi strategis untuk memastikan Anda
-                            selalu punya akses ke fasilitas olahraga terbaik
-                            kapan saja.
-                        </p>
+                        <span className="font-bdo font-medium text-sm text-black">
+                            Cabang Kami
+                        </span>
                     </div>
                 </div>
 
-                <div className="mb-6 flex items-center justify-between">
-                    <span className="text-sm md:text-base xl:text-xl font-regular text-gray-900">
-                        Lokasi Strategis Kami
-                    </span>
-                    <span className="text-sm md:text-base xl:text-xl font-medium text-gray-900">
-                        01/{String(total).padStart(2, "0")}
-                    </span>
+                {/* ScrollStack cards */}
+                <div className="flex-1 min-w-0">
+                    <ScrollStack topStart={80} cardOffset={20}>
+                        {DUMMY_LOCATIONS.map((loc) => (
+                            <ScrollStackItem key={loc.id}>
+                                <LocationCard location={loc} />
+                            </ScrollStackItem>
+                        ))}
+                    </ScrollStack>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    {locations.map((loc) => (
-                        <LocationCard
-                            key={loc.id}
-                            location={loc}
-                            onViewDetail={handleViewDetail}
-                        />
-                    ))}
-                </div>
-
-                <div className="mt-6 text-xs md:text-base xl:text-xl flex items-center justify-between font-regular text-gray-900">
-                    <span>Pengalaman olahraga</span>
-                    <span>Demi Kemajuan</span>
+                {/* Right sticky description */}
+                <div className="hidden xl:flex xl:sticky xl:top-24 xl:w-52 xl:flex-shrink-0 flex-col justify-start pt-2">
+                    <h2 className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] leading-snug text-black">
+                        Pusat Olahraga saat ini ada di Berbagai Lokasi
+                    </h2>
                 </div>
             </div>
         </section>

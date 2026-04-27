@@ -34,14 +34,14 @@ export default function ServiceCard({
             </div>
 
             <div className="mt-4 flex w-full items-start gap-4">
-                <span className="w-8 flex-shrink-0 font-bdo font-medium text-sm text-black">
+                <span className="w-8 flex-shrink-0 font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-black">
                     {numberString}
                 </span>
                 <div className="flex flex-col gap-0.5">
-                    <span className="font-bdo font-medium text-[20px] leading-tight text-black">
+                    <span className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] leading-tight text-black">
                         {title}
                     </span>
-                    <span className="font-bdo font-light text-sm text-black/60">
+                    <span className="font-bdo font-light text-[clamp(0.875rem,0.83vw,16px)] text-black/60">
                         {subtitle}
                     </span>
                 </div>

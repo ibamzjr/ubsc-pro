@@ -172,13 +172,14 @@ export default function PricingClassSection() {
 
     return (
         <section className="bg-[#121212] overflow-x-clip" id="pricing-classes">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="02"
                 title="Kelas"
                 subtitle="02 schedulepage"
                 theme="dark"
             />
-
+            </div>
             <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pb-24">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 mb-12 xl:mb-16">
                     <div className="xl:col-span-8 flex flex-col gap-6">

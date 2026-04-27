@@ -63,11 +63,11 @@ export default function MembershipModal({
                             className="h-10 w-auto"
                         />
 
-                        <h2 className="mt-6 text-lg lg:text-2xl font-semibold leading-tight text-gray-900">
+                        <h2 className="mt-6 text-[clamp(1rem,1.25vw,24px)] font-semibold leading-tight text-gray-900">
                             Bergabung Sekarang Juga Untuk <br />
                             Menjadi Member Resmi Kami
                         </h2>
-                        <p className="mt-2 text-sm text-left font-regular text-black opacity-60">
+                        <p className="mt-2 text-[clamp(0.75rem,0.73vw,14px)] text-left font-normal text-black opacity-60">
                             Fokus Konsisten Raih Target Sehat Kamu
                         </p>
                     </div>
@@ -77,7 +77,7 @@ export default function MembershipModal({
                         onSubmit={(e) => e.preventDefault()}
                     >
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-[clamp(0.75rem,0.73vw,14px)] font-medium text-gray-700">
                                 Nama Lengkap
                             </label>
                             <input
@@ -88,7 +88,7 @@ export default function MembershipModal({
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-[clamp(0.75rem,0.73vw,14px)] font-medium text-gray-700">
                                 Email
                             </label>
                             <input
@@ -99,7 +99,7 @@ export default function MembershipModal({
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-[clamp(0.75rem,0.73vw,14px)] font-medium text-gray-700">
                                 Jenis Kelamin
                             </label>
                             <div className="relative">
@@ -130,7 +130,7 @@ export default function MembershipModal({
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-[clamp(0.75rem,0.73vw,14px)] font-medium text-gray-700">
                                 No. Whatsapp
                             </label>
                             <input
@@ -141,7 +141,7 @@ export default function MembershipModal({
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-[clamp(0.75rem,0.73vw,14px)] font-medium text-gray-700">
                                 Kategori
                             </label>
                             <div className="relative">
@@ -173,7 +173,7 @@ export default function MembershipModal({
 
                         <button
                             type="submit"
-                            className="mt-4 w-full rounded-xl py-4 text-base font-semibold text-white transition-opacity hover:opacity-90"
+                            className="mt-4 w-full rounded-xl py-4 text-[clamp(0.875rem,0.83vw,16px)] font-semibold text-white transition-opacity hover:opacity-90"
                             style={{ backgroundColor: "#2D3A5A" }}
                         >
                             Daftar Sekarang

@@ -6,7 +6,6 @@ export default function AboutHero() {
     return (
         <div className="relative overflow-hidden">
 
-            {/* Absolute bg: top blue/dark band */}
             <div className="pointer-events-none absolute left-0 right-0 top-0 h-[45vh] overflow-hidden bg-black xl:h-[63vh]">
                 <img
                     src={TopBg}
@@ -15,18 +14,15 @@ export default function AboutHero() {
                     className="absolute inset-0 h-full w-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
-                {/* Mobile only: description text pinned to bottom of blue band */}
                 <div className="absolute bottom-8 left-8 right-8 z-20 block lg:hidden">
                     <p className="font-bdo font-light text-[clamp(0.85rem,3.5vw,1rem)] leading-relaxed text-white/80">
                         Welcome to the UB Sport where people work on{" "}
-                        <span className="font-medium text-white">strength body</span>{" "}
-                        where people on{" "}
+                        <span className="font-medium text-white">strength body where people on </span>
                         <span className="font-medium text-white">strengthening body</span>.
                     </p>
                 </div>
             </div>
 
-            {/* Absolute bg: bottom (black left + image right) */}
             <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-[45vh] xl:top-[63vh]">
                 <div className="absolute inset-0 bg-black" />
                 <img
@@ -63,7 +59,7 @@ export default function AboutHero() {
                                 className="h-12 w-12 object-contain opacity-90 xl:h-20 xl:w-20"
                             />
                         </div>
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] leading-tight text-white">
+                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
                             Tentang Kami
                         </h1>
                     </div>

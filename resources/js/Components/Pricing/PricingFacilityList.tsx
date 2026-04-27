@@ -204,7 +204,7 @@ export default function PricingFacilityList() {
                 />
             </div>
 
-            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16   xl:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 mb-16 xl:mb-20">
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">

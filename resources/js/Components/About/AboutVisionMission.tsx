@@ -76,14 +76,14 @@ export default function AboutVisionMission() {
                     <div className="xl:col-span-4">
                         <div className="flex items-center gap-2">
                             <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-accent-red" />
-                            <span className="font-bdo font-medium text-xl text-black">
+                            <span className="font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Visi &amp; Misi
                             </span>
                         </div>
                     </div>
 
                     <div className="xl:col-span-8">
-                        <h2 className="font-bdo font-medium text-[clamp(1.75rem,3.5vw,3.25rem)] leading-tight text-black">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             Menetapkan Arah dan Tujuan Perjalanan Perusahaan
                         </h2>
                     </div>

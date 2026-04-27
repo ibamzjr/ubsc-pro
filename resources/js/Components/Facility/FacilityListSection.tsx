@@ -48,14 +48,15 @@ const FACILITIES: FacilityItem[] = [
 export default function FacilityListSection() {
     return (
         <section className="bg-white overflow-x-clip" id="facility-content">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="02"
                 title="Lokasi Kami"
                 subtitle="/01 aboutpage"
                 theme="light"
             />
-
-            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:py-16 xl:px-24">
+            </div>
+            <div className="mx-auto max-w px-6 py-6 sm:px-10 xl:px-24">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-16 mb-16">
                     <div className="lg:col-span-3">
                         <div className="flex items-center gap-3">

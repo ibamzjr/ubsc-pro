@@ -52,16 +52,16 @@ export default function NewsCard({
 
                     <div className="flex flex-1 flex-col justify-between bg-white p-6">
                         <div className="flex flex-col gap-1">
-                            <p className="line-clamp-3 font-bdo font-medium text-[24px] leading-snug text-black">
+                            <p className="line-clamp-3 font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] leading-snug text-black">
                                 {title}
                             </p>
                             {description && (
-                                <p className="font-bdo font-normal text-[16px] text-black/70 line-clamp-3 mt-1">
+                                <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-black/70 line-clamp-3 mt-1">
                                     {description}
                                 </p>
                             )}
                         </div>
-                        <span className="font-bdo font-normal text-[20px] text-black/70">
+                        <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-black/70">
                             {date}
                         </span>
                     </div>
@@ -69,15 +69,15 @@ export default function NewsCard({
             ) : (
                 <>
                     <div className="flex flex-[0_0_44%] flex-col justify-between bg-black p-6">
-                        <span className="font-bdo font-normal text-[20px] text-white/70">
+                        <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/70">
                             {date}
                         </span>
                         <div className="flex flex-col gap-1">
-                            <p className="line-clamp-3 font-bdo font-medium text-[24px] leading-snug text-white">
+                            <p className="line-clamp-3 font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] leading-snug text-white">
                                 {title}
                             </p>
                             {description && (
-                                <p className="font-bdo font-normal text-[16px] text-white/70 line-clamp-3 mt-1">
+                                <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/70 line-clamp-3 mt-1">
                                     {description}
                                 </p>
                             )}

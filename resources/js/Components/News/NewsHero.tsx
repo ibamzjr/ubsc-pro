@@ -115,20 +115,20 @@ export default function NewsHero() {
                                             className="flex h-9 w-fit items-center rounded-md px-4"
                                             style={{ background: "linear-gradient(to right, red, #790a0a)" }}
                                         >
-                                            <span className="font-clash font-bold text-[16px] text-white">
+                                            <span className="font-clash font-bold text-[clamp(0.875rem,0.83vw,16px)] text-white">
                                                 {slide.badge}
                                             </span>
                                         </div>
-                                        <h1 className="font-bdo font-medium text-[clamp(1.25rem,2vw,1.75rem)] text-white leading-snug max-w-[656px]">
+                                        <h1 className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-white leading-snug max-w-[656px]">
                                             {slide.title}
                                         </h1>
-                                        <p className="font-bdo font-normal text-[clamp(1rem,1.5vw,1.5rem)] text-white/70 max-w-[643px]">
+                                        <p className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-white/70 max-w-[643px]">
                                             {slide.description}
                                         </p>
                                     </div>
 
                                     <div className="xl:col-span-4 flex flex-row xl:flex-col items-start xl:items-end justify-between xl:h-full gap-4">
-                                        <span className="font-bdo font-normal text-[20px] text-white/80">
+                                        <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/80">
                                             {slide.date}
                                         </span>
                                         <AnimatedBookingLink />

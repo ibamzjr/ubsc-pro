@@ -116,7 +116,7 @@ function FeatureItem({ label }: { label: string }) {
                     />
                 </svg>
             </div>
-            <span className="text-sm font-semibold text-gray-800">{label}</span>
+            <span className="text-[clamp(0.75rem,0.83vw,16px)] font-semibold text-gray-800">{label}</span>
         </div>
     );
 }
@@ -156,7 +156,7 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
     const nextDisabled = page >= totalPages - 1;
 
     return (
-        <section id="pricing" className="w-full bg-white  pt-12 pb-24">
+        <section id="pricing" className="w-full bg-white  pt-12 xl:pb-12">
             <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
                 <SectionDivider
                     number="04"
@@ -169,17 +169,17 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
                     <div className="col-span-1 flex flex-col xl:col-span-5">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm font-semibold text-gray-800">
+                            <span className="text-[clamp(0.75rem,0.83vw,16px)] font-semibold text-gray-800">
                                 Tarif Lapangan
                             </span>
                         </div>
 
-                        <h2 className="mb-4 mt-6 max-w-sm text-4xl font-bold leading-[1.1] tracking-tight text-gray-900 md:text-4xl xl:text-5xl">
+                        <h2 className="mb-4 mt-6 max-w-sm text-[clamp(1.5rem,2.7vw,52px)] font-bold leading-[1.1] tracking-[-0.021em] text-gray-900">
                             Raih Performa Terbaik Dengan Paket Fasilitas
                             Unggulan
                         </h2>
 
-                        <p className="mb-8 max-w-sm text-base leading-relaxed text-gray-600">
+                        <p className="mb-8 max-w-sm text-[clamp(0.875rem,0.83vw,16px)] leading-relaxed text-gray-600">
                             Penyewaan arena olahraga standar profesional untuk
                             kebutuhan tim dan komunitas Anda.
                         </p>

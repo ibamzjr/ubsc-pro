@@ -106,13 +106,14 @@ export default function BookingSection() {
 
     return (
         <section className="bg-white overflow-x-clip" id="booking-content">
+            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="01"
                 title="Lokasi Kami"
                 subtitle="/01 bookingpage"
                 theme="light"
             />
-
+            </div>
             <div className="mx-auto max-w px-6 sm:px-10  lg:px-16 xl:px-24">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-16 mb-16">
                     <div className="lg:col-span-3">

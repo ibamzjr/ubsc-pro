@@ -95,7 +95,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                 />
             </div>
 
-            <h2 className="px-8 font-bdo text-4xl font-semibold text-white md:text-4xl xl:text-5xl">
+            <h2 className="px-8 font-bdo text-[clamp(1.5rem,2.7vw,52px)] font-semibold text-white leading-[1.1]">
                 Berita & Artikel
             </h2>
 
@@ -124,7 +124,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                         }}
                     />
                     <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                        <span className="text-xl font-medium text-white">
+                        <span className="text-[clamp(1rem,1.04vw,20px)] font-medium text-white">
                             Lihat Selengkapnya
                         </span>
                         <span
@@ -141,7 +141,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                     </span>
                 </a>
                 <div className="flex-1 flex items-center justify-center">
-                    <p className="font-bdo text-left font-light text-2xl leading-relaxed text-white max-w-2xl">
+                    <p className="font-bdo text-left font-light text-[clamp(1rem,1.25vw,24px)] leading-relaxed text-white max-w-2xl">
                         Komitmen kami adalah menghadirkan{" "}
                         <span className="font-semibold text-white">
                             ekosistem <br />olahraga yang inklusif.
@@ -202,7 +202,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
                             }}
                         />
                         <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                            <span className="text-sm xl:text-xl font-medium text-white">
+                            <span className="text-[clamp(0.875rem,1.04vw,20px)] font-medium text-white">
                                 Lihat Selengkapnya
                             </span>
                             <span

@@ -35,10 +35,10 @@ export default function PriceCard({ item }: PriceCardProps) {
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-base font-bold text-gray-900 xl:text-xl">
+                <span className="truncate text-[clamp(0.875rem,1.04vw,20px)] font-bold text-gray-900">
                     {item.title}
                 </span>
-                <span className="mt-1 truncate text-xs text-gray-600 xl:text-sm">
+                <span className="mt-1 truncate text-[clamp(0.625rem,0.73vw,14px)] text-gray-600">
                     {item.price}
                 </span>
                 <div className="mt-2 flex items-center gap-0.5">

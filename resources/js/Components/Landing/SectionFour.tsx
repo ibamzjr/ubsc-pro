@@ -121,7 +121,7 @@ export default function SectionFour() {
 
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
-            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24 xl:pt-12">
                 <SectionDivider
                     number="02"
                     title="Fasilitas"
@@ -132,7 +132,7 @@ export default function SectionFour() {
                     <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-sm md:text-base xl:text-2xl font-regular text-gray-800">
+                            <span className="text-[clamp(0.875rem,1.25vw,24px)] font-regular text-gray-800">
                                 Fasilitas Kami
                             </span>
                         </div>
@@ -142,7 +142,7 @@ export default function SectionFour() {
                     </div>
 
                     <div className="xl:col-span-6">
-                        <h2 className="max-w-lg text-3xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl xl:text-5xl xl:text-center xl:max-w-none">
+                        <h2 className="max-w-lg text-[clamp(1.5rem,2.7vw,52px)] font-medium leading-[1.1] tracking-[-0.021em] text-gray-900 xl:text-center xl:max-w-none">
                             Dukungan Penuh Untuk
                             <br />
                             Setiap Cabang Olahraga
@@ -151,7 +151,7 @@ export default function SectionFour() {
 
                     <div className="flex h-full flex-col xl:col-span-3 xl:pt-2">
                         <div className="flex flex-col gap-2 xl:block">
-                            <p className="text-sm md:text-2xl xl:text-xl font-regular leading-relaxed text-black opacity-70 xl:opacity-100">
+                            <p className="text-[clamp(0.875rem,1.04vw,20px)] font-regular leading-relaxed text-black opacity-70 xl:opacity-100">
                                 Kami menghadirkan berbagai pilihan fasilitas
                                 olahraga indoor dan fitness untuk kenyamanan
                                 latihan Anda.

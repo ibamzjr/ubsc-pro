@@ -67,7 +67,7 @@ export default function FacilityRow({ facility }: FacilityRowProps) {
                     />
                 </div>
 
-                <span className="ml-10 flex-1 truncate text-5xl font-semibold tracking-tight">
+                <span className="ml-10 flex-1 truncate text-[clamp(1.5rem,2.5vw,48px)] font-semibold tracking-tight">
                     /{facility.name}.
                 </span>
 

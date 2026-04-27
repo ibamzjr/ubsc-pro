@@ -53,7 +53,7 @@ export default function ArenaCard({ item }: ArenaCardProps) {
             </div>
 
             <div className="flex items-center bg-[#323232] p-5">
-                <span className="text-xl font-bold tracking-tight text-white md:text-2xl xl:text-3xl">
+                <span className="text-[clamp(1rem,1.56vw,30px)] font-bold tracking-tight text-white">
                     {item.title}
                 </span>
             </div>

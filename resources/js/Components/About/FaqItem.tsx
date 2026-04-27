@@ -21,10 +21,10 @@ export default function FaqItem({ number, question, answer }: FaqItemProps) {
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center gap-6 xl:gap-8 min-w-0">
-                    <span className="font-bdo font-light text-[28px] text-black leading-none flex-shrink-0 w-12">
+                    <span className="font-bdo font-light text-[clamp(1.125rem,1.46vw,28px)] text-black leading-none flex-shrink-0 w-12">
                         {number}
                     </span>
-                    <span className="font-bdo font-medium text-[clamp(0.95rem,1.5vw,1.75rem)] text-black leading-snug">
+                    <span className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-black leading-snug">
                         {question}
                     </span>
                 </div>
@@ -34,7 +34,7 @@ export default function FaqItem({ number, question, answer }: FaqItemProps) {
                     transition={{ duration: 0.3, ease: EASE }}
                     className="ml-6 flex-shrink-0 text-black"
                 >
-                    <Plus size={22} strokeWidth={1.5} />
+                    <Plus size={28} strokeWidth={1.5} />
                 </motion.div>
             </button>
 

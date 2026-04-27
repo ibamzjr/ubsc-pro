@@ -186,7 +186,7 @@ export default function SectionSeven({
                                     </div>
                                     <div className="relative flex flex-col lg:col-span-8">
                                         <blockquote className="absolute top-0 left-0 w-full mb-4 z-10">
-                                            <p className="font-bdo text-3xl font-semibold leading-[1.15] tracking-tight text-gray-900 lg:text-3xl xl:text-5xl 2xl:text-6xl">
+                                            <p className="font-bdo text-[clamp(1.5rem,3.1vw,48px)] font-semibold leading-[1.15] tracking-[-0.021em] text-gray-900">
                                                 &ldquo;{item.quote}&rdquo;
                                             </p>
                                         </blockquote>
@@ -237,10 +237,10 @@ export default function SectionSeven({
                                     )}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-clash text-base xl:text-xl font-medium leading-tight text-gray-900">
+                                    <span className="font-clash text-[clamp(0.875rem,1.04vw,20px)] font-medium leading-tight text-gray-900">
                                         {activeItem.authorName}
                                     </span>
-                                    <span className="mt-0.5 font-clash text-sm xl:text-base font-regular text-gray-500">
+                                    <span className="mt-0.5 font-clash text-[clamp(0.75rem,0.83vw,16px)] font-regular text-gray-500">
                                         {activeItem.authorRole}
                                     </span>
                                 </div>
@@ -250,10 +250,10 @@ export default function SectionSeven({
                                     key={stat.label}
                                     className="flex flex-col ml-0 lg:ml-0 xl:ml-36"
                                 >
-                                    <span className="font-bdo text-2xl font-regular tracking-tight text-gray-900 lg:text-3xl xl:text-4xl">
+                                    <span className="font-bdo text-[clamp(1.25rem,2.08vw,40px)] font-regular tracking-tight text-gray-900">
                                         {stat.value}
                                     </span>
-                                    <span className="mt-1 font-bdo text-sm font-semibold text-gray-800">
+                                    <span className="mt-1 font-bdo text-[clamp(0.75rem,0.73vw,14px)] font-semibold text-gray-800">
                                         {stat.label}
                                     </span>
                                     <span className="font-bdo text-xs font-regular text-gray-500">

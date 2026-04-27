@@ -95,17 +95,17 @@ export default function ServicesSectionArtikel() {
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
                             <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[18px] xl:text-[24px] text-black">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Artikel Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(1.75rem,4vw,3.25rem)] text-black leading-none">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             Artikel Terkini Kami
                         </h2>
                     </div>
                     <a
                         href="#"
-                        className="flex items-center gap-2 font-bdo font-normal text-[18px] xl:text-[24px] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />

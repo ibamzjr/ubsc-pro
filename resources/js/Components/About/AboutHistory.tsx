@@ -47,11 +47,11 @@ function StatItem({ value, suffix, label }: { value: number; suffix: string; lab
     }
 
     return (
-        <div className="flex flex-col gap-1">
-            <span className="font-bdo font-medium text-[clamp(2rem,4vw,3rem)] text-black leading-none">
+        <div className="flex flex-col gap-1 xl:gap-[29px]">
+            <span className="font-bdo font-medium text-[clamp(3rem,4.16vw,80px)] text-black leading-none">
                 {display}
             </span>
-            <span className="font-bdo font-light text-sm text-gray-500 uppercase tracking-widest">
+            <span className="font-bdo font-light text-[clamp(1rem,1.25vw,24px)] text-black/40 normal-case tracking-normal">
                 {label}
             </span>
         </div>
@@ -70,16 +70,16 @@ export default function AboutHistory() {
                 />
 
                 <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-3 xl:gap-12">
-                    <h2 className="font-bdo font-medium text-[clamp(2rem,3.5vw,3.25rem)] text-black leading-tight">
+                    <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                         Sejarah dan Perkembangan
                     </h2>
-                    <p className="font-bdo font-light text-base xl:text-lg leading-relaxed text-gray-600 xl:pt-2">
+                    <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70 xl:pt-2">
                         UB Sport Center merupakan pusat olahraga milik Universitas
                         Brawijaya yang dikelola oleh PT Brawijaya Multi Usaha,
                         dengan tujuan menyediakan fasilitas olahraga yang
                         representatif bagi sivitas akademika dan masyarakat umum.
                     </p>
-                    <p className="font-bdo font-light text-base xl:text-lg leading-relaxed text-gray-600 xl:pt-2">
+                    <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70 xl:pt-2">
                         Berdiri sejak tahun 2008 sebagai Fitness Centre di
                         lingkungan Universitas Brawijaya, UB Sport Center
                         berkembang menjadi pusat olahraga terpadu berbasis

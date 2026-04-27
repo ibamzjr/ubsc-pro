@@ -65,11 +65,11 @@ export default function GymTrafficBadge({
     const StatusSection = (
         <motion.div
             key={status}
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, filter: "blur(8px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className={`relative flex items-center bg-gradient-to-r ${styles.bg} px-8 py-3 md:px-8 md:py-5 xl:px-10 xl:py-3 overflow-hidden`}
+            className={`absolute inset-0 flex items-center bg-gradient-to-r ${styles.bg} px-8 overflow-hidden`}
         >
             {/* Glow */}
             <motion.div
@@ -90,7 +90,7 @@ export default function GymTrafficBadge({
                 }}
             />
 
-            <span className="relative font-clash text-sm xl:text-xl font-bold text-white whitespace-nowrap">
+            <span className="relative font-clash text-[clamp(0.875rem,1.04vw,20px)] font-bold text-white whitespace-nowrap">
                 {status}
             </span>
         </motion.div>
@@ -102,9 +102,11 @@ export default function GymTrafficBadge({
                 whileHover={{ scale: 1.05, rotateX: 3 }}
                 className="flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-5 xl:mt-0 perspective-[1000px]"
             >
-                <AnimatePresence mode="wait">
-                    {StatusSection}
-                </AnimatePresence>
+                <div className="relative flex-1 overflow-hidden">
+                    <AnimatePresence>
+                        {StatusSection}
+                    </AnimatePresence>
+                </div>
 
                 <div className="flex items-center gap-2 bg-gray-200 px-5 py-4 md:px-8 md:py-5 xl:px-12 xl:py-3">
                     <motion.img
@@ -118,7 +120,7 @@ export default function GymTrafficBadge({
                             ease: "linear",
                         }}
                     />
-                    <span className="font-clash xl:text-xl font-medium text-black whitespace-nowrap">
+                    <span className="font-clash text-[clamp(0.875rem,1.04vw,20px)] font-medium text-black whitespace-nowrap">
                         Gym Traffic
                     </span>
                 </div>
@@ -129,7 +131,7 @@ export default function GymTrafficBadge({
     return (
         <motion.div
             whileHover={{ scale: 1.05, rotateX: 3 }}
-            className="inline-flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-16 xl:mt-0 perspective-[1000px]"
+            className="flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-16 xl:mt-0 perspective-[1000px]"
         >
             <div className="flex items-center gap-2 bg-black px-5 py-3 md:px-8 md:py-5 xl:px-10 xl:py-5">
                 <motion.img
@@ -143,14 +145,16 @@ export default function GymTrafficBadge({
                         ease: "linear",
                     }}
                 />
-                <span className="font-bdo text-sm xl:text-xl font-medium text-white/90 whitespace-nowrap">
+                <span className="font-bdo text-[clamp(0.875rem,1.04vw,20px)] font-medium text-white/90 whitespace-nowrap">
                     Gym Traffic
                 </span>
             </div>
 
-            <AnimatePresence mode="wait">
-                {StatusSection}
-            </AnimatePresence>
+            <div className="relative flex-1 overflow-hidden">
+                <AnimatePresence>
+                    {StatusSection}
+                </AnimatePresence>
+            </div>
         </motion.div>
     );
 }

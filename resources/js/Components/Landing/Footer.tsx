@@ -49,7 +49,7 @@ export default function Footer() {
             <div className="mx-auto w-full px-6 sm:px-10 xl:px-16">
                 <div className="mb-16 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8">
                     <div className="xl:col-span-7">
-                        <h2 className="font-semibold mb-12 text-4xl leading-tight tracking-tight md:text-5xl xl:text-5xl">
+                        <h2 className="font-semibold mb-12 text-[clamp(1.5rem,2.7vw,52px)] leading-tight tracking-[-0.021em]">
                             Ingin Menjalin Kemitraan?{" "}
                             <br className="hidden xl:block" />
                             Mari Terhubung dengan Kami
@@ -79,7 +79,7 @@ export default function Footer() {
                                 }}
                             />
                             <span className="pointer-events-none relative z-10 flex w-full items-center justify-between">
-                                <span className="font-bdo text-xl font-extrabold leading-tight tracking-tight text-white">
+                                <span className="font-bdo text-[clamp(1rem,1.04vw,20px)] font-medium leading-tight tracking-tight text-white">
                                     Hubungi kami
                                 </span>
                                 <span
@@ -100,7 +100,7 @@ export default function Footer() {
 
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:col-span-5">
                         <div>
-                            <h3 className="font-bdo mb-4 text-lg font-semibold">
+                            <h3 className="font-bdo mb-4 text-[clamp(0.875rem,0.94vw,18px)] font-semibold">
                                 <span className="xl:hidden">Lokasi</span>
                                 <span className="hidden xl:inline">Alamat</span>
                             </h3>
@@ -112,7 +112,7 @@ export default function Footer() {
                         </div>
 
                         <div>
-                            <h3 className="font-bdo mb-4 text-lg font-semibold">
+                            <h3 className="font-bdo mb-4 text-[clamp(0.875rem,0.94vw,18px)] font-semibold">
                                 Kontak
                             </h3>
                             <div className="flex flex-col gap-1 text-white">
@@ -138,7 +138,7 @@ export default function Footer() {
                         </div>
 
                         <div className="sm:col-span-2">
-                            <h3 className="font-bdo mb-4 text-lg font-semibold">
+                            <h3 className="font-bdo mb-4 text-[clamp(0.875rem,0.94vw,18px)] font-semibold">
                                 Sosial Media
                             </h3>
                             <div className="grid grid-cols-2 gap-x-8 gap-y-4 xl:flex xl:flex-nowrap xl:items-center xl:gap-14">
@@ -183,7 +183,7 @@ export default function Footer() {
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="font-clash text-base font-medium text-white transition hover:text-gray-300"
+                                className="font-clash text-[clamp(0.875rem,0.83vw,16px)] font-medium text-white transition hover:text-gray-300"
                             >
                                 {link.label}
                                 <sup className="ml-0.5 text-[10px] text-gray-500">
