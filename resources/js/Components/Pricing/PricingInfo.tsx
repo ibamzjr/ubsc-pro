@@ -20,7 +20,7 @@ export default function PricingSectionTwo() {
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[16px] xl:text-[18px] text-black">
+                            <span className="font-bdo font-normal text-[clamp(0.875rem,0.94vw,18px)] text-black">
                                 Informasi Jadwal dan Harga
                             </span>
                         </div>
@@ -34,7 +34,7 @@ export default function PricingSectionTwo() {
                     </div>
 
                     <div className="xl:col-span-8 flex flex-col justify-between gap-10">
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,3.5vw,3.25rem)] text-black leading-tight max-w">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black max-w">
                             Temukan paket membership terbaik dengan fasilitas modern dan program latihan profesional untuk membantu dalam Anda.®
                         </h2>
 
@@ -42,18 +42,18 @@ export default function PricingSectionTwo() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-b border-gray-200">
                             <div className="sm:border-r border-gray-200 py-8 sm:pr-8">
-                                <h3 className="font-bdo font-medium text-[clamp(1.25rem,2vw,1.75rem)] text-black mb-3">
+                                <h3 className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-black mb-3">
                                     Fleksibel
                                 </h3>
-                                <p className="font-bdo font-normal text-[15px] xl:text-[16px] text-black/60 leading-relaxed">
+                                <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-black/60 leading-relaxed">
                                     UB Sport Center buka setiap hari pukul 06.00 - 21.00 dengan pilihan paket bulanan dan tahunan yang fleksibel serta akses fasilitas lengkap untuk mendukung kebutuhan latihan Anda.
                                 </p>
                             </div>
                             <div className="py-8 sm:pl-8">
-                                <h3 className="font-bdo font-medium text-[clamp(1.25rem,2vw,1.75rem)] text-black mb-3">
+                                <h3 className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-black mb-3">
                                     Terjangkau
                                 </h3>
-                                <p className="font-bdo font-normal text-[15px] xl:text-[16px] text-black/60 leading-relaxed">
+                                <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-black/60 leading-relaxed">
                                     Temukan paket membership terbaik dengan fasilitas modern dan program latihan profesional untuk membantu Anda mencapai target kebugaran secara maksimal dan berkelanjutan.
                                 </p>
                             </div>

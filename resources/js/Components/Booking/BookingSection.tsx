@@ -119,16 +119,13 @@ export default function BookingSection() {
                     <div className="lg:col-span-3">
                         <div className="flex items-center gap-3">
                             <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[1.5rem] text-black">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Reservasi Lewat Website
                             </span>
                         </div>
                     </div>
                     <div className="lg:col-span-9">
-                        <h2
-                            className="font-bdo font-medium text-[clamp(2rem,3.5vw,3rem)] text-black leading-[1.15]"
-                            style={{ letterSpacing: "-1.5px" }}
-                        >
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             Booking fasilitas olahraga terbaik kami kapan saja,
                             langsung dari website.{" "}
                             <span style={{ color: "#ABABAB" }}>

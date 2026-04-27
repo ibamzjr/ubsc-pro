@@ -54,13 +54,13 @@ export default function PricingHero() {
                             aria-hidden
                             className="mb-6 h-12 w-12 xl:h-20 xl:w-20"
                         />
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-white leading-tight">
+                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
                             Jadwal &amp; Paket Harga
                         </h1>
                     </div>
 
                     <div className="flex flex-1 items-center w-full lg:basis-2/3">
-                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
+                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
                             Pilih jadwal dan paket terbaik Anda, lalu{" "}
                             <span className="font-medium text-white">
                                 mulai perjalanan menuju tubuh yang lebih kuat dan bugar.

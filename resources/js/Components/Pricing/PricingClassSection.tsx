@@ -185,11 +185,11 @@ export default function PricingClassSection() {
                     <div className="xl:col-span-8 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[1.5rem] text-white">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-white">
                                 Kelas Olahraga Terstruktur
                             </span>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-white leading-[1.2]">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
                             Ikuti kelas yang dipandu instruktur berpengalaman,
                             sesuai level dan tujuan Anda.
                         </h2>

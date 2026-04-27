@@ -65,10 +65,10 @@ export default function PricingAccordionItem({
                 className="w-full flex items-center justify-between py-6 border-b border-white/10 text-left"
             >
                 <div className="flex items-center gap-8 xl:gap-12">
-                    <span className="font-bdo font-medium text-[1.75rem] text-white leading-[1.48]">
+                    <span className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-white leading-[1.48]">
                         {item.id}
                     </span>
-                    <span className="font-bdo font-light text-[2.5rem] text-white leading-snug">
+                    <span className="font-bdo font-light text-[clamp(1.5rem,2.08vw,40px)] text-white leading-snug">
                         {item.title}
                     </span>
                 </div>
@@ -111,7 +111,7 @@ export default function PricingAccordionItem({
                     </div>
 
                     <div>
-                        <p className="font-bdo font-medium text-[1.25rem] text-white">
+                        <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white">
                             {item.classCode}
                         </p>
                     </div>
@@ -119,17 +119,17 @@ export default function PricingAccordionItem({
                     <div className="flex flex-col gap-6">
                         {item.pricingLeft.map((tier, i) => (
                             <div key={i} className="flex flex-col gap-0.5">
-                                <p className="font-bdo font-normal text-[1.25rem] text-white">
+                                <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white">
                                     {tier.title}
                                 </p>
-                                <p className="font-bdo font-normal text-[1.25rem] text-white/60">
+                                <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/60">
                                     {tier.warga}
                                 </p>
-                                <p className="font-bdo font-normal text-[1.25rem] text-white/60">
+                                <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/60">
                                     {tier.umum}
                                 </p>
                                 {tier.note && (
-                                    <p className="font-bdo font-normal text-[1rem] text-white/40 mt-0.5">
+                                    <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/40 mt-0.5">
                                         {tier.note}
                                     </p>
                                 )}
@@ -140,19 +140,19 @@ export default function PricingAccordionItem({
                     <div className="flex flex-col gap-6">
                         {item.pricingRight.map((tier, i) => (
                             <div key={i} className="flex flex-col gap-0.5">
-                                <p className="font-bdo font-normal text-[1.25rem] text-white">
+                                <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white">
                                     {tier.title}
                                 </p>
-                                <p className="font-bdo font-normal text-[1.25rem] text-white/60">
+                                <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/60">
                                     {tier.warga}
                                 </p>
                                 {tier.umum && (
-                                    <p className="font-bdo font-normal text-[1.25rem] text-white/60">
+                                    <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/60">
                                         {tier.umum}
                                     </p>
                                 )}
                                 {tier.note && (
-                                    <p className="font-bdo font-normal text-[1rem] text-white/40 mt-0.5">
+                                    <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/40 mt-0.5">
                                         {tier.note}
                                     </p>
                                 )}

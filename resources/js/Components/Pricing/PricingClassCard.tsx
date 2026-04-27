@@ -31,10 +31,10 @@ export default function PricingClassCard({ item }: Props) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex flex-col justify-between p-5 xl:p-6">
                     <div>
-                        <p className="font-bdo font-medium text-[1.25rem] text-white leading-snug">
+                        <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white leading-snug">
                             {item.title}
                         </p>
-                        <p className="font-bdo font-normal text-[0.775rem] text-white/70 mt-1 leading-relaxed ">
+                        <p className="font-bdo font-normal text-[clamp(0.75rem,0.73vw,14px)] text-white/70 mt-1 leading-relaxed ">
                             {item.description}
                         </p>
                     </div>
@@ -56,7 +56,7 @@ export default function PricingClassCard({ item }: Props) {
                         {item.daftarHarga.left.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[0.9375rem] text-white/80"
+                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
                             >
                                 + {entry.label}
                             </span>
@@ -66,7 +66,7 @@ export default function PricingClassCard({ item }: Props) {
                         {item.daftarHarga.right.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[0.9375rem] text-white/80"
+                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
                             >
                                 + {entry.label}
                             </span>
@@ -84,7 +84,7 @@ export default function PricingClassCard({ item }: Props) {
                         {item.persewaan.left.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[0.9375rem] text-white/80"
+                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
                             >
                                 + {entry.label}
                             </span>
@@ -94,7 +94,7 @@ export default function PricingClassCard({ item }: Props) {
                         {item.persewaan.right.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[0.9375rem] text-white/80"
+                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
                             >
                                 + {entry.label}
                             </span>

@@ -162,7 +162,7 @@ export default function PricingAccordionSection() {
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[1.5rem] text-white">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-white">
                                 Gabung Member Sekarang
                             </span>
                         </div>
@@ -180,7 +180,7 @@ export default function PricingAccordionSection() {
                     </div>
 
                     <div className="xl:col-span-8 flex flex-col">
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-white leading-[1.27] max-w-3xl">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white max-w-3xl">
                             Area gym ini dirancang kardio yang nyaman bagi
                             seluruh pengguna yang ada di UB Sport Center.
                             <sup className="text-[0.6em]">®</sup>

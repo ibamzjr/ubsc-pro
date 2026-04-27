@@ -62,14 +62,14 @@ export default function BookingReviewSection() {
                     <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="font-bdo text-sm md:text-base xl:text-2xl text-gray-800">
+                            <span className="font-bdo text-[clamp(1rem,1.25vw,24px)] text-gray-800">
                                 Ulasan Pelanggan
                             </span>
                         </div>
                     </div>
 
                     <div className="xl:col-span-6">
-                        <h2 className="text-3xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl xl:text-5xl">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-gray-900">
                             Dukungan Penuh Untuk
                             <br />
                             Setiap Cabang Olahraga
@@ -77,7 +77,7 @@ export default function BookingReviewSection() {
                     </div>
 
                     <div className="xl:col-span-3">
-                        <p className="font-bdo font-light text-sm md:text-base xl:text-xl leading-relaxed text-black opacity-70">
+                        <p className="font-bdo font-light text-[clamp(0.875rem,1.04vw,20px)] leading-relaxed text-black opacity-70">
                             Kami menghadirkan berbagai pilihan fasilitas
                             olahraga indoor dan fitness untuk kenyamanan
                             latihan Anda.

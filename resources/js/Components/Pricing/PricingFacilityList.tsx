@@ -209,7 +209,7 @@ export default function PricingFacilityList() {
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[1.5rem] text-black">
+                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Gabung Member Sekarang
                             </span>
                         </div>
@@ -217,7 +217,7 @@ export default function PricingFacilityList() {
                     </div>
 
                     <div className="xl:col-span-8 flex items-start">
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-black leading-[1.27] max-w-3xl">
+                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black max-w-3xl">
                             Area gym ini dirancang kardio yang nyaman bagi
                             seluruh pengguna yang ada di UB Sport Center.
                             <sup className="text-[0.6em]">®</sup>
@@ -238,10 +238,10 @@ export default function PricingFacilityList() {
                                 }`}
                             >
                                 <div className="flex items-center gap-5">
-                                    <span className="font-bdo font-normal text-[2rem] tracking-[-0.1rem] text-black">
+                                    <span className="font-bdo font-normal text-[clamp(1.25rem,1.67vw,32px)] tracking-[-0.1rem] text-black">
                                         ({facility.id})
                                     </span>
-                                    <span className="font-bdo font-medium text-[1.75rem] tracking-[-0.077rem] text-black">
+                                    <span className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] tracking-[-0.077rem] text-black">
                                         {facility.name}
                                     </span>
                                 </div>
@@ -268,10 +268,10 @@ export default function PricingFacilityList() {
                                     }`}
                                 >
                                     <div className="flex items-center gap-5">
-                                        <span className="font-bdo font-normal text-[2rem] tracking-[-0.1rem] text-black">
+                                        <span className="font-bdo font-normal text-[clamp(1.25rem,1.67vw,32px)] tracking-[-0.1rem] text-black">
                                             ({facility.id})
                                         </span>
-                                        <span className="font-bdo font-medium text-[1.75rem] tracking-[-0.077rem] text-black">
+                                        <span className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] tracking-[-0.077rem] text-black">
                                             {facility.name}
                                         </span>
                                     </div>
@@ -303,13 +303,13 @@ export default function PricingFacilityList() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 xl:mt-12">
                             {activeFacility.periods.map((period, i) => (
                                 <div key={i} className="flex flex-col gap-0.5">
-                                    <p className="font-bdo font-medium text-[1.25rem] text-white/80 leading-[1.68rem] whitespace-pre-line">
+                                    <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white/80 leading-[1.68rem] whitespace-pre-line">
                                         {period.label}
                                     </p>
-                                    <p className="font-bdo font-medium text-[1.25rem] text-white/80 leading-[1.68rem]">
+                                    <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white/80 leading-[1.68rem]">
                                         {period.wargaPrice}
                                     </p>
-                                    <p className="font-bdo font-medium text-[1.25rem] text-white/80 leading-[1.68rem]">
+                                    <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white/80 leading-[1.68rem]">
                                         {period.umumPrice}
                                     </p>
                                 </div>
@@ -324,7 +324,7 @@ export default function PricingFacilityList() {
                                         className="flex items-center gap-2"
                                     >
                                         <div className="size-2 rounded-sm bg-white/80 flex-shrink-0" />
-                                        <span className="font-bdo font-medium text-[1.25rem] text-white/80">
+                                        <span className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white/80">
                                             {detail}
                                         </span>
                                     </div>
@@ -338,7 +338,7 @@ export default function PricingFacilityList() {
                                     size={20}
                                     className="text-white/80 flex-shrink-0"
                                 />
-                                <span className="font-bdo font-medium text-[1rem] text-white/80">
+                                <span className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-white/80">
                                     {activeFacility.timeSlot}
                                 </span>
                             </div>

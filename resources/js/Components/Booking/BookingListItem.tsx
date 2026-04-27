@@ -173,7 +173,7 @@ export default function BookingListItem({ item, isOpen, onToggle }: Props) {
                     aria-expanded={isOpen}
                     className="flex w-full items-center justify-between cursor-pointer pb-2 gap-4"
                 >
-                    <span className="flex-grow font-bdo font-light text-[clamp(1.5rem,2vw,2rem)] text-black leading-tight">
+                    <span className="flex-grow font-bdo font-light text-[clamp(1.25rem,1.67vw,32px)] text-black leading-tight">
                         {item.title}
                     </span>
                     <span className="hidden sm:block font-bdo font-medium text-sm text-gray-400 whitespace-nowrap">

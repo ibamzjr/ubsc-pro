@@ -39,18 +39,18 @@ export default function BookingHero() {
                             aria-hidden
                             className="mb-4 h-12 w-12 xl:h-16 xl:w-16"
                         />
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,4vw,3.25rem)] text-white leading-tight">
+                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
                             Booking Sekarang
                         </h1>
                     </div>
                 </div>
 
                 <div className="flex flex-col justify-center overflow-hidden px-8 py-12 xl:px-20 xl:py-20">
-                    <h2 className="font-monument font-extrabold text-[clamp(2.25rem,4vw,3.5rem)] text-white leading-[1.1]">
+                    <h2 className="font-monument font-extrabold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
                         Fasilitas Terbaik Kami
                     </h2>
 
-                    <p className="font-bdo font-light text-[clamp(0.9rem,1.25vw,1.1rem)] text-white/70 mt-6 max-w-lg leading-relaxed">
+                    <p className="font-bdo font-light text-[clamp(0.875rem,0.94vw,18px)] text-white/70 mt-6 max-w-lg leading-relaxed">
                         Mengenal lebih dekat cerita, nilai, dan dedikasi kami{" "}
                         <span className="font-medium text-white">
                             dalam menghadirkan layanan olahraga terbaik untuk semua
