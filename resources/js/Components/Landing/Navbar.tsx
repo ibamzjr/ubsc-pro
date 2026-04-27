@@ -22,7 +22,6 @@ interface NavbarProps {
 }
 
 export default function Navbar({ activeSection = "Home" }: NavbarProps) {
-
     const [mobileOpen, setMobileOpen] = useState(false);
 
     /* =========================
@@ -36,9 +35,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
     const ticking = useRef(false);
 
     useEffect(() => {
-
         const updateNav = () => {
-
             const currentScroll = window.scrollY;
 
             /* backdrop blur trigger */
@@ -60,18 +57,15 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
         };
 
         const onScroll = () => {
-
             if (!ticking.current) {
                 window.requestAnimationFrame(updateNav);
                 ticking.current = true;
             }
-
         };
 
         window.addEventListener("scroll", onScroll, { passive: true });
 
         return () => window.removeEventListener("scroll", onScroll);
-
     }, []);
 
     /* =========================
@@ -79,7 +73,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
     ========================= */
 
     useEffect(() => {
-
         if (mobileOpen) {
             document.body.style.overflow = "hidden";
         } else {
@@ -89,19 +82,17 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
         return () => {
             document.body.style.overflow = "unset";
         };
-
     }, [mobileOpen]);
 
     return (
         <>
             <nav
                 className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12
-                transition-all duration-500 ease-out
+                transition-all duration-500 ease-out bg-gradient-to-b to-transparent
                 ${navVisible ? "translate-y-0" : "-translate-y-full"}
-                ${scrolled ? "backdrop-blur-xl bg-black/60 border-b border-white/10" : "bg-transparent"}
+                ${scrolled ? "from-black/85" : "from-black/55"}
                 `}
             >
-
                 <div className="flex items-center gap-2">
                     <img
                         src="/UBSC.svg"
@@ -115,7 +106,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                         <li key={item.number}>
                             <a
                                 href={item.href}
-                                className={`font-clash relative text-[clamp(1rem,1.1vw,1.4rem)] tracking-wide transition-opacity duration-200 ${
+                                className={`font-clash relative text-[clamp(0.75rem,1vw,16px)] tracking-wide transition-opacity duration-200 ${
                                     item.label === activeSection
                                         ? "text-white"
                                         : "text-white/50 hover:text-white/80"
@@ -183,7 +174,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                         }`}
                     />
                 </button>
-
             </nav>
 
             <div
@@ -202,7 +192,6 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 }`}
                 style={{ background: "#111111" }}
             >
-
                 <div className="h-[80px] md:h-[104px]" />
                 <div className="h-px w-full bg-white/10" />
 
@@ -233,13 +222,13 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
 
                 <div className="mx-8 mt-0 h-px bg-white/10" />
 
-                <div className="px-8 py-6">
+                <div className="px-[clamp(1.25rem,4vw,2rem)] py-[clamp(0.75rem,3vw,1.5rem)]">
                     <a
                         href="/coming-soon"
                         onClick={() => setMobileOpen(false)}
-                        className="group flex items-stretch overflow-hidden rounded-md bg-white transition-opacity hover:opacity-90"
+                        className="group flex items-stretch overflow-hidden rounded-xl bg-white transition-opacity hover:opacity-90"
                     >
-                        <div className="mt-1 ml-1 mb-1 mr-1 h-14 w-14 flex-shrink-0 overflow-hidden rounded-sm">
+                        <div className="m-1.5 w-[clamp(3rem,10vw,5rem)] aspect-square flex-shrink-0 overflow-hidden rounded-lg">
                             <img
                                 src={square}
                                 alt=""
@@ -247,24 +236,25 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                             />
                         </div>
 
-                        <div className="flex flex-col justify-center px-3 py-1 text-left">
-                            <p className="font-clash text-sm font-semibold text-navy-900">
+                        <div className="flex flex-col justify-center px-[clamp(0.5rem,2vw,0.875rem)] py-2 text-left">
+                            <p className="font-clash text-[clamp(0.75rem,3.5vw,1rem)] font-semibold leading-tight text-navy-900">
                                 Lets Get Started
                             </p>
-                            <p className="font-clash text-[12px] mt-1 text-navy-900/80">
+                            <p className="font-clash text-[clamp(0.625rem,2.8vw,0.875rem)] mt-0.5 text-navy-900/80">
                                 Register Now
                             </p>
-                            <p className="font-clash text-[10px] -mt-1 text-navy-900/40">
+                            <p className="font-clash text-[clamp(0.5rem,2.3vw,0.75rem)] text-navy-900/40">
                                 Guest
                             </p>
                         </div>
 
-                        <div className="ml-auto flex items-center pr-3">
-                            <ArrowRight size={20} className="text-navy-900" />
+                        <div className="ml-auto flex items-center pr-[clamp(0.5rem,2vw,0.875rem)]">
+                            <ArrowRight
+                                className="h-[clamp(1rem,4vw,1.25rem)] w-[clamp(1rem,4vw,1.25rem)] text-navy-900 transition-transform group-hover:translate-x-0.5"
+                            />
                         </div>
                     </a>
                 </div>
-
             </div>
         </>
     );

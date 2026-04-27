@@ -332,7 +332,7 @@ export default function PricingFacilityList() {
                             )}
                         </div>
 
-                        <div className="mt-auto pt-10 xl:pt-12 flex items-end justify-between">
+                        <div className="mt-auto pt-10 xl:pt-12 flex items-end justify-between xl:pb-12">
                             <div className="flex items-center gap-2">
                                 <Clock
                                     size={20}

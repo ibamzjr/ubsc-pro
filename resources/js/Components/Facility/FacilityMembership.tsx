@@ -1,28 +1,8 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
-
-const LOGOS = [
-    { id: 1, name: "SAVANNAH" },
-    { id: 2, name: "oslo." },
-    { id: 3, name: "Manila." },
-    { id: 4, name: "monaco" },
-    { id: 5, name: "UBSC Pro" },
-];
-
-const duplicatedLogos = [...LOGOS, ...LOGOS];
+import LogoMarquee from "@/Components/Landing/LogoMarquee";
 
 export default function FacilityMembership() {
-    const [marqueeDuration, setMarqueeDuration] = useState(20);
-
-    useEffect(() => {
-        const update = () =>
-            setMarqueeDuration(window.innerWidth < 768 ? 8 : 20);
-        update();
-        window.addEventListener("resize", update);
-        return () => window.removeEventListener("resize", update);
-    }, []);
 
     return (
         <section className="bg-white overflow-x-clip" id="facility-membership">
@@ -80,33 +60,7 @@ export default function FacilityMembership() {
 
                 <hr className="border-gray-200 w-full my-16" />
 
-                <div className="flex items-center gap-8 overflow-hidden w-full">
-                    <p className="whitespace-nowrap font-bdo font-medium text-sm uppercase text-black flex-shrink-0">
-                        /Worked With
-                    </p>
-                    <div className="overflow-hidden flex-1">
-                        <motion.div
-                            className="flex gap-4"
-                            animate={{ x: ["-50%", "0%"] }}
-                            transition={{
-                                repeat: Infinity,
-                                ease: "linear",
-                                duration: marqueeDuration,
-                            }}
-                        >
-                            {duplicatedLogos.map((logo, i) => (
-                                <div
-                                    key={i}
-                                    className="bg-gray-50 flex items-center justify-center w-[200px] h-[100px] rounded-lg flex-shrink-0 pointer-events-none"
-                                >
-                                    <span className="font-bdo font-medium text-sm text-black/40 uppercase tracking-widest">
-                                        {logo.name}
-                                    </span>
-                                </div>
-                            ))}
-                        </motion.div>
-                    </div>
-                </div>
+                <LogoMarquee />
             </div>
         </section>
     );

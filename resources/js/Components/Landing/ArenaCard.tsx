@@ -20,7 +20,7 @@ export default function ArenaCard({ item }: ArenaCardProps) {
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex w-full cursor-pointer flex-col overflow-hidden border-b border-r border-neutral-700 even:border-r-0 md:border-b-0 md:border-r md:last:border-r-0 md:even:border-r"
+            className="group flex w-full cursor-pointer flex-col overflow-hidden border-b border-t border-r border-white/55 even:border-r-0 md:border-b-0 md:border-r md:last:border-r-0 md:even:border-r"
         >
             <div className="relative h-[200px] w-full overflow-hidden md:h-[220px] xl:h-[260px]">
                 <img
@@ -52,7 +52,7 @@ export default function ArenaCard({ item }: ArenaCardProps) {
                 </div>
             </div>
 
-            <div className="flex items-center bg-[#323232] p-5">
+            <div className="flex items-center bg-[#252525] border-b border-white/55 p-5">
                 <span className="text-[clamp(1rem,1.56vw,30px)] font-bold tracking-tight text-white">
                     {item.title}
                 </span>

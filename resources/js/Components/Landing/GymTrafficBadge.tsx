@@ -69,7 +69,7 @@ export default function GymTrafficBadge({
             animate={{ opacity: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, filter: "blur(8px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className={`absolute inset-0 flex items-center bg-gradient-to-r ${styles.bg} px-8 overflow-hidden`}
+            className={`absolute inset-0 flex items-center bg-gradient-to-r ${styles.bg} px-5 overflow-hidden`}
         >
             {/* Glow */}
             <motion.div
@@ -102,7 +102,7 @@ export default function GymTrafficBadge({
                 whileHover={{ scale: 1.05, rotateX: 3 }}
                 className="flex items-stretch overflow-hidden rounded-lg border-4 border-black mt-5 xl:mt-0 perspective-[1000px]"
             >
-                <div className="relative flex-1 overflow-hidden">
+                <div className="relative flex-1 min-w-[140px] overflow-hidden">
                     <AnimatePresence>
                         {StatusSection}
                     </AnimatePresence>
@@ -150,7 +150,7 @@ export default function GymTrafficBadge({
                 </span>
             </div>
 
-            <div className="relative flex-1 overflow-hidden">
+            <div className="relative flex-1 min-w-[140px] overflow-hidden">
                 <AnimatePresence>
                     {StatusSection}
                 </AnimatePresence>

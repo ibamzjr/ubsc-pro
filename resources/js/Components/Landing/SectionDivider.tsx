@@ -1,7 +1,9 @@
+import { motion } from "framer-motion";
+
 interface SectionDividerProps {
-    number: string; // e.g. "01", "02"
-    title: string; // e.g. "Fasilitas"
-    subtitle: string; // e.g. "01 homepage"
+    number: string;
+    title: string;
+    subtitle: string;
     theme?: "light" | "dark";
 }
 
@@ -25,7 +27,22 @@ export default function SectionDivider({
                 }`}
             >
                 <span className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full font-bdo font-light bg-red-600" />
+                    <motion.span
+                        className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0"
+                        animate={{
+                            scale: [1, 1.7, 1],
+                            boxShadow: [
+                                "0 0 0px 0px rgba(220,38,38,0)",
+                                "0 0 6px 3px rgba(220,38,38,0.35)",
+                                "0 0 0px 0px rgba(220,38,38,0)",
+                            ],
+                        }}
+                        transition={{
+                            duration: 2.2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                    />
                     ({number})
                 </span>
                 <span className="font-bdo font-medium">({title})</span>

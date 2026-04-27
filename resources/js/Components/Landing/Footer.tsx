@@ -43,7 +43,7 @@ export default function Footer() {
         <footer
             className="relative w-full overflow-hidden pt-28 text-white"
             style={{
-                background: "linear-gradient(180deg, #000000 0%, #173859 100%)",
+                background: "#252525",
             }}
         >
             <div className="mx-auto w-full px-6 sm:px-10 xl:px-16">

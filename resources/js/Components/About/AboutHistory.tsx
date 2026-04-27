@@ -34,7 +34,15 @@ const STATS = [
     { value: 231, suffix: "", label: "Membership" },
 ];
 
-function StatItem({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+function StatItem({
+    value,
+    suffix,
+    label,
+}: {
+    value: number;
+    suffix: string;
+    label: string;
+}) {
     const animated = useCountUp(value, 1.4);
     let display: string;
     if (suffix === "%") {
@@ -74,10 +82,11 @@ export default function AboutHistory() {
                         Sejarah dan Perkembangan
                     </h2>
                     <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70 xl:pt-2">
-                        UB Sport Center merupakan pusat olahraga milik Universitas
-                        Brawijaya yang dikelola oleh PT Brawijaya Multi Usaha,
-                        dengan tujuan menyediakan fasilitas olahraga yang
-                        representatif bagi sivitas akademika dan masyarakat umum.
+                        UB Sport Center merupakan pusat olahraga milik
+                        Universitas Brawijaya yang dikelola oleh PT Brawijaya
+                        Multi Usaha, dengan tujuan menyediakan fasilitas
+                        olahraga yang representatif bagi sivitas akademika dan
+                        masyarakat umum.
                     </p>
                     <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70 xl:pt-2">
                         Berdiri sejak tahun 2008 sebagai Fitness Centre di
@@ -95,14 +104,17 @@ export default function AboutHistory() {
                 </div>
             </div>
 
-            <div className="relative bg-[#0B1E3B] py-32 mx-16 overflow-hidden  xl:mb-12"
-            style={{ background: `url(${bg}) repeat` }}>
+            <div
+                className="relative bg-[#0B1E3B] py-52 mx-16 overflow-hidden  xl:mb-12"
+                style={{ background: `url(${bg}) repeat` }}
+            >
                 <CurvedLoop
-                    marqueeText="UB * SPORT CENTER * "
+                    marqueeText="UB   ✦   SPORT  ✦  CENTER   ✦   UBSC   ✦   "
                     speed={1.5}
-                    curveAmount={80}
+                    curveAmount={200}
                     direction="left"
                     interactive
+                    className="z-100 absolute -top-16 h-full"
                 />
 
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">

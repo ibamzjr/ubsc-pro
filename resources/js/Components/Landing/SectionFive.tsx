@@ -92,7 +92,7 @@ export default function SectionFive() {
             className="w-full py-24 text-white"
             style={{
                 background:
-                    "linear-gradient(180deg, #000000 0%, #09172B 50%, #173859 100%)",
+                    "#252525",
             }}
         >
             <div className="mx-auto max-w px-6 sm:px-10 xl:px-24">
