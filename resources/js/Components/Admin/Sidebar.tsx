@@ -46,20 +46,20 @@ function safeRoute(name: string): string | undefined {
 }
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
-    const dashboardActive   = isCurrent("admin.dashboard");
-    const identityActive    = isCurrent("admin.identity.*");
-    const facilitiesActive  = isCurrent("admin.facilities.*");
-    const bookingsActive    = isCurrent("admin.bookings.*");
+    const dashboardActive = isCurrent("admin.dashboard");
+    const identityActive = isCurrent("admin.identity.*");
+    const facilitiesActive = isCurrent("admin.facilities.*");
+    const bookingsActive = isCurrent("admin.bookings.*");
     const newsActive = isCurrent("admin.news.*");
     const promoActive = isCurrent("admin.promo.*");
     const sponsorsActive = isCurrent("admin.sponsors.*");
     const reelsActive = isCurrent("admin.reels.*");
     const testimonialsActive = isCurrent("admin.testimonials.*");
-    const membershipsActive  = isCurrent("admin.memberships.*");
-    const financeActive      = isCurrent("admin.finance.*");
-    const schedulesActive    = isCurrent("admin.settings.schedules");
-    const rolesActive        = isCurrent("admin.settings.roles");
-    const usersActive        = isCurrent("admin.settings.users*");
+    const membershipsActive = isCurrent("admin.memberships.*");
+    const financeActive = isCurrent("admin.finance.*");
+    const schedulesActive = isCurrent("admin.settings.schedules");
+    const rolesActive = isCurrent("admin.settings.roles");
+    const usersActive = isCurrent("admin.settings.users*");
 
     return (
         <>
@@ -85,12 +85,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             >
                 <div className="flex h-16 items-center justify-between px-6">
                     <Link href="/" className="flex items-center gap-2">
-                        <div className="bg-slate-500 rounded-md p-1">
-                            <img src="/ubsc.svg" alt="UBSC Logo" className="h-8 w-auto" />
-                        </div>
-                        <span className="font-clash text-base font-medium tracking-tight text-gray-900">
-                            UB Sport System
-                        </span>
+                        <img
+                            src="/UBSC PRO.png"
+                            alt="UBSC Logo"
+                            className="h-16 w-auto"
+                        />
                     </Link>
                     <button
                         type="button"
