@@ -32,39 +32,44 @@ type Props = PageProps<{ roles: RoleData[] }>;
 
 // ── Permission groups — keys must match backend permission names ───────────────
 
+// ─── PERMISSION KEY REGISTRY ───────────────────────────────────────────────────
+//
+// Each `key` here MUST match exactly:
+//   • The permission name in RoleAndPermissionSeeder.php
+//   • The string passed to $this->authorize() in the relevant controller
+//
+// If you add a new permission, update the seeder AND the controller first,
+// then add it here so the UI can manage it.
+//
 const PERMISSION_GROUPS: PermissionGroup[] = [
     {
         id: "dashboard", letter: "A", label: "Beranda & Dasbor",
         items: [
-            { key: "view-stats",           label: "Melihat Statistik" },
-            { key: "view-finance-reports", label: "Melihat Laporan Keuangan" },
-            { key: "view-balance",         label: "Melihat Saldo Rekening" },
-            { key: "withdraw-balance",     label: "Penarikan Saldo" },
+            { key: "view-stats",    label: "Melihat Statistik Dasbor" },
+            { key: "view-reports",  label: "Melihat Laporan Keuangan" },
         ],
     },
     {
         id: "booking", letter: "B", label: "Reservasi & Jadwal",
         items: [
-            { key: "view-bookings",         label: "Melihat Daftar Reservasi" },
-            { key: "create-manual-booking", label: "Membuat Jadwal Reservasi Manual" },
-            { key: "cancel-booking",        label: "Membatalkan Jadwal Reservasi" },
-            { key: "manage-booking-limits", label: "Mengatur Batas Reservasi" },
+            { key: "view-bookings",          label: "Melihat Daftar Reservasi" },
+            { key: "manage-bookings",        label: "Membuat, Mengubah & Membatalkan Reservasi" },
+            { key: "manage-booking-limits",  label: "Mengatur Batas & Jadwal Reservasi" },
         ],
     },
     {
         id: "facility", letter: "C", label: "Fasilitas & Lapangan",
         items: [
-            { key: "view-facilities",    label: "Melihat Daftar Lapangan" },
-            { key: "manage-facilities",  label: "Menambah & Menghapus Lapangan" },
-            { key: "manage-pricing",     label: "Mengatur Harga & Diskon (Pricing)" },
-            { key: "manage-venue-details", label: "Mengatur Foto & Detail Venue" },
+            { key: "view-facilities",   label: "Melihat Daftar Fasilitas" },
+            { key: "manage-facilities", label: "Menambah, Mengubah & Menghapus Fasilitas" },
+            { key: "manage-pricing",    label: "Mengatur Harga & Diskon" },
         ],
     },
     {
-        id: "cms", letter: "D", label: "Promosi & CMS",
+        id: "cms", letter: "D", label: "Konten & CMS",
         items: [
-            { key: "view-promos",   label: "Melihat Daftar Promosi & Berita" },
-            { key: "manage-promos", label: "Menambah & Menghapus Promosi" },
+            { key: "manage-cms",    label: "Mengelola Berita, Promo, Reels & Sponsor" },
+            { key: "publish-news",  label: "Mempublikasikan Artikel Berita" },
         ],
     },
     {
@@ -78,7 +83,7 @@ const PERMISSION_GROUPS: PermissionGroup[] = [
     {
         id: "identity", letter: "F", label: "Verifikasi UBSC",
         items: [
-            { key: "verify-identity-queue", label: "Validasi Identitas Warga UB (Identity Queue)" },
+            { key: "verify-identity", label: "Validasi Identitas Warga UB (Identity Queue)" },
         ],
     },
 ];
