@@ -68,6 +68,11 @@ class RoleController extends Controller
 
         $role->syncPermissions($data['permissions']);
 
+        // Force-clear the permission cache so changes are reflected immediately
+        // on the next request — without this, users keep the old cached set
+        // until the TTL expires (typically 24 h).
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         return back()->with('success', "Hak akses {$role->name} berhasil diperbarui.");
     }
 }

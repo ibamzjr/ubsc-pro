@@ -17,34 +17,41 @@ class RoleAndPermissionSeeder extends Seeder
         Role::where('name', 'Staff Front Officer')->update(['name' => 'Staff Front Office']);
 
         // ── Define all permissions ────────────────────────────────────────────
+        //
+        // IMPORTANT: These names MUST match exactly what controllers call in
+        // $this->authorize('...') and what the Roles.tsx UI renders as keys.
+        // Do not rename here without updating controllers and Roles.tsx simultaneously.
+        //
         $allPermissions = [
             // Beranda & Dasbor
-            'view-stats',
-            'view-finance-reports',
-            'view-balance',
-            'withdraw-balance',
+            'view-stats',           // dashboard stat visibility (no controller gate yet)
+            'view-reports',         // FinanceReportController — was: view-finance-reports
+
             // Reservasi & Jadwal
-            'view-bookings',
-            'create-manual-booking',
-            'cancel-booking',
-            'manage-booking-limits',
+            'view-bookings',        // read-only booking list (no controller gate yet)
+            'manage-bookings',      // BookingController, MembershipController, TransactionController
+            'manage-booking-limits', // future: schedule/capacity limits
+
             // Fasilitas & Lapangan
-            'view-facilities',
-            'manage-facilities',
-            'manage-pricing',
-            'manage-venue-details',
-            // Promosi & CMS
-            'view-promos',
-            'manage-promos',
+            'view-facilities',      // read-only facility list (no controller gate yet)
+            'manage-facilities',    // FacilityController, FacilityCategoryController
+            'manage-pricing',       // future: FacilityPricing controller
+
+            // CMS — News, Promo, Reels, Sponsors, Testimonials
+            'manage-cms',           // NewsController, PromoCarouselController, ReelController,
+                                    // SponsorLogoController, TestimonialController
+            'publish-news',         // NewsController — sub-permission for is_published flag
+
             // Member & Pelanggan
-            'view-members',
-            'manage-members',
-            'manage-payment-links',
+            'view-members',         // read-only member list (no controller gate yet)
+            'manage-members',       // future: member CRUD
+            'manage-payment-links', // future: payment link management
+
             // Verifikasi UBSC
-            'verify-identity-queue',
+            'verify-identity',      // IdentityQueueController — was: verify-identity-queue
         ];
 
-        // Remove obsolete permissions no longer defined
+        // Remove permissions that no longer exist in this list
         Permission::whereNotIn('name', $allPermissions)->delete();
 
         foreach ($allPermissions as $perm) {
@@ -54,27 +61,28 @@ class RoleAndPermissionSeeder extends Seeder
         // ── Role → Permission matrix ──────────────────────────────────────────
         $matrix = [
             'Administrator'      => $allPermissions,
+
             'Manager'            => $allPermissions,
+
             'Finance'            => [
                 'view-stats',
-                'view-finance-reports',
-                'view-balance',
-                'withdraw-balance',
+                'view-reports',
                 'view-bookings',
                 'view-members',
                 'manage-payment-links',
             ],
+
             'Staff Central'      => [
                 'view-bookings',
-                'create-manual-booking',
-                'cancel-booking',
+                'manage-bookings',
                 'view-facilities',
-                'view-promos',
+                'manage-cms',
                 'view-members',
             ],
+
             'Staff Front Office' => [
                 'view-bookings',
-                'verify-identity-queue',
+                'verify-identity',
             ],
         ];
 
