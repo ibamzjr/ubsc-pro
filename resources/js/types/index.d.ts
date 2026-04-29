@@ -10,6 +10,8 @@ export interface User {
     identity_category?: IdentityCategory | null;
     identity_number?: string | null;
     identity_status?: IdentityStatus;
+    role?: string | null;
+    permissions?: string[];
 }
 
 export type PageProps<
@@ -17,8 +19,10 @@ export type PageProps<
 > = T & {
     auth: {
         user: User | null;
-        roles: string[];
-        permissions: string[];
+    };
+    flash?: {
+        success?: string | null;
+        error?: string | null;
     };
 };
 
@@ -131,4 +135,48 @@ export interface TestimonialItem {
     is_active: boolean;
     sort_order: number;
     avatar_url?: string | null;
+}
+
+// ─── Booking / Transaction Types ──────────────────────────────────────────────
+
+export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
+export type PaymentStatus = "UNPAID" | "PAID" | "EXPIRED" | "FAILED";
+export type UserCategory  = "warga_ub" | "umum";
+
+export interface BookingTransaction {
+    id: number;
+    amount: number;
+    payment_status: PaymentStatus;
+    checkout_url: string | null;
+    paid_at: string | null;
+}
+
+export interface AdminBooking {
+    id: number;
+    user_id: number;
+    facility_id: number;
+    booking_date: string;       // YYYY-MM-DD
+    start_time: string;         // HH:MM
+    end_time: string;           // HH:MM
+    subtotal_price: number;
+    status: BookingStatus;
+    notes: string | null;
+    customer_name: string;
+    customer_phone: string | null;
+    user_category: UserCategory;
+    facility_name: string;
+    transaction: BookingTransaction | null;
+}
+
+export type MembershipStatus = "active" | "expired" | "cancelled";
+
+export interface AdminMembership {
+    id: number;
+    user_id: number;
+    customer_name: string;
+    customer_phone: string | null;
+    start_date: string;          // YYYY-MM-DD
+    end_date: string;            // YYYY-MM-DD
+    status: MembershipStatus;
+    transaction: BookingTransaction | null;
 }

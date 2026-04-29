@@ -43,4 +43,9 @@ class Facility extends Model implements HasMedia
     {
         return $this->hasMany(FacilityPrice::class);
     }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

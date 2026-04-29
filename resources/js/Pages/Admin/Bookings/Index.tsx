@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import {
     CalendarDays,
@@ -7,129 +7,48 @@ import {
     Eye,
     LayoutGrid,
     List,
+    Plus,
 } from "lucide-react";
 import { useState } from "react";
 import DataTable from "@/Components/Admin/DataTable";
 import SlideOver from "@/Components/Admin/SlideOver";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
+import type {
+    AdminBooking,
+    BookingStatus,
+    BookingTransaction,
+    PageProps,
+    PaymentStatus,
+    UserCategory,
+} from "@/types";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Page props ────────────────────────────────────────────────────────────────
 
-type BookingStatus = "pending" | "paid" | "cancelled";
-type UserCategory = "warga_ub" | "umum";
+interface BookingUser {
+    id: number;
+    name: string;
+    phone_number?: string | null;
+    identity_category?: string | null;
+}
 
-interface FacilityCol {
-    id: string;
+interface FacilityOption {
+    id: number;
     name: string;
 }
 
-interface BookingEntry {
-    id: string;
-    customerName: string;
-    phone: string;
-    facilityId: string;
-    facilityName: string;
-    date: string;
-    startHour: number;
-    startMinute: number;
-    durationMinutes: number;
-    userCategory: UserCategory;
-    status: BookingStatus;
-    pricePerHour: number;
-    totalPrice: number;
-    notes?: string;
-}
+type Props = PageProps<{
+    bookings: AdminBooking[];
+    facilities: FacilityOption[];
+    users: BookingUser[];
+}>;
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Calendar constants ────────────────────────────────────────────────────────
 
 const SLOT_HEIGHT = 44; // px per 30-minute slot
-const START_HOUR = 6;
-const END_HOUR = 22;
-const TOTAL_SLOTS = (END_HOUR - START_HOUR) * 2; // 32 half-hour slots
-
-const FACILITIES: FacilityCol[] = [
-    { id: "futsal-a",    name: "Futsal A" },
-    { id: "futsal-b",    name: "Futsal B" },
-    { id: "basket",      name: "Basket" },
-    { id: "tennis-1",    name: "Tennis 1" },
-    { id: "badminton-1", name: "Badminton 1" },
-    { id: "badminton-2", name: "Badminton 2" },
-];
-
-const DUMMY_BOOKINGS: BookingEntry[] = [
-    {
-        id: "BK001", customerName: "Budi Santoso", phone: "081234567890",
-        facilityId: "futsal-a", facilityName: "Futsal A",
-        date: "2026-04-28", startHour: 8, startMinute: 0, durationMinutes: 120,
-        userCategory: "warga_ub", status: "paid",
-        pricePerHour: 75000, totalPrice: 150000,
-    },
-    {
-        id: "BK002", customerName: "Ahmad Fauzi", phone: "082345678901",
-        facilityId: "futsal-a", facilityName: "Futsal A",
-        date: "2026-04-28", startHour: 13, startMinute: 0, durationMinutes: 60,
-        userCategory: "umum", status: "pending",
-        pricePerHour: 100000, totalPrice: 100000,
-    },
-    {
-        id: "BK003", customerName: "Dewi Rahayu", phone: "083456789012",
-        facilityId: "futsal-b", facilityName: "Futsal B",
-        date: "2026-04-28", startHour: 9, startMinute: 0, durationMinutes: 120,
-        userCategory: "warga_ub", status: "paid",
-        pricePerHour: 75000, totalPrice: 150000,
-    },
-    {
-        id: "BK004", customerName: "Eko Prasetyo", phone: "084567890123",
-        facilityId: "basket", facilityName: "Basket",
-        date: "2026-04-28", startHour: 14, startMinute: 0, durationMinutes: 120,
-        userCategory: "umum", status: "pending",
-        pricePerHour: 120000, totalPrice: 240000,
-        notes: "Bawa bola sendiri",
-    },
-    {
-        id: "BK005", customerName: "Siti Nurhaliza", phone: "085678901234",
-        facilityId: "tennis-1", facilityName: "Tennis 1",
-        date: "2026-04-28", startHour: 7, startMinute: 0, durationMinutes: 60,
-        userCategory: "warga_ub", status: "paid",
-        pricePerHour: 80000, totalPrice: 80000,
-    },
-    {
-        id: "BK006", customerName: "Reza Kurniawan", phone: "086789012345",
-        facilityId: "badminton-1", facilityName: "Badminton 1",
-        date: "2026-04-28", startHour: 10, startMinute: 0, durationMinutes: 60,
-        userCategory: "warga_ub", status: "paid",
-        pricePerHour: 50000, totalPrice: 50000,
-    },
-    {
-        id: "BK007", customerName: "Linda Susanti", phone: "087890123456",
-        facilityId: "badminton-1", facilityName: "Badminton 1",
-        date: "2026-04-28", startHour: 15, startMinute: 0, durationMinutes: 90,
-        userCategory: "umum", status: "pending",
-        pricePerHour: 60000, totalPrice: 90000,
-    },
-    {
-        id: "BK008", customerName: "Hendra Wijaya", phone: "088901234567",
-        facilityId: "badminton-2", facilityName: "Badminton 2",
-        date: "2026-04-28", startHour: 8, startMinute: 30, durationMinutes: 90,
-        userCategory: "warga_ub", status: "cancelled",
-        pricePerHour: 50000, totalPrice: 75000,
-    },
-    {
-        id: "BK009", customerName: "Maya Putri", phone: "089012345678",
-        facilityId: "futsal-b", facilityName: "Futsal B",
-        date: "2026-04-28", startHour: 16, startMinute: 0, durationMinutes: 120,
-        userCategory: "umum", status: "paid",
-        pricePerHour: 100000, totalPrice: 200000,
-    },
-    {
-        id: "BK010", customerName: "Fajar Nugroho", phone: "080123456789",
-        facilityId: "tennis-1", facilityName: "Tennis 1",
-        date: "2026-04-28", startHour: 11, startMinute: 0, durationMinutes: 120,
-        userCategory: "warga_ub", status: "pending",
-        pricePerHour: 80000, totalPrice: 160000,
-    },
-];
+const START_HOUR  = 6;
+const END_HOUR    = 22;
+const TOTAL_SLOTS = (END_HOUR - START_HOUR) * 2;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -141,9 +60,24 @@ function formatHM(h: number, m: number): string {
     return `${padTwo(h)}:${padTwo(m)}`;
 }
 
-function formatEndTime(b: BookingEntry): string {
-    const total = b.startHour * 60 + b.startMinute + b.durationMinutes;
-    return formatHM(Math.floor(total / 60), total % 60);
+function parseTimeHM(timeStr: string): { h: number; m: number } {
+    const parts = timeStr.split(":").map(Number);
+    return { h: parts[0] ?? 0, m: parts[1] ?? 0 };
+}
+
+function getDurationMinutes(startTime: string, endTime: string): number {
+    const { h: sh, m: sm } = parseTimeHM(startTime);
+    const { h: eh, m: em } = parseTimeHM(endTime);
+    return (eh * 60 + em) - (sh * 60 + sm);
+}
+
+function getPillTopFromTime(startTime: string): number {
+    const { h, m } = parseTimeHM(startTime);
+    return ((h - START_HOUR) * 2 + m / 30) * SLOT_HEIGHT;
+}
+
+function getPillHeight(durationMinutes: number): number {
+    return (durationMinutes / 30) * SLOT_HEIGHT;
 }
 
 function formatPrice(amount: number): string {
@@ -160,7 +94,7 @@ function formatDuration(minutes: number): string {
 
 function formatDateDisplay(dateStr: string): string {
     const [y, mo, d] = dateStr.split("-").map(Number);
-    return new Date(y, mo - 1, d).toLocaleDateString("id-ID", {
+    return new Date(y, (mo ?? 1) - 1, d).toLocaleDateString("id-ID", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -170,37 +104,59 @@ function formatDateDisplay(dateStr: string): string {
 
 function shiftDate(dateStr: string, delta: number): string {
     const [y, mo, d] = dateStr.split("-").map(Number);
-    const result = new Date(y, mo - 1, d + delta);
+    const result = new Date(y, (mo ?? 1) - 1, (d ?? 1) + delta);
     return `${result.getFullYear()}-${padTwo(result.getMonth() + 1)}-${padTwo(result.getDate())}`;
 }
 
-function getPillTop(startHour: number, startMinute: number): number {
-    return ((startHour - START_HOUR) * 2 + startMinute / 30) * SLOT_HEIGHT;
+function todayStr(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${padTwo(now.getMonth() + 1)}-${padTwo(now.getDate())}`;
 }
 
-function getPillHeight(durationMinutes: number): number {
-    return (durationMinutes / 30) * SLOT_HEIGHT;
-}
-
-// ── Status ────────────────────────────────────────────────────────────────────
+// ── Status maps ───────────────────────────────────────────────────────────────
 
 const STATUS_STYLE: Record<BookingStatus, string> = {
     pending:   "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
-    paid:      "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+    confirmed: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+    completed: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200",
     cancelled: "bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-200",
 };
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
     pending:   "Pending",
-    paid:      "Paid",
-    cancelled: "Cancelled",
+    confirmed: "Confirmed",
+    completed: "Selesai",
+    cancelled: "Dibatalkan",
 };
 
 const STATUS_DOT: Record<BookingStatus, string> = {
     pending:   "bg-amber-400",
-    paid:      "bg-green-500",
+    confirmed: "bg-green-500",
+    completed: "bg-blue-500",
     cancelled: "bg-gray-400",
 };
+
+const PAYMENT_STATUS_STYLE: Record<PaymentStatus, string> = {
+    UNPAID:  "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
+    PAID:    "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+    EXPIRED: "bg-orange-50 text-orange-600 ring-1 ring-inset ring-orange-200",
+    FAILED:  "bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-200",
+};
+
+const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
+    UNPAID:  "Belum Bayar",
+    PAID:    "Lunas",
+    EXPIRED: "Expired",
+    FAILED:  "Gagal",
+};
+
+// Pill color per user category (calendar grid)
+const PILL_STYLE: Record<UserCategory, string> = {
+    warga_ub: "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100",
+    umum:     "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200",
+};
+
+// ── Badges ────────────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: BookingStatus }) {
     return (
@@ -215,11 +171,164 @@ function StatusBadge({ status }: { status: BookingStatus }) {
     );
 }
 
-// Pill color by user category
-const PILL_STYLE: Record<UserCategory, string> = {
-    warga_ub: "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100",
-    umum:     "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200",
-};
+function PaymentBadge({ tx }: { tx: BookingTransaction | null }) {
+    if (!tx) return null;
+    return (
+        <span
+            className={cn(
+                "inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide",
+                PAYMENT_STATUS_STYLE[tx.payment_status],
+            )}
+        >
+            {PAYMENT_STATUS_LABEL[tx.payment_status]}
+        </span>
+    );
+}
+
+// ── Create Booking Form ───────────────────────────────────────────────────────
+
+const inputBase =
+    "w-full rounded-2xl border-0 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-gray-900 transition-colors";
+const labelBase =
+    "font-clash text-xs font-medium uppercase tracking-wider text-gray-500";
+
+function CreateBookingForm({
+    facilities,
+    users,
+    onClose,
+}: {
+    facilities: FacilityOption[];
+    users: BookingUser[];
+    onClose: () => void;
+}) {
+    const { data, setData, post, processing, errors } = useForm({
+        user_id:      "",
+        facility_id:  "",
+        booking_date: todayStr(),
+        start_time:   "08:00",
+        end_time:     "10:00",
+        notes:        "",
+    });
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route("admin.bookings.store"), { onSuccess: onClose });
+    };
+
+    return (
+        <form onSubmit={submit} className="flex flex-col gap-5">
+            <div>
+                <label className={labelBase}>Customer (User)</label>
+                <select
+                    value={data.user_id}
+                    onChange={(e) => setData("user_id", e.target.value)}
+                    className={`${inputBase} mt-1.5`}
+                >
+                    <option value="">Pilih user…</option>
+                    {users.map((u) => (
+                        <option key={u.id} value={u.id}>
+                            {u.name}
+                            {u.phone_number ? ` · ${u.phone_number}` : ""}
+                        </option>
+                    ))}
+                </select>
+                {errors.user_id && (
+                    <p className="mt-1 text-xs text-rose-500">{errors.user_id}</p>
+                )}
+            </div>
+
+            <div>
+                <label className={labelBase}>Fasilitas</label>
+                <select
+                    value={data.facility_id}
+                    onChange={(e) => setData("facility_id", e.target.value)}
+                    className={`${inputBase} mt-1.5`}
+                >
+                    <option value="">Pilih fasilitas…</option>
+                    {facilities.map((f) => (
+                        <option key={f.id} value={f.id}>
+                            {f.name}
+                        </option>
+                    ))}
+                </select>
+                {errors.facility_id && (
+                    <p className="mt-1 text-xs text-rose-500">{errors.facility_id}</p>
+                )}
+            </div>
+
+            <div>
+                <label className={labelBase}>Tanggal</label>
+                <input
+                    type="date"
+                    value={data.booking_date}
+                    min={todayStr()}
+                    onChange={(e) => setData("booking_date", e.target.value)}
+                    className={`${inputBase} mt-1.5`}
+                />
+                {errors.booking_date && (
+                    <p className="mt-1 text-xs text-rose-500">{errors.booking_date}</p>
+                )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className={labelBase}>Jam Mulai</label>
+                    <input
+                        type="time"
+                        value={data.start_time}
+                        step="1800"
+                        onChange={(e) => setData("start_time", e.target.value)}
+                        className={`${inputBase} mt-1.5`}
+                    />
+                    {errors.start_time && (
+                        <p className="mt-1 text-xs text-rose-500">{errors.start_time}</p>
+                    )}
+                </div>
+                <div>
+                    <label className={labelBase}>Jam Selesai</label>
+                    <input
+                        type="time"
+                        value={data.end_time}
+                        step="1800"
+                        onChange={(e) => setData("end_time", e.target.value)}
+                        className={`${inputBase} mt-1.5`}
+                    />
+                    {errors.end_time && (
+                        <p className="mt-1 text-xs text-rose-500">{errors.end_time}</p>
+                    )}
+                </div>
+            </div>
+
+            <div>
+                <label className={labelBase}>Catatan (opsional)</label>
+                <textarea
+                    value={data.notes}
+                    onChange={(e) => setData("notes", e.target.value)}
+                    rows={3}
+                    placeholder="Informasi tambahan…"
+                    className={`${inputBase} mt-1.5 resize-none`}
+                />
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+                <button
+                    type="submit"
+                    disabled={processing}
+                    className="flex-1 rounded-2xl bg-gray-900 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-60"
+                >
+                    {processing ? "Menyimpan…" : "Buat Booking"}
+                </button>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-2xl px-5 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                >
+                    Batal
+                </button>
+            </div>
+        </form>
+    );
+}
 
 // ── Booking Detail Panel ──────────────────────────────────────────────────────
 
@@ -227,15 +336,32 @@ function BookingDetail({
     booking,
     onClose,
 }: {
-    booking: BookingEntry;
+    booking: AdminBooking;
     onClose: () => void;
 }) {
+    const handleUpdateStatus = (status: BookingStatus) => {
+        router.patch(
+            route("admin.bookings.update", booking.id),
+            { status },
+            { onSuccess: onClose },
+        );
+    };
+
+    const handleCancel = () => {
+        if (!confirm(`Batalkan booking #${booking.id}?`)) return;
+        router.delete(route("admin.bookings.destroy", booking.id), {
+            onSuccess: onClose,
+        });
+    };
+
+    const duration = getDurationMinutes(booking.start_time, booking.end_time);
+
     return (
         <div className="flex flex-col gap-5">
-            {/* ID + Status */}
+            {/* ID + Booking Status */}
             <div className="flex items-center justify-between">
                 <span className="font-clash text-xs font-semibold uppercase tracking-widest text-gray-400">
-                    {booking.id}
+                    #{String(booking.id).padStart(5, "0")}
                 </span>
                 <StatusBadge status={booking.status} />
             </div>
@@ -245,17 +371,19 @@ function BookingDetail({
                 <p className="mb-2.5 font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
                     Customer
                 </p>
-                <p className="font-medium text-gray-900">{booking.customerName}</p>
-                <p className="mt-0.5 text-sm text-gray-500">{booking.phone}</p>
+                <p className="font-medium text-gray-900">{booking.customer_name}</p>
+                {booking.customer_phone && (
+                    <p className="mt-0.5 text-sm text-gray-500">{booking.customer_phone}</p>
+                )}
                 <span
                     className={cn(
                         "mt-2 inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium",
-                        booking.userCategory === "warga_ub"
+                        booking.user_category === "warga_ub"
                             ? "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200"
                             : "bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200",
                     )}
                 >
-                    {booking.userCategory === "warga_ub" ? "Warga UB" : "Umum"}
+                    {booking.user_category === "warga_ub" ? "Warga UB" : "Umum"}
                 </span>
             </section>
 
@@ -267,75 +395,96 @@ function BookingDetail({
                 <dl className="flex flex-col gap-2.5 text-sm">
                     <div className="flex items-center justify-between">
                         <dt className="text-gray-500">Fasilitas</dt>
-                        <dd className="font-medium text-gray-900">{booking.facilityName}</dd>
+                        <dd className="font-medium text-gray-900">{booking.facility_name}</dd>
                     </div>
                     <div className="flex items-center justify-between">
                         <dt className="text-gray-500">Tanggal</dt>
-                        <dd className="font-medium text-gray-900">{booking.date}</dd>
+                        <dd className="font-medium text-gray-900">
+                            {formatDateDisplay(booking.booking_date)}
+                        </dd>
                     </div>
                     <div className="flex items-center justify-between">
                         <dt className="text-gray-500">Waktu</dt>
                         <dd className="font-medium text-gray-900">
-                            {formatHM(booking.startHour, booking.startMinute)} – {formatEndTime(booking)}
+                            {booking.start_time} – {booking.end_time}
                         </dd>
                     </div>
                     <div className="flex items-center justify-between">
                         <dt className="text-gray-500">Durasi</dt>
-                        <dd className="font-medium text-gray-900">{formatDuration(booking.durationMinutes)}</dd>
+                        <dd className="font-medium text-gray-900">{formatDuration(duration)}</dd>
                     </div>
                     {booking.notes && (
                         <div className="flex items-start justify-between gap-4">
-                            <dt className="text-gray-500">Catatan</dt>
+                            <dt className="shrink-0 text-gray-500">Catatan</dt>
                             <dd className="text-right text-gray-700">{booking.notes}</dd>
                         </div>
                     )}
                 </dl>
             </section>
 
-            {/* Price Breakdown */}
+            {/* Payment */}
             <section className="rounded-2xl bg-gray-50 p-4">
-                <p className="mb-2.5 font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                    Rincian Harga
-                </p>
+                <div className="mb-2.5 flex items-center justify-between">
+                    <p className="font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                        Pembayaran
+                    </p>
+                    <PaymentBadge tx={booking.transaction} />
+                </div>
                 <dl className="flex flex-col gap-2 text-sm">
                     <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Tarif per jam</dt>
-                        <dd className="text-gray-700">{formatPrice(booking.pricePerHour)}</dd>
+                        <dt className="text-gray-500">Subtotal</dt>
+                        <dd className="font-semibold text-gray-900">
+                            {formatPrice(booking.subtotal_price)}
+                        </dd>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Durasi</dt>
-                        <dd className="text-gray-700">{formatDuration(booking.durationMinutes)}</dd>
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-between border-t border-gray-200 pt-2.5">
-                        <dt className="font-semibold text-gray-900">Total</dt>
-                        <dd className="font-bold text-gray-900">{formatPrice(booking.totalPrice)}</dd>
-                    </div>
+                    {booking.transaction?.paid_at && (
+                        <div className="flex items-center justify-between">
+                            <dt className="text-gray-500">Dibayar</dt>
+                            <dd className="text-gray-700">{booking.transaction.paid_at}</dd>
+                        </div>
+                    )}
                 </dl>
             </section>
 
             {/* Actions */}
             <div className="flex flex-col gap-2.5 pt-1">
+                {booking.transaction?.payment_status === "UNPAID" && (
+                    <button
+                        type="button"
+                        onClick={() =>
+                            router.post(
+                                route("admin.transactions.simulate-pay", booking.transaction!.id),
+                                {},
+                                { onSuccess: onClose },
+                            )
+                        }
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+                    >
+                        Simulasi Bayar
+                    </button>
+                )}
                 {booking.status === "pending" && (
                     <button
                         type="button"
-                        onClick={() =>
-                            alert(
-                                `[PLACEHOLDER]\nKonfirmasi pembayaran untuk ${booking.id}.\nFitur ini akan tersedia setelah backend booking diimplementasikan.`,
-                            )
-                        }
+                        onClick={() => handleUpdateStatus("confirmed")}
                         className="flex items-center justify-center rounded-2xl bg-green-600 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
                     >
-                        Konfirmasi Pembayaran
+                        Konfirmasi Booking
                     </button>
                 )}
-                {booking.status !== "cancelled" && (
+                {booking.status === "confirmed" && (
                     <button
                         type="button"
-                        onClick={() =>
-                            alert(
-                                `[PLACEHOLDER]\nBatalkan booking ${booking.id}.\nFitur ini akan tersedia setelah backend booking diimplementasikan.`,
-                            )
-                        }
+                        onClick={() => handleUpdateStatus("completed")}
+                        className="flex items-center justify-center rounded-2xl bg-blue-600 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    >
+                        Tandai Selesai
+                    </button>
+                )}
+                {booking.status !== "cancelled" && booking.status !== "completed" && (
+                    <button
+                        type="button"
+                        onClick={handleCancel}
                         className="flex items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
                     >
                         Batalkan Booking
@@ -355,18 +504,28 @@ function BookingDetail({
 
 // ── Grid View ─────────────────────────────────────────────────────────────────
 
-function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
-    const [dateStr, setDateStr] = useState("2026-04-28");
+function GridView({
+    bookings,
+    facilities,
+    onSelect,
+}: {
+    bookings: AdminBooking[];
+    facilities: FacilityOption[];
+    onSelect: (b: AdminBooking) => void;
+}) {
+    const [dateStr, setDateStr] = useState(todayStr());
 
     const timeSlots = Array.from({ length: TOTAL_SLOTS }, (_, i) => {
         const totalMin = START_HOUR * 60 + i * 30;
         return formatHM(Math.floor(totalMin / 60), totalMin % 60);
     });
 
+    const dayBookings = bookings.filter((b) => b.booking_date === dateStr);
+
     return (
         <div className="flex flex-col gap-4">
             {/* Date navigation */}
-            <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
@@ -391,36 +550,32 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                 </div>
                 <button
                     type="button"
-                    onClick={() => setDateStr("2026-04-28")}
+                    onClick={() => setDateStr(todayStr())}
                     className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50"
                 >
-                    Reset Demo
+                    Hari ini
                 </button>
             </div>
 
             {/* Legend */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500">
                 <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-4 rounded-sm bg-blue-50 border border-blue-200" />
+                    <span className="h-3 w-4 rounded-sm border border-blue-200 bg-blue-50" />
                     Warga UB
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-4 rounded-sm bg-gray-100 border border-gray-200" />
+                    <span className="h-3 w-4 rounded-sm border border-gray-200 bg-gray-100" />
                     Umum
                 </span>
                 <span className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-green-500" />
-                        Paid
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-amber-400" />
-                        Pending
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <span className="h-2 w-2 rounded-full bg-gray-400" />
-                        Cancelled
-                    </span>
+                    {(["confirmed", "pending", "completed", "cancelled"] as BookingStatus[]).map(
+                        (s) => (
+                            <span key={s} className="flex items-center gap-1">
+                                <span className={cn("h-2 w-2 rounded-full", STATUS_DOT[s])} />
+                                {STATUS_LABEL[s]}
+                            </span>
+                        ),
+                    )}
                 </span>
             </div>
 
@@ -431,13 +586,11 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
             >
                 <div
                     className="flex"
-                    style={{ minWidth: `${64 + FACILITIES.length * 152}px` }}
+                    style={{ minWidth: `${64 + facilities.length * 152}px` }}
                 >
-                    {/* ── Time column ── */}
-                    <div className="w-16 flex-shrink-0 bg-white" style={{ minWidth: 64 }}>
-                        {/* Corner cell */}
+                    {/* Time column */}
+                    <div className="w-16 shrink-0 bg-white">
                         <div className="sticky top-0 z-30 h-12 border-b border-r border-gray-100 bg-white" />
-                        {/* Time labels */}
                         {timeSlots.map((slot, i) => (
                             <div
                                 key={i}
@@ -458,10 +611,10 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                         ))}
                     </div>
 
-                    {/* ── Facility columns ── */}
-                    {FACILITIES.map((facility) => {
-                        const facilityBookings = DUMMY_BOOKINGS.filter(
-                            (b) => b.facilityId === facility.id,
+                    {/* Facility columns */}
+                    {facilities.map((facility) => {
+                        const facilityBookings = dayBookings.filter(
+                            (b) => b.facility_id === facility.id,
                         );
                         return (
                             <div
@@ -469,16 +622,12 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                                 className="flex flex-1 flex-col"
                                 style={{ minWidth: 152 }}
                             >
-                                {/* Sticky facility header */}
                                 <div className="sticky top-0 z-20 flex h-12 items-center justify-center border-b border-l border-gray-100 bg-white px-2">
                                     <span className="text-center text-xs font-medium text-gray-700">
                                         {facility.name}
                                     </span>
                                 </div>
-
-                                {/* Column body */}
                                 <div className="relative flex-1 border-l border-gray-100">
-                                    {/* Background grid lines */}
                                     {timeSlots.map((_, i) => (
                                         <div
                                             key={i}
@@ -490,18 +639,11 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                                             }
                                         />
                                     ))}
-
-                                    {/* Booking pills */}
                                     {facilityBookings.map((booking) => {
-                                        const top = getPillTop(
-                                            booking.startHour,
-                                            booking.startMinute,
-                                        );
-                                        const height = getPillHeight(
-                                            booking.durationMinutes,
-                                        );
-                                        const isCancelled =
-                                            booking.status === "cancelled";
+                                        const top      = getPillTopFromTime(booking.start_time);
+                                        const duration = getDurationMinutes(booking.start_time, booking.end_time);
+                                        const height   = getPillHeight(duration);
+                                        const isCancelled = booking.status === "cancelled";
 
                                         return (
                                             <button
@@ -517,15 +659,12 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                                                     zIndex: 10,
                                                 }}
                                                 className={cn(
-                                                    "group flex flex-col items-start overflow-hidden rounded-xl border px-2 py-1.5 text-left transition-all hover:shadow-md hover:z-20",
+                                                    "group flex flex-col items-start overflow-hidden rounded-xl border px-2 py-1.5 text-left transition-all hover:z-20 hover:shadow-md",
                                                     isCancelled
                                                         ? "border-gray-200 bg-gray-100 text-gray-400 opacity-50"
-                                                        : PILL_STYLE[
-                                                              booking.userCategory
-                                                          ],
+                                                        : PILL_STYLE[booking.user_category],
                                                 )}
                                             >
-                                                {/* Status dot */}
                                                 <span
                                                     className={cn(
                                                         "absolute right-1.5 top-1.5 h-2 w-2 rounded-full ring-1 ring-white",
@@ -533,15 +672,11 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
                                                     )}
                                                 />
                                                 <p className="w-full truncate pr-3 text-[11px] font-semibold leading-tight">
-                                                    {booking.customerName}
+                                                    {booking.customer_name}
                                                 </p>
                                                 {height >= 72 && (
                                                     <p className="truncate text-[10px] opacity-70">
-                                                        {formatHM(
-                                                            booking.startHour,
-                                                            booking.startMinute,
-                                                        )}
-                                                        –{formatEndTime(booking)}
+                                                        {booking.start_time}–{booking.end_time}
                                                     </p>
                                                 )}
                                             </button>
@@ -559,34 +694,40 @@ function GridView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
 
 // ── List View ─────────────────────────────────────────────────────────────────
 
-const listHelper = createColumnHelper<BookingEntry>();
+const listHelper = createColumnHelper<AdminBooking>();
 
-function ListView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
+function ListView({
+    bookings,
+    onSelect,
+}: {
+    bookings: AdminBooking[];
+    onSelect: (b: AdminBooking) => void;
+}) {
     const columns = [
         listHelper.accessor("id", {
             header: "Booking ID",
             cell: (info) => (
                 <span className="font-mono text-xs font-semibold text-gray-700">
-                    {info.getValue()}
+                    #{String(info.getValue()).padStart(5, "0")}
                 </span>
             ),
         }),
-        listHelper.accessor("customerName", {
+        listHelper.accessor("customer_name", {
             header: "Customer",
             enableSorting: true,
             cell: (info) => {
                 const b = info.row.original;
                 return (
                     <div>
-                        <p className="font-medium text-sm text-gray-900">
-                            {b.customerName}
+                        <p className="text-sm font-medium text-gray-900">{b.customer_name}</p>
+                        <p className="text-[11px] text-gray-400">
+                            {b.customer_phone ?? "—"}
                         </p>
-                        <p className="text-[11px] text-gray-400">{b.phone}</p>
                     </div>
                 );
             },
         }),
-        listHelper.accessor("facilityName", {
+        listHelper.accessor("facility_name", {
             header: "Fasilitas",
             enableSorting: true,
             cell: (info) => (
@@ -600,18 +741,18 @@ function ListView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
             header: "Tanggal & Waktu",
             cell: ({ row }) => {
                 const b = row.original;
+                const duration = getDurationMinutes(b.start_time, b.end_time);
                 return (
                     <div>
-                        <p className="text-sm text-gray-700">{b.date}</p>
+                        <p className="text-sm text-gray-700">{b.booking_date}</p>
                         <p className="text-[11px] text-gray-400">
-                            {formatHM(b.startHour, b.startMinute)} –{" "}
-                            {formatEndTime(b)} · {formatDuration(b.durationMinutes)}
+                            {b.start_time}–{b.end_time} · {formatDuration(duration)}
                         </p>
                     </div>
                 );
             },
         }),
-        listHelper.accessor("totalPrice", {
+        listHelper.accessor("subtotal_price", {
             header: "Total",
             enableSorting: true,
             cell: (info) => (
@@ -621,8 +762,13 @@ function ListView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
             ),
         }),
         listHelper.accessor("status", {
-            header: "Status",
+            header: "Booking",
             cell: (info) => <StatusBadge status={info.getValue()} />,
+        }),
+        listHelper.display({
+            id: "payment",
+            header: "Bayar",
+            cell: ({ row }) => <PaymentBadge tx={row.original.transaction} />,
         }),
         listHelper.display({
             id: "actions",
@@ -642,9 +788,9 @@ function ListView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
 
     return (
         <DataTable
-            columns={columns as ColumnDef<BookingEntry, unknown>[]}
-            data={DUMMY_BOOKINGS}
-            searchColumn="customerName"
+            columns={columns as ColumnDef<AdminBooking, unknown>[]}
+            data={bookings}
+            searchColumn="customer_name"
             searchPlaceholder="Cari nama pelanggan…"
             emptyMessage="Belum ada booking."
         />
@@ -656,12 +802,15 @@ function ListView({ onSelect }: { onSelect: (b: BookingEntry) => void }) {
 type ViewMode = "grid" | "list";
 
 export default function BookingsIndex() {
-    const [viewMode, setViewMode] = useState<ViewMode>("grid");
-    const [selected, setSelected] = useState<BookingEntry | null>(null);
+    const { bookings, facilities, users } = usePage<Props>().props;
 
-    const pendingCount  = DUMMY_BOOKINGS.filter((b) => b.status === "pending").length;
-    const paidCount     = DUMMY_BOOKINGS.filter((b) => b.status === "paid").length;
-    const cancelledCount = DUMMY_BOOKINGS.filter((b) => b.status === "cancelled").length;
+    const [viewMode, setViewMode]     = useState<ViewMode>("grid");
+    const [selected, setSelected]     = useState<AdminBooking | null>(null);
+    const [showCreate, setShowCreate] = useState(false);
+
+    const pendingCount   = bookings.filter((b) => b.status === "pending").length;
+    const confirmedCount = bookings.filter((b) => b.status === "confirmed").length;
+    const cancelledCount = bookings.filter((b) => b.status === "cancelled").length;
 
     return (
         <AdminLayout
@@ -679,64 +828,75 @@ export default function BookingsIndex() {
             <Head title="Bookings" />
 
             <div className="flex flex-col gap-5 pt-6">
-                {/* Stats row + view toggle */}
+                {/* Stats row + toolbar */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 ring-1 ring-inset ring-amber-200">
                             {pendingCount} pending
                         </span>
                         <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-200">
-                            {paidCount} paid
+                            {confirmedCount} confirmed
                         </span>
                         {cancelledCount > 0 && (
                             <span className="rounded-full bg-rose-50 px-3 py-1 text-sm font-medium text-rose-600 ring-1 ring-inset ring-rose-200">
                                 {cancelledCount} cancelled
                             </span>
                         )}
-                        <span className="text-sm text-gray-500">
-                            {DUMMY_BOOKINGS.length} total
-                        </span>
-                        <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-500">
-                            UI Placeholder · Demo Data
-                        </span>
+                        <span className="text-sm text-gray-500">{bookings.length} total</span>
                     </div>
 
-                    {/* Pill toggle */}
-                    <div className="flex items-center rounded-2xl bg-gray-100 p-1">
+                    <div className="flex items-center gap-2">
+                        {/* View toggle */}
+                        <div className="flex items-center rounded-2xl bg-gray-100 p-1">
+                            <button
+                                type="button"
+                                onClick={() => setViewMode("grid")}
+                                className={cn(
+                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
+                                    viewMode === "grid"
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700",
+                                )}
+                            >
+                                <LayoutGrid size={14} />
+                                Grid
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setViewMode("list")}
+                                className={cn(
+                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
+                                    viewMode === "list"
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700",
+                                )}
+                            >
+                                <List size={14} />
+                                List
+                            </button>
+                        </div>
+
+                        {/* Add booking */}
                         <button
                             type="button"
-                            onClick={() => setViewMode("grid")}
-                            className={cn(
-                                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
-                                viewMode === "grid"
-                                    ? "bg-white text-gray-900 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700",
-                            )}
+                            onClick={() => setShowCreate(true)}
+                            className="flex items-center gap-2 rounded-2xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
                         >
-                            <LayoutGrid size={14} />
-                            Grid View
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setViewMode("list")}
-                            className={cn(
-                                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
-                                viewMode === "list"
-                                    ? "bg-white text-gray-900 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700",
-                            )}
-                        >
-                            <List size={14} />
-                            List View
+                            <Plus size={15} />
+                            Tambah Booking
                         </button>
                     </div>
                 </div>
 
                 {/* View content */}
                 {viewMode === "grid" ? (
-                    <GridView onSelect={setSelected} />
+                    <GridView
+                        bookings={bookings}
+                        facilities={facilities}
+                        onSelect={setSelected}
+                    />
                 ) : (
-                    <ListView onSelect={setSelected} />
+                    <ListView bookings={bookings} onSelect={setSelected} />
                 )}
             </div>
 
@@ -747,14 +907,31 @@ export default function BookingsIndex() {
                 title="Detail Booking"
                 description={
                     selected
-                        ? `${selected.facilityName} · ${formatHM(selected.startHour, selected.startMinute)}–${formatEndTime(selected)}`
+                        ? `${selected.facility_name} · ${selected.start_time}–${selected.end_time}`
                         : undefined
                 }
             >
                 {selected && (
                     <BookingDetail
+                        key={selected.id}
                         booking={selected}
                         onClose={() => setSelected(null)}
+                    />
+                )}
+            </SlideOver>
+
+            {/* Create SlideOver */}
+            <SlideOver
+                isOpen={showCreate}
+                onClose={() => setShowCreate(false)}
+                title="Tambah Booking"
+                description="Buat reservasi baru atas nama pelanggan."
+            >
+                {showCreate && (
+                    <CreateBookingForm
+                        facilities={facilities}
+                        users={users}
+                        onClose={() => setShowCreate(false)}
                     />
                 )}
             </SlideOver>

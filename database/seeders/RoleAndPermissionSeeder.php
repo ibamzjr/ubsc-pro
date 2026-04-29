@@ -13,60 +13,68 @@ class RoleAndPermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $permissions = [
-            'view-dashboard',
-            'manage-users',
-            'manage-roles-permissions',
-            'verify-identity',
+        // Rename legacy role name if it exists
+        Role::where('name', 'Staff Front Officer')->update(['name' => 'Staff Front Office']);
+
+        // ── Define all permissions ────────────────────────────────────────────
+        $allPermissions = [
+            // Beranda & Dasbor
+            'view-stats',
+            'view-finance-reports',
+            'view-balance',
+            'withdraw-balance',
+            // Reservasi & Jadwal
+            'view-bookings',
+            'create-manual-booking',
+            'cancel-booking',
+            'manage-booking-limits',
+            // Fasilitas & Lapangan
+            'view-facilities',
             'manage-facilities',
             'manage-pricing',
-            'view-reports',
-            'manage-cms',
-            'publish-news',
-            'manage-bookings',
+            'manage-venue-details',
+            // Promosi & CMS
+            'view-promos',
+            'manage-promos',
+            // Member & Pelanggan
+            'view-members',
+            'manage-members',
+            'manage-payment-links',
+            // Verifikasi UBSC
+            'verify-identity-queue',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        // Remove obsolete permissions no longer defined
+        Permission::whereNotIn('name', $allPermissions)->delete();
+
+        foreach ($allPermissions as $perm) {
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
         }
 
+        // ── Role → Permission matrix ──────────────────────────────────────────
         $matrix = [
-            'Administrator' => [
-                'view-dashboard',
-                'manage-users',
-                'manage-roles-permissions',
-                'verify-identity',
-                'manage-facilities',
-                'manage-pricing',
-                'view-reports',
-                'manage-cms',
-                'publish-news',
-                'manage-bookings',
+            'Administrator'      => $allPermissions,
+            'Manager'            => $allPermissions,
+            'Finance'            => [
+                'view-stats',
+                'view-finance-reports',
+                'view-balance',
+                'withdraw-balance',
+                'view-bookings',
+                'view-members',
+                'manage-payment-links',
             ],
-            'Manager' => [
-                'view-dashboard',
-                'manage-users',
-                'manage-facilities',
-                'manage-pricing',
-                'view-reports',
-                'manage-cms',
-                'publish-news',
-                'manage-bookings',
+            'Staff Central'      => [
+                'view-bookings',
+                'create-manual-booking',
+                'cancel-booking',
+                'view-facilities',
+                'view-promos',
+                'view-members',
             ],
-            'Finance' => [
-                'view-dashboard',
-                'manage-pricing',
-                'view-reports',
-            ],
-            'Staff Front Officer' => [
-                'view-dashboard',
-                'verify-identity',
-                'manage-bookings',
-            ],
-            'Staff Central' => [
-                'view-dashboard',
-                'manage-cms',
-                'publish-news',
+            'Staff Front Office' => [
+                'view-bookings',
+                'verify-identity-queue',
             ],
         ];
 

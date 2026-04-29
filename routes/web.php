@@ -1,6 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FacilityCategoryController;
+use App\Http\Controllers\Admin\FinanceReportController;
+use App\Http\Controllers\Admin\MembershipController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\IdentityQueueController;
 use App\Http\Controllers\Admin\NewsCategoryController;
@@ -10,7 +17,10 @@ use App\Http\Controllers\Admin\ReelController;
 use App\Http\Controllers\Admin\SponsorLogoController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Booking;
 use App\Models\Facility;
+use App\Models\Membership;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -58,24 +68,40 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware([
     'auth',
-    'role:Administrator|Manager|Finance|Staff Front Officer|Staff Central',
+    'role:Administrator|Manager|Finance|Staff Front Office|Staff Central',
 ])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        // Bookings (UI placeholder — no backend)
-        Route::get('bookings', function () {
-            return Inertia::render('Admin/Bookings/Index');
-        })->name('bookings.index');
+        // Bookings
+        Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
+        Route::post('bookings', [BookingController::class, 'store'])->name('bookings.store');
+        Route::patch('bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+        Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+
+        // Memberships
+        Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
+        Route::post('memberships', [MembershipController::class, 'store'])->name('memberships.store');
+        Route::patch('memberships/{membership}', [MembershipController::class, 'update'])->name('memberships.update');
+        Route::delete('memberships/{membership}', [MembershipController::class, 'destroy'])->name('memberships.destroy');
+
+        // Transactions
+        Route::post('transactions/{transaction}/simulate-pay', [TransactionController::class, 'simulatePay'])
+            ->name('transactions.simulate-pay');
+
+        // Finance & Analytics
+        Route::get('finance', [FinanceReportController::class, 'index'])->name('finance.index');
 
         // Dashboard
         Route::get('/', function () {
             return Inertia::render('Admin/Dashboard', [
                 'stats' => [
-                    'pendingIdentities' => User::where('identity_status', 'pending')->count(),
-                    'activeFacilities'  => Facility::where('is_active', true)->count(),
-                    'todaysBookings'    => null,
+                    'pendingIdentities'  => User::where('identity_status', 'pending')->count(),
+                    'activeFacilities'   => Facility::where('is_active', true)->count(),
+                    'todaysBookings'     => Booking::where('booking_date', today())->whereIn('status', ['pending', 'confirmed'])->count(),
+                    'totalRevenue'       => (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', now())->sum('amount'),
+                    'activeMemberships'  => Membership::where('status', 'active')->count(),
                 ],
             ]);
         })->name('dashboard');
@@ -111,6 +137,26 @@ Route::middleware([
             ->name('facilities.update');
         Route::delete('facilities/{facility}', [FacilityController::class, 'destroy'])
             ->name('facilities.destroy');
+
+        // Facility Pricing (UI Placeholder)
+        Route::get('facilities/{facility}/pricing', function () {
+            return Inertia::render('Admin/Facilities/Pricing');
+        })->name('facilities.pricing');
+
+        // Settings — Schedule Control (Administrator only)
+        Route::get('settings/schedules', [ScheduleController::class, 'index'])->name('settings.schedules');
+        Route::post('settings/schedules/toggle', [ScheduleController::class, 'toggle'])->name('settings.schedules.toggle');
+        Route::post('settings/schedules/quick-open-next', [ScheduleController::class, 'quickOpenNext'])->name('settings.schedules.quick-open-next');
+
+        // Settings — Role & Access
+        Route::get('settings/roles', [RoleController::class, 'index'])->name('settings.roles');
+        Route::put('settings/roles/{role}', [RoleController::class, 'update'])->name('settings.roles.update');
+
+        // Settings — Internal User Management (Administrator only, enforced in controller)
+        Route::get('settings/users', [UserController::class, 'index'])->name('settings.users');
+        Route::post('settings/users', [UserController::class, 'store'])->name('settings.users.store');
+        Route::put('settings/users/{user}', [UserController::class, 'update'])->name('settings.users.update');
+        Route::delete('settings/users/{user}', [UserController::class, 'destroy'])->name('settings.users.destroy');
 
         // Facility media
         Route::post('facilities/{facility}/hero', [FacilityController::class, 'updateHero'])

@@ -2,7 +2,9 @@ import { Link } from "@inertiajs/react";
 import {
     Award,
     BadgeCheck,
+    BarChart3,
     CalendarCheck2,
+    CalendarRange,
     Dumbbell,
     Film,
     HelpCircle,
@@ -11,7 +13,9 @@ import {
     LogOut,
     MessageSquare,
     Newspaper,
-    Settings,
+    ShieldCheck,
+    UserCog,
+    Users2,
     X,
 } from "lucide-react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
@@ -51,6 +55,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     const sponsorsActive = isCurrent("admin.sponsors.*");
     const reelsActive = isCurrent("admin.reels.*");
     const testimonialsActive = isCurrent("admin.testimonials.*");
+    const membershipsActive  = isCurrent("admin.memberships.*");
+    const financeActive      = isCurrent("admin.finance.*");
+    const schedulesActive    = isCurrent("admin.settings.schedules");
+    const rolesActive        = isCurrent("admin.settings.roles");
+    const usersActive        = isCurrent("admin.settings.users*");
 
     return (
         <>
@@ -122,6 +131,19 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                             active={bookingsActive}
                             badge="Preview"
                         />
+                        <SidebarNavLink
+                            icon={Users2}
+                            label="Memberships"
+                            href={safeRoute("admin.memberships.index")}
+                            active={membershipsActive}
+                        />
+                        <SidebarNavLink
+                            icon={BarChart3}
+                            label="Finance"
+                            href={safeRoute("admin.finance.index")}
+                            active={financeActive}
+                            badge="Preview"
+                        />
                     </SidebarGroup>
 
                     <SidebarGroup label="Content">
@@ -157,13 +179,28 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         />
                     </SidebarGroup>
 
-                    <SidebarGroup label="Other">
+                    <SidebarGroup label="Settings">
                         <SidebarNavLink
-                            icon={Settings}
-                            label="Settings"
-                            disabled
-                            badge="Soon"
+                            icon={CalendarRange}
+                            label="Schedule Control"
+                            href={safeRoute("admin.settings.schedules")}
+                            active={schedulesActive}
                         />
+                        <SidebarNavLink
+                            icon={ShieldCheck}
+                            label="Role & Access"
+                            href={safeRoute("admin.settings.roles")}
+                            active={rolesActive}
+                        />
+                        <SidebarNavLink
+                            icon={UserCog}
+                            label="Internal Users"
+                            href={safeRoute("admin.settings.users")}
+                            active={usersActive}
+                        />
+                    </SidebarGroup>
+
+                    <SidebarGroup label="Other">
                         <SidebarNavLink
                             icon={HelpCircle}
                             label="Help"

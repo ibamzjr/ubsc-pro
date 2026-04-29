@@ -43,4 +43,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(News::class, 'author_id');
     }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Membership::class);
+    }
 }

@@ -31,7 +31,7 @@ function slugify(str: string): string {
 export default function NewsForm() {
     const { article, categories, auth } = usePage<Props>().props;
     const isEdit = article !== null;
-    const canPublish = auth.permissions.includes("publish-news");
+    const canPublish = auth.user?.permissions?.includes("manage-promos") ?? false;
 
     const { data, setData, post, processing, errors } = useForm<FormData>({
         news_category_id: article?.category?.id ?? "",
