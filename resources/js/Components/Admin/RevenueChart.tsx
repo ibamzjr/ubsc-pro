@@ -7,15 +7,22 @@ interface RevenueChartProps {
     data: number[];
     color?: string;
     peakLabel?: string;
+    currentMonth?: string;
+    daysInMonth?: number;
 }
 
 export default function RevenueChart({
     data,
     color = "#10b981",
     peakLabel,
+    currentMonth,
+    daysInMonth,
 }: RevenueChartProps) {
-    const maxVal = Math.max(...data);
-    const peakIdx = data.indexOf(maxVal);
+    if (data.length < 2) {
+        return <div className="flex h-[200px] items-center justify-center text-sm text-gray-400">Belum ada data pendapatan.</div>;
+    }
+    const maxVal = Math.max(...data, 1);
+    const peakIdx = data.indexOf(Math.max(...data));
 
     const points = data.map((v, i) => ({
         x: (i / (data.length - 1)) * SVG_W,
@@ -140,9 +147,9 @@ export default function RevenueChart({
             </svg>
 
             <div className="mt-1 flex items-center justify-between px-1 text-[10px] text-gray-400">
-                <span>1 Apr</span>
-                <span>15 Apr</span>
-                <span>30 Apr</span>
+                <span>1 {currentMonth ?? ""}</span>
+                <span>{daysInMonth ? Math.ceil(daysInMonth / 2) : 15} {currentMonth ?? ""}</span>
+                <span>{daysInMonth ?? 30} {currentMonth ?? ""}</span>
             </div>
         </div>
     );

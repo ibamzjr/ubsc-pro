@@ -13,6 +13,7 @@ import {
     LogOut,
     MessageSquare,
     Newspaper,
+    Package,
     ShieldCheck,
     UserCog,
     Users2,
@@ -55,7 +56,8 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     const sponsorsActive = isCurrent("admin.sponsors.*");
     const reelsActive = isCurrent("admin.reels.*");
     const testimonialsActive = isCurrent("admin.testimonials.*");
-    const membershipsActive = isCurrent("admin.memberships.*");
+    const membershipsActive = isCurrent("admin.memberships.index") || isCurrent("admin.memberships.store");
+    const plansActive = isCurrent("admin.memberships.plans.*");
     const financeActive = isCurrent("admin.finance.*");
     const schedulesActive = isCurrent("admin.settings.schedules");
     const rolesActive = isCurrent("admin.settings.roles");
@@ -135,6 +137,12 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                             label="Memberships"
                             href={safeRoute("admin.memberships.index")}
                             active={membershipsActive}
+                        />
+                        <SidebarNavLink
+                            icon={Package}
+                            label="Paket Membership"
+                            href={safeRoute("admin.memberships.plans.index")}
+                            active={plansActive}
                         />
                         <SidebarNavLink
                             icon={BarChart3}

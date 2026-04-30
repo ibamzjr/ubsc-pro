@@ -14,7 +14,7 @@ export const ADMIN_TOKENS = {
     STAT_GRADIENT_BLUE:
         "bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-800",
     STAT_GRADIENT_PURPLE:
-        "bg-gradient-to-br from-fuchsia-500 via-purple-600 to-purple-900",
+        "bg-gradient-to-br from-purple-500 via-indigo-600 to-purple-800",
 
     GLASS_OVERLAY:
         "bg-white/10 backdrop-blur-sm ring-1 ring-inset ring-white/15",
