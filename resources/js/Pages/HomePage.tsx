@@ -9,9 +9,16 @@ import SectionSeven from "@/Components/Landing/SectionSeven";
 import SectionEight from "@/Components/Landing/SectionEight";
 import Footer from "@/Components/Landing/Footer";
 import FadeIn from "@/Components/Landing/FadeIn";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
+import type { MembershipPlanItem, PageProps } from "@/types";
+
+type HomeProps = PageProps<{
+    membershipPlans?: MembershipPlanItem[];
+}>;
 
 export default function HomePage() {
+    // Type the page so membershipPlans is available to child components via usePage<HomeProps>()
+    usePage<HomeProps>();
     return (
         <>
             <Head>

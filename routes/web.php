@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FacilityCategoryController;
 use App\Http\Controllers\Admin\FinanceReportController;
 use App\Http\Controllers\Admin\MembershipController;
+use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\IdentityQueueController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Booking;
 use App\Models\Facility;
 use App\Models\Membership;
+use App\Models\MembershipPlan;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +29,18 @@ use Inertia\Inertia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 Route::get('/', function () {
-    return Inertia::render('HomePage');
+    return Inertia::render('HomePage', [
+        'membershipPlans' => MembershipPlan::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn ($p) => [
+                'id'              => $p->id,
+                'name'            => $p->name,
+                'price'           => $p->price,
+                'duration_months' => $p->duration_months,
+                'features'        => $p->features ?? [],
+            ]),
+    ]);
 });
 
 Route::get('/about', function () {
@@ -80,6 +93,14 @@ Route::middleware([
         Route::patch('bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
         Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
 
+        // Membership Plans (must precede {membership} wildcard routes)
+        Route::prefix('memberships/plans')->name('memberships.plans.')->group(function () {
+            Route::get('',           [MembershipPlanController::class, 'index'])->name('index');
+            Route::post('',          [MembershipPlanController::class, 'store'])->name('store');
+            Route::patch('{plan}',   [MembershipPlanController::class, 'update'])->name('update');
+            Route::delete('{plan}',  [MembershipPlanController::class, 'destroy'])->name('destroy');
+        });
+
         // Memberships
         Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
         Route::post('memberships', [MembershipController::class, 'store'])->name('memberships.store');
@@ -92,17 +113,115 @@ Route::middleware([
 
         // Finance & Analytics
         Route::get('finance', [FinanceReportController::class, 'index'])->name('finance.index');
+        Route::get('finance/export', [FinanceReportController::class, 'export'])->name('finance.export');
 
         // Dashboard
         Route::get('/', function () {
+            $now              = now();
+            $prevMonth        = $now->month === 1 ? 12 : $now->month - 1;
+            $prevYear         = $now->month === 1 ? $now->year - 1 : $now->year;
+            $currentRevenue   = (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', $now)->whereYear('paid_at', $now)->sum('amount');
+            $lastMonthRevenue = (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', $prevMonth)->whereYear('paid_at', $prevYear)->sum('amount');
+            $revenueTrend = match(true) {
+                $lastMonthRevenue > 0 => round((($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1),
+                $currentRevenue > 0  => 100.0,
+                default              => 0.0,
+            };
+
+            // Daily revenue array for the current month (thousands IDR, one value per day)
+            $daysInMonth    = (int) $now->daysInMonth;
+            $dailyRaw       = Transaction::where('payment_status', 'PAID')
+                ->whereMonth('paid_at', $now)
+                ->whereYear('paid_at', $now)
+                ->selectRaw('DAY(paid_at) as day, SUM(amount) as total')
+                ->groupBy('day')
+                ->pluck('total', 'day');
+            $dailyRevenue = array_map(
+                fn($d) => (int) round(($dailyRaw[$d] ?? 0) / 1000),
+                range(1, $daysInMonth),
+            );
+
+            // Today's occupancy per active facility
+            // Operating window = 15 hours = 900 minutes
+            $operatingMinutes = 900;
+            $todayBookings    = Booking::with('facility')
+                ->whereDate('booking_date', today())
+                ->whereIn('status', ['confirmed', 'pending'])
+                ->get();
+
+            $activeFacilities = Facility::where('is_active', true)->get(['id', 'name']);
+            $COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6b7280', '#ec4899', '#14b8a6'];
+            $occupancyData = $activeFacilities->values()->map(function ($facility, $idx) use ($todayBookings, $operatingMinutes, $COLORS) {
+                $booked = $todayBookings
+                    ->where('facility_id', $facility->id)
+                    ->sum(fn($b) => \Carbon\Carbon::parse($b->start_time)->diffInMinutes(\Carbon\Carbon::parse($b->end_time)));
+                return [
+                    'name'  => $facility->name,
+                    'pct'   => (int) min(100, round($booked / $operatingMinutes * 100)),
+                    'color' => $COLORS[$idx % count($COLORS)],
+                ];
+            })->all();
+
+            // Combined recent activity feed (last 8 events)
+            $recentBookings = Booking::with('facility')
+                ->latest()
+                ->take(5)
+                ->get()
+                ->map(fn($b) => [
+                    'id'       => $b->id,
+                    'type'     => 'booking',
+                    'title'    => 'Reservasi Baru',
+                    'subtitle' => ($b->customer_name ?? $b->user?->name ?? 'Guest') . ' · ' . ($b->facility?->name ?? '-'),
+                    'time'     => $b->created_at->diffForHumans(),
+                ]);
+
+            $recentMemberships = Membership::with('user')
+                ->latest()
+                ->take(3)
+                ->get()
+                ->map(fn($m) => [
+                    'id'       => $m->id,
+                    'type'     => 'membership',
+                    'title'    => 'Membership Baru',
+                    'subtitle' => $m->customer_name ?? $m->user?->name ?? 'Guest',
+                    'time'     => $m->created_at->diffForHumans(),
+                ]);
+
+            $recentPayments = Transaction::where('payment_status', 'PAID')
+                ->with('user')
+                ->orderByDesc('paid_at')
+                ->take(5)
+                ->get()
+                ->map(fn($t) => [
+                    'id'       => $t->id,
+                    'type'     => 'payment',
+                    'title'    => 'Pembayaran Diterima',
+                    'subtitle' => 'Rp ' . number_format($t->amount, 0, ',', '.') . ' · ' . ($t->user?->name ?? 'Guest'),
+                    'time'     => $t->paid_at?->diffForHumans() ?? '-',
+                ]);
+
+            $recentActivity = $recentBookings
+                ->concat($recentMemberships)
+                ->concat($recentPayments)
+                ->sortByDesc('time')
+                ->take(8)
+                ->values()
+                ->all();
+
             return Inertia::render('Admin/Dashboard', [
                 'stats' => [
                     'pendingIdentities'  => User::where('identity_status', 'pending')->count(),
-                    'activeFacilities'   => Facility::where('is_active', true)->count(),
+                    'activeFacilities'   => $activeFacilities->count(),
                     'todaysBookings'     => Booking::where('booking_date', today())->whereIn('status', ['pending', 'confirmed'])->count(),
-                    'totalRevenue'       => (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', now())->sum('amount'),
+                    'totalRevenue'       => $currentRevenue,
                     'activeMemberships'  => Membership::where('status', 'active')->count(),
                 ],
+                'revenueTrend'     => $revenueTrend,
+                'dailyRevenue'     => $dailyRevenue,
+                'daysInMonth'      => $daysInMonth,
+                'currentMonthLabel' => $now->translatedFormat('M Y'),
+                'occupancyData'    => array_values($occupancyData),
+                'recentActivity'   => $recentActivity,
             ]);
         })->name('dashboard');
 
