@@ -10,6 +10,8 @@ class Membership extends Model
 {
     protected $fillable = [
         'user_id',
+        'membership_plan_id',
+        'customer_name',
         'start_date',
         'end_date',
         'status',
@@ -31,5 +33,10 @@ class Membership extends Model
     public function transaction(): MorphOne
     {
         return $this->morphOne(Transaction::class, 'transactionable');
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(MembershipPlan::class, 'membership_plan_id');
     }
 }
