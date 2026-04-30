@@ -35,6 +35,9 @@ class IdentityQueueController extends Controller
                 'identity_number'   => $user->identity_number,
                 'identity_status'   => $user->identity_status,
                 'has_document'      => filled($user->identity_file_path),
+                'document_url'      => filled($user->identity_file_path)
+                    ? route('admin.identity.document', $user->id)
+                    : null,
                 'updated_at'        => $user->updated_at->diffForHumans(),
             ]);
 
@@ -48,15 +51,22 @@ class IdentityQueueController extends Controller
         $this->authorize('verify-identity');
 
         $validated = $request->validate([
-            'status' => ['required', Rule::in(['verified', 'rejected'])],
+            'status'            => ['required', Rule::in(['verified', 'rejected'])],
+            'identity_category' => ['nullable', Rule::in(['umum', 'warga_kampus'])],
         ]);
 
-        $user->update(['identity_status' => $validated['status']]);
+        $updates = ['identity_status' => $validated['status']];
 
-        return back()->with(
-            'success',
-            "Identity {$validated['status']} for {$user->name}.",
-        );
+        // Staff can correct the category the user selected during registration
+        if (filled($validated['identity_category'] ?? null)) {
+            $updates['identity_category'] = $validated['identity_category'];
+        }
+
+        $user->update($updates);
+
+        $label = $validated['status'] === 'verified' ? 'diverifikasi' : 'ditolak';
+
+        return back()->with('success', "Identitas {$user->name} berhasil {$label}.");
     }
 
     public function document(User $user): StreamedResponse
