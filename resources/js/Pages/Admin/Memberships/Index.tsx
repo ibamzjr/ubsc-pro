@@ -1,9 +1,10 @@
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Eye, Plus } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import DataTable from "@/Components/Admin/DataTable";
 import SlideOver from "@/Components/Admin/SlideOver";
+import { ADMIN_TOKENS } from "@/Components/Admin/tokens";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
 import type {
@@ -22,9 +23,17 @@ interface MembershipUser {
     phone_number?: string | null;
 }
 
+interface PlanOption {
+    id: number;
+    name: string;
+    price: number;
+    duration_months: number;
+}
+
 type Props = PageProps<{
     memberships: AdminMembership[];
     users: MembershipUser[];
+    plans: PlanOption[];
 }>;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -45,6 +54,13 @@ function formatDate(dateStr: string): string {
         month: "short",
         year: "numeric",
     });
+}
+
+function addMonthsToDateStr(dateStr: string, months: number): string {
+    const [y, mo, d] = dateStr.split("-").map(Number);
+    const date = new Date(y, (mo ?? 1) - 1, d ?? 1);
+    date.setMonth(date.getMonth() + months);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 // ── Status maps ───────────────────────────────────────────────────────────────
@@ -115,17 +131,40 @@ const labelBase =
 
 function CreateMembershipForm({
     users,
+    plans,
     onClose,
 }: {
     users: MembershipUser[];
+    plans: PlanOption[];
     onClose: () => void;
 }) {
+    const [isGuest, setIsGuest] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
-        user_id:    "",
-        start_date: todayStr(),
-        end_date:   "",
-        amount:     "",
+        user_id:            "",
+        customer_name:      "",
+        membership_plan_id: "",
+        start_date:         todayStr(),
+        end_date:           "",
+        amount:             "",
     });
+
+    const selectedPlan = plans.find((p) => String(p.id) === data.membership_plan_id);
+
+    const handlePlanChange = (planId: string) => {
+        setData("membership_plan_id", planId);
+        const plan = plans.find((p) => String(p.id) === planId);
+        if (plan && data.start_date) {
+            setData("end_date", addMonthsToDateStr(data.start_date, plan.duration_months));
+        }
+    };
+
+    const handleStartDateChange = (dateStr: string) => {
+        setData("start_date", dateStr);
+        if (selectedPlan && dateStr) {
+            setData("end_date", addMonthsToDateStr(dateStr, selectedPlan.duration_months));
+        }
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,69 +173,147 @@ function CreateMembershipForm({
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-5">
-            <div>
-                <label className={labelBase}>Member (User)</label>
-                <select
-                    value={data.user_id}
-                    onChange={(e) => setData("user_id", e.target.value)}
-                    className={`${inputBase} mt-1.5`}
+            {/* Member type toggle */}
+            <div className="flex rounded-2xl bg-gray-100 p-1">
+                <button
+                    type="button"
+                    onClick={() => { setIsGuest(false); setData("customer_name", ""); }}
+                    className={cn(
+                        "flex-1 rounded-xl py-2 text-xs font-medium transition-colors",
+                        !isGuest ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700",
+                    )}
                 >
-                    <option value="">Pilih user…</option>
-                    {users.map((u) => (
-                        <option key={u.id} value={u.id}>
-                            {u.name}
-                            {u.phone_number ? ` · ${u.phone_number}` : ""}
+                    Pengguna Terdaftar
+                </button>
+                <button
+                    type="button"
+                    onClick={() => { setIsGuest(true); setData("user_id", ""); }}
+                    className={cn(
+                        "flex-1 rounded-xl py-2 text-xs font-medium transition-colors",
+                        isGuest ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700",
+                    )}
+                >
+                    Tamu / Walk-in
+                </button>
+            </div>
+
+            {/* User select or guest name */}
+            {isGuest ? (
+                <div>
+                    <label className={cn(labelBase, "mb-1.5 block")}>Nama Member</label>
+                    <input
+                        type="text"
+                        value={data.customer_name}
+                        onChange={(e) => setData("customer_name", e.target.value)}
+                        placeholder="Nama lengkap tamu…"
+                        className={inputBase}
+                        required
+                    />
+                    {errors.customer_name && (
+                        <p className="mt-1 text-xs text-rose-500">{errors.customer_name}</p>
+                    )}
+                </div>
+            ) : (
+                <div>
+                    <label className={cn(labelBase, "mb-1.5 block")}>Member (User)</label>
+                    <select
+                        value={data.user_id}
+                        onChange={(e) => setData("user_id", e.target.value)}
+                        className={inputBase}
+                    >
+                        <option value="">Pilih user…</option>
+                        {users.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u.name}
+                                {u.phone_number ? ` · ${u.phone_number}` : ""}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.user_id && (
+                        <p className="mt-1 text-xs text-rose-500">{errors.user_id}</p>
+                    )}
+                </div>
+            )}
+
+            {/* Plan */}
+            <div>
+                <label className={cn(labelBase, "mb-1.5 block")}>Paket Membership</label>
+                <select
+                    value={data.membership_plan_id}
+                    onChange={(e) => handlePlanChange(e.target.value)}
+                    className={inputBase}
+                >
+                    <option value="">Tanpa paket (isi manual)</option>
+                    {plans.map((p) => (
+                        <option key={p.id} value={p.id}>
+                            {p.name} — {formatPrice(p.price)}
                         </option>
                     ))}
                 </select>
-                {errors.user_id && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.user_id}</p>
-                )}
             </div>
 
+            {/* Dates */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className={labelBase}>Tanggal Mulai</label>
+                    <label className={cn(labelBase, "mb-1.5 block")}>Tanggal Mulai</label>
                     <input
                         type="date"
                         value={data.start_date}
-                        onChange={(e) => setData("start_date", e.target.value)}
-                        className={`${inputBase} mt-1.5`}
+                        onChange={(e) => handleStartDateChange(e.target.value)}
+                        className={inputBase}
                     />
                     {errors.start_date && (
                         <p className="mt-1 text-xs text-rose-500">{errors.start_date}</p>
                     )}
                 </div>
                 <div>
-                    <label className={labelBase}>Tanggal Selesai</label>
+                    <label className={cn(labelBase, "mb-1.5 block")}>Tanggal Selesai</label>
                     <input
                         type="date"
                         value={data.end_date}
                         min={data.start_date || todayStr()}
                         onChange={(e) => setData("end_date", e.target.value)}
-                        className={`${inputBase} mt-1.5`}
+                        readOnly={!!selectedPlan}
+                        className={cn(
+                            inputBase,
+                            selectedPlan && "cursor-not-allowed opacity-60",
+                        )}
                     />
+                    {selectedPlan && (
+                        <p className="mt-1 text-[11px] text-indigo-500">
+                            Otomatis dari paket ({selectedPlan.duration_months} bln)
+                        </p>
+                    )}
                     {errors.end_date && (
                         <p className="mt-1 text-xs text-rose-500">{errors.end_date}</p>
                     )}
                 </div>
             </div>
 
-            <div>
-                <label className={labelBase}>Nominal (IDR)</label>
-                <input
-                    type="number"
-                    value={data.amount}
-                    min="0"
-                    step="1000"
-                    placeholder="0"
-                    onChange={(e) => setData("amount", e.target.value)}
-                    className={`${inputBase} mt-1.5`}
-                />
-                {errors.amount && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.amount}</p>
-                )}
-            </div>
+            {/* Amount — auto from plan or manual */}
+            {selectedPlan ? (
+                <div className="rounded-2xl bg-indigo-50 px-4 py-3 text-sm text-indigo-700 ring-1 ring-inset ring-indigo-200">
+                    Nominal:{" "}
+                    <span className="font-semibold">{formatPrice(selectedPlan.price)}</span>
+                    <span className="ml-1 opacity-60">(dari paket — tersimpan otomatis)</span>
+                </div>
+            ) : (
+                <div>
+                    <label className={cn(labelBase, "mb-1.5 block")}>Nominal (IDR)</label>
+                    <input
+                        type="number"
+                        value={data.amount}
+                        min="0"
+                        step="1000"
+                        placeholder="0"
+                        onChange={(e) => setData("amount", e.target.value)}
+                        className={inputBase}
+                    />
+                    {errors.amount && (
+                        <p className="mt-1 text-xs text-rose-500">{errors.amount}</p>
+                    )}
+                </div>
+            )}
 
             <div className="flex items-center gap-3 pt-2">
                 <button
@@ -262,6 +379,16 @@ function MembershipDetail({
                     <p className="mt-0.5 text-sm text-gray-500">{membership.customer_phone}</p>
                 )}
             </section>
+
+            {/* Plan */}
+            {membership.plan_name && (
+                <section className="rounded-2xl bg-indigo-50 p-4 ring-1 ring-inset ring-indigo-100">
+                    <p className="mb-1.5 font-clash text-[11px] font-medium uppercase tracking-wider text-indigo-400">
+                        Paket
+                    </p>
+                    <p className="font-clash font-semibold text-indigo-800">{membership.plan_name}</p>
+                </section>
+            )}
 
             {/* Period */}
             <section className="rounded-2xl bg-gray-50 p-4">
@@ -360,9 +487,11 @@ const listHelper = createColumnHelper<AdminMembership>();
 function ListView({
     memberships,
     onSelect,
+    toolbar,
 }: {
     memberships: AdminMembership[];
     onSelect: (m: AdminMembership) => void;
+    toolbar?: ReactNode;
 }) {
     const columns = [
         listHelper.accessor("id", {
@@ -396,6 +525,19 @@ function ListView({
                         <p className="text-sm text-gray-700">{formatDate(m.start_date)}</p>
                         <p className="text-[11px] text-gray-400">s/d {formatDate(m.end_date)}</p>
                     </div>
+                );
+            },
+        }),
+        listHelper.accessor("plan_name", {
+            header: "Paket",
+            cell: (info) => {
+                const val = info.getValue();
+                return val ? (
+                    <span className="inline-flex rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">
+                        {val}
+                    </span>
+                ) : (
+                    <span className="text-gray-400">—</span>
                 );
             },
         }),
@@ -443,6 +585,7 @@ function ListView({
             searchColumn="customer_name"
             searchPlaceholder="Cari nama member…"
             emptyMessage="Belum ada membership."
+            toolbar={toolbar}
         />
     );
 }
@@ -450,14 +593,49 @@ function ListView({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MembershipsIndex() {
-    const { memberships, users } = usePage<Props>().props;
+    const { memberships, users, plans } = usePage<Props>().props;
 
     const [selected, setSelected]     = useState<AdminMembership | null>(null);
     const [showCreate, setShowCreate] = useState(false);
+    const [planFilter, setPlanFilter] = useState("all");
 
     const activeCount    = memberships.filter((m) => m.status === "active").length;
     const expiredCount   = memberships.filter((m) => m.status === "expired").length;
     const cancelledCount = memberships.filter((m) => m.status === "cancelled").length;
+
+    // Per-plan active member counts, sorted descending
+    const plansWithCount = plans
+        .map((p) => ({
+            ...p,
+            count: memberships.filter(
+                (m) => m.membership_plan_id === p.id && m.status === "active",
+            ).length,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+    // Client-side filter
+    const filtered =
+        planFilter === "all"
+            ? memberships
+            : planFilter === "none"
+              ? memberships.filter((m) => m.membership_plan_id === null)
+              : memberships.filter((m) => String(m.membership_plan_id) === planFilter);
+
+    const toolbar = plans.length > 0 ? (
+        <select
+            value={planFilter}
+            onChange={(e) => setPlanFilter(e.target.value)}
+            className="h-10 rounded-2xl border-0 bg-gray-50 px-3 text-sm text-gray-700 focus:ring-2 focus:ring-gray-900 transition-colors"
+        >
+            <option value="all">Semua Paket</option>
+            <option value="none">Tanpa Paket</option>
+            {plans.map((p) => (
+                <option key={p.id} value={String(p.id)}>
+                    {p.name}
+                </option>
+            ))}
+        </select>
+    ) : undefined;
 
     return (
         <AdminLayout
@@ -504,7 +682,43 @@ export default function MembershipsIndex() {
                     </button>
                 </div>
 
-                <ListView memberships={memberships} onSelect={setSelected} />
+                {/* Per-plan stat cards */}
+                {plansWithCount.length > 0 && (
+                    <div className="flex gap-3 overflow-x-auto pb-1">
+                        {plansWithCount.map((p, idx) => (
+                            <div
+                                key={p.id}
+                                className={`${ADMIN_TOKENS.CARD} flex shrink-0 flex-col gap-1 p-4`}
+                                style={{ minWidth: "140px" }}
+                            >
+                                <p className="font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                                    {idx === 0 && (
+                                        <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700">
+                                            #1
+                                        </span>
+                                    )}
+                                    {idx === 1 && (
+                                        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[9px] font-bold text-gray-500">
+                                            #2
+                                        </span>
+                                    )}
+                                    {idx === 2 && (
+                                        <span className="rounded-full bg-orange-50 px-1.5 py-0.5 text-[9px] font-bold text-orange-500">
+                                            #3
+                                        </span>
+                                    )}
+                                    {p.name}
+                                </p>
+                                <p className="font-monument text-3xl font-normal text-gray-900">
+                                    {p.count}
+                                </p>
+                                <p className="text-[11px] text-gray-400">anggota aktif</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <ListView memberships={filtered} onSelect={setSelected} toolbar={toolbar} />
             </div>
 
             {/* Detail SlideOver */}
@@ -537,6 +751,7 @@ export default function MembershipsIndex() {
                 {showCreate && (
                     <CreateMembershipForm
                         users={users}
+                        plans={plans}
                         onClose={() => setShowCreate(false)}
                     />
                 )}

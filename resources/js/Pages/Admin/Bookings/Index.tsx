@@ -8,8 +8,11 @@ import {
     LayoutGrid,
     List,
     Plus,
+    Search,
+    UserCheck,
+    UserX,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DataTable from "@/Components/Admin/DataTable";
 import SlideOver from "@/Components/Admin/SlideOver";
 import AdminLayout from "@/Layouts/AdminLayout";
@@ -192,6 +195,131 @@ const inputBase =
 const labelBase =
     "font-clash text-xs font-medium uppercase tracking-wider text-gray-500";
 
+// ── Customer Combobox ─────────────────────────────────────────────────────────
+// Allows typing a new guest name OR picking an existing user from a dropdown.
+
+function CustomerCombobox({
+    users,
+    value,
+    userId,
+    onChange,
+    error,
+}: {
+    users: BookingUser[];
+    value: string;
+    userId: string;
+    onChange: (name: string, id: string) => void;
+    error?: string;
+}) {
+    const [open, setOpen]       = useState(false);
+    const [query, setQuery]     = useState(value);
+    const inputRef              = useRef<HTMLInputElement>(null);
+    const linkedUser            = userId ? users.find((u) => String(u.id) === userId) : null;
+
+    const filtered = query.trim().length > 0
+        ? users.filter((u) =>
+            u.name.toLowerCase().includes(query.toLowerCase()) ||
+            (u.phone_number ?? "").includes(query),
+          )
+        : users.slice(0, 8);
+
+    const select = (u: BookingUser) => {
+        setQuery(u.name);
+        onChange(u.name, String(u.id));
+        setOpen(false);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const v = e.target.value;
+        setQuery(v);
+        onChange(v, "");   // clear user_id when typing manually
+        setOpen(true);
+    };
+
+    const clearUser = () => {
+        setQuery("");
+        onChange("", "");
+        setOpen(false);
+        inputRef.current?.focus();
+    };
+
+    return (
+        <div className="relative">
+            <label className={labelBase}>Nama Pelanggan</label>
+            <div className="relative mt-1.5">
+                <div className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center">
+                    {linkedUser
+                        ? <UserCheck size={14} className="text-emerald-500" />
+                        : <Search    size={14} className="text-gray-400" />}
+                </div>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    placeholder="Ketik nama atau cari user terdaftar…"
+                    onFocus={() => setOpen(true)}
+                    onBlur={() => setTimeout(() => setOpen(false), 150)}
+                    onChange={handleInputChange}
+                    className={cn(
+                        inputBase,
+                        "pl-9 pr-9",
+                        error && "ring-2 ring-rose-400",
+                        linkedUser && "ring-2 ring-emerald-300",
+                    )}
+                />
+                {(query || linkedUser) && (
+                    <button
+                        type="button"
+                        onClick={clearUser}
+                        className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                    >
+                        <UserX size={14} />
+                    </button>
+                )}
+            </div>
+
+            {linkedUser && (
+                <p className="mt-1 text-[11px] text-emerald-600">
+                    User terdaftar: {linkedUser.name}
+                    {linkedUser.phone_number ? ` · ${linkedUser.phone_number}` : ""}
+                    {linkedUser.identity_category === "warga_kampus" ? " · Warga UB" : ""}
+                </p>
+            )}
+            {!linkedUser && query.trim().length > 0 && (
+                <p className="mt-1 text-[11px] text-amber-600">
+                    Tamu / Walk-in — tidak terhubung ke akun
+                </p>
+            )}
+            {error && <p className="mt-1 text-[11px] text-rose-500">{error}</p>}
+
+            {open && (
+                <ul className="absolute z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-2xl border border-gray-100 bg-white py-1 shadow-xl">
+                    {filtered.length === 0 ? (
+                        <li className="px-4 py-3 text-sm text-gray-400">
+                            Tidak ada user. Booking akan dicatat sebagai tamu.
+                        </li>
+                    ) : (
+                        filtered.map((u) => (
+                            <li
+                                key={u.id}
+                                onMouseDown={() => select(u)}
+                                className="flex cursor-pointer items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50"
+                            >
+                                <span className="font-medium text-gray-900">{u.name}</span>
+                                <span className="text-xs text-gray-400">
+                                    {u.phone_number ?? (u.identity_category === "warga_kampus" ? "Warga UB" : "")}
+                                </span>
+                            </li>
+                        ))
+                    )}
+                </ul>
+            )}
+        </div>
+    );
+}
+
+// ── Create Booking Form ───────────────────────────────────────────────────────
+
 function CreateBookingForm({
     facilities,
     users,
@@ -202,12 +330,13 @@ function CreateBookingForm({
     onClose: () => void;
 }) {
     const { data, setData, post, processing, errors } = useForm({
-        user_id:      "",
-        facility_id:  "",
-        booking_date: todayStr(),
-        start_time:   "08:00",
-        end_time:     "10:00",
-        notes:        "",
+        user_id:       "",
+        customer_name: "",
+        facility_id:   "",
+        booking_date:  todayStr(),
+        start_time:    "08:00",
+        end_time:      "10:00",
+        notes:         "",
     });
 
     const submit = (e: React.FormEvent) => {
@@ -217,25 +346,15 @@ function CreateBookingForm({
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-5">
-            <div>
-                <label className={labelBase}>Customer (User)</label>
-                <select
-                    value={data.user_id}
-                    onChange={(e) => setData("user_id", e.target.value)}
-                    className={`${inputBase} mt-1.5`}
-                >
-                    <option value="">Pilih user…</option>
-                    {users.map((u) => (
-                        <option key={u.id} value={u.id}>
-                            {u.name}
-                            {u.phone_number ? ` · ${u.phone_number}` : ""}
-                        </option>
-                    ))}
-                </select>
-                {errors.user_id && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.user_id}</p>
-                )}
-            </div>
+            <CustomerCombobox
+                users={users}
+                value={data.customer_name}
+                userId={data.user_id}
+                onChange={(name, id) => {
+                    setData((prev) => ({ ...prev, customer_name: name, user_id: id }));
+                }}
+                error={errors.customer_name ?? errors.user_id}
+            />
 
             <div>
                 <label className={labelBase}>Fasilitas</label>

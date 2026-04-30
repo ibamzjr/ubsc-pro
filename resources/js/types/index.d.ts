@@ -68,6 +68,7 @@ export interface IdentityUser {
     identity_number?: string | null;
     identity_status: IdentityStatus;
     has_document: boolean;
+    document_url: string | null;
     updated_at: string;
 }
 
@@ -151,9 +152,25 @@ export interface BookingTransaction {
     paid_at: string | null;
 }
 
+export interface RecentTransaction {
+    id: number;
+    amount: number;
+    user_name: string;
+    paid_at: string;        // human-readable "5 menit lalu"
+    type: string;           // "Booking" | "Membership"
+}
+
+export interface RecentActivity {
+    id: number;
+    type: "booking" | "membership" | "payment";
+    title: string;
+    subtitle: string;
+    time: string;           // human-readable
+}
+
 export interface AdminBooking {
     id: number;
-    user_id: number;
+    user_id: number | null;
     facility_id: number;
     booking_date: string;       // YYYY-MM-DD
     start_time: string;         // HH:MM
@@ -170,9 +187,23 @@ export interface AdminBooking {
 
 export type MembershipStatus = "active" | "expired" | "cancelled";
 
+export interface MembershipPlanItem {
+    id: number;
+    name: string;
+    description: string | null;
+    price: number;
+    duration_months: number;
+    features: string[];
+    is_active: boolean;
+    sort_order: number;
+    active_members_count: number;
+}
+
 export interface AdminMembership {
     id: number;
-    user_id: number;
+    user_id: number | null;
+    membership_plan_id: number | null;
+    plan_name: string | null;
     customer_name: string;
     customer_phone: string | null;
     start_date: string;          // YYYY-MM-DD

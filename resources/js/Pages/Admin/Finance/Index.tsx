@@ -1,8 +1,12 @@
-import { Head, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import {
+    ArrowDownRight,
+    ArrowUpRight,
     BarChart3,
     CalendarDays,
     ChevronDown,
+    CreditCard,
+    Download,
     PieChart,
     TrendingUp,
     Wallet,
@@ -13,7 +17,7 @@ import StatCard from "@/Components/Admin/StatCard";
 import { ADMIN_TOKENS } from "@/Components/Admin/tokens";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
-import type { PageProps } from "@/types";
+import type { PageProps, RecentTransaction } from "@/types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -43,6 +47,8 @@ type FinanceProps = PageProps<{
     dailyRevenue: number[];
     stats: FinanceStats;
     period: { month: number; year: number };
+    revenueTrend: number;
+    recentTransactions: RecentTransaction[];
 }>;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -180,8 +186,10 @@ function FacilityRow({
 type DetailTab = "revenue" | "bookings";
 
 export default function FinanceIndex() {
-    const { facilityRevenue, facilityBookings, dailyRevenue, stats, period } =
+    const { facilityRevenue, facilityBookings, dailyRevenue, stats, period, revenueTrend, recentTransactions } =
         usePage<FinanceProps>().props;
+
+    const trendPositive = revenueTrend >= 0;
 
     const [activeTab, setActiveTab] = useState<DetailTab>("revenue");
 
@@ -222,14 +230,24 @@ export default function FinanceIndex() {
                         <h1 className="font-monument text-3xl font-normal tracking-tight text-gray-900">
                             Finance & Analytics
                         </h1>
-                        <button
-                            type="button"
-                            className="flex shrink-0 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-[0_2px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50"
-                        >
-                            <CalendarDays size={15} className="text-gray-400" />
-                            <span>{periodLabel}</span>
-                            <ChevronDown size={14} className="text-gray-400" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => router.get(route("admin.finance.export", { month: period.month, year: period.year }))}
+                                className="flex shrink-0 items-center gap-2 rounded-2xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                            >
+                                <Download size={14} />
+                                Export PDF
+                            </button>
+                            <button
+                                type="button"
+                                className="flex shrink-0 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-[0_2px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50"
+                            >
+                                <CalendarDays size={15} className="text-gray-400" />
+                                <span>{periodLabel}</span>
+                                <ChevronDown size={14} className="text-gray-400" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             }
@@ -240,14 +258,26 @@ export default function FinanceIndex() {
 
                 {/* ── KPI Stat Cards ── */}
                 <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                    <StatCard
-                        icon={Wallet}
-                        label="Total Pendapatan"
-                        value={totalRevenueLabel}
-                        caption={`${periodLabel}`}
-                        gradient="bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700"
-                        badge={periodLabel}
-                    />
+                    <div className="relative">
+                        <StatCard
+                            icon={Wallet}
+                            label="Total Pendapatan"
+                            value={totalRevenueLabel}
+                            caption={`${periodLabel}`}
+                            gradient="bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700"
+                            badge={periodLabel}
+                        />
+                        {/* Revenue trend overlay badge */}
+                        <span className={cn(
+                            "absolute bottom-5 right-5 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                            trendPositive
+                                ? "bg-white/20 text-white"
+                                : "bg-rose-900/40 text-rose-200",
+                        )}>
+                            {trendPositive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                            {Math.abs(revenueTrend)}%
+                        </span>
+                    </div>
                     <StatCard
                         icon={BarChart3}
                         label="Jumlah Reservasi"
@@ -409,6 +439,50 @@ export default function FinanceIndex() {
                             )}
                         </div>
                     </div>
+                </section>
+
+                {/* ── Recent PAID Transactions ── */}
+                <section className={`${ADMIN_TOKENS.CARD_LARGE} p-6`}>
+                    <div className="mb-5 flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50">
+                            <CreditCard size={15} className="text-emerald-600" />
+                        </div>
+                        <div>
+                            <h2 className="font-clash text-sm font-medium text-gray-900">
+                                Transaksi Terakhir
+                            </h2>
+                            <p className="text-[11px] text-gray-400">5 pembayaran lunas terbaru</p>
+                        </div>
+                    </div>
+
+                    {recentTransactions.length === 0 ? (
+                        <p className="py-6 text-center text-sm text-gray-400">
+                            Belum ada transaksi lunas.
+                        </p>
+                    ) : (
+                        <ul className="divide-y divide-gray-50">
+                            {recentTransactions.map((tx) => (
+                                <li key={tx.id} className="flex items-center justify-between gap-4 py-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
+                                            <CreditCard size={13} className="text-emerald-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {tx.user_name}
+                                            </p>
+                                            <p className="text-[11px] text-gray-400">
+                                                {tx.type || "Transaksi"} · {tx.paid_at}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className="font-clash text-sm font-semibold text-gray-900">
+                                        Rp {tx.amount.toLocaleString("id-ID")}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </section>
 
             </div>
