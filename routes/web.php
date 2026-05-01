@@ -188,7 +188,7 @@ Route::middleware([
                 ]);
 
             $recentPayments = Transaction::where('payment_status', 'PAID')
-                ->with('user')
+                ->with(['user', 'transactionable'])
                 ->orderByDesc('paid_at')
                 ->take(5)
                 ->get()
@@ -196,7 +196,8 @@ Route::middleware([
                     'id'       => $t->id,
                     'type'     => 'payment',
                     'title'    => 'Pembayaran Diterima',
-                    'subtitle' => 'Rp ' . number_format($t->amount, 0, ',', '.') . ' · ' . ($t->user?->name ?? 'Guest'),
+                    'subtitle' => 'Rp ' . number_format($t->amount, 0, ',', '.') . ' · '
+                        . ($t->user?->name ?? $t->transactionable?->customer_name ?? 'Guest'),
                     'time'     => $t->paid_at?->diffForHumans() ?? '-',
                 ]);
 

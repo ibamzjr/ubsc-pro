@@ -142,14 +142,16 @@ class FinanceReportController extends Controller
 
         // ── 5 most recent PAID transactions ───────────────────────────────────
         $recentTransactions = Transaction::where('payment_status', 'PAID')
-            ->with('user')
+            ->with(['user', 'transactionable'])
             ->orderByDesc('paid_at')
             ->take(5)
             ->get()
             ->map(fn($t) => [
                 'id'        => $t->id,
                 'amount'    => $t->amount,
-                'user_name' => $t->user?->name ?? 'Guest',
+                'user_name' => $t->user?->name
+                    ?? $t->transactionable?->customer_name
+                    ?? 'Guest',
                 'paid_at'   => $t->paid_at?->diffForHumans() ?? '-',
                 'type'      => class_basename($t->transactionable_type ?? ''),
             ]);

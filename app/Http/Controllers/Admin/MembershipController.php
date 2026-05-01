@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
 use App\Models\MembershipPlan;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -23,15 +22,11 @@ class MembershipController extends Controller
             ->get()
             ->map(fn($m) => $this->transform($m));
 
-        $users = User::orderBy('name')
-            ->get(['id', 'name', 'phone_number']);
-
         $plans = MembershipPlan::orderBy('sort_order')
             ->get(['id', 'name', 'price', 'duration_months']);
 
         return Inertia::render('Admin/Memberships/Index', [
             'memberships' => $memberships,
-            'users'       => $users,
             'plans'       => $plans,
         ]);
     }
@@ -41,8 +36,7 @@ class MembershipController extends Controller
         $this->authorize('manage-bookings');
 
         $data = $request->validate([
-            'user_id'            => ['nullable', 'exists:users,id'],
-            'customer_name'      => ['required_without:user_id', 'nullable', 'string', 'max:255'],
+            'customer_name'      => ['required', 'string', 'max:255'],
             'membership_plan_id' => ['nullable', 'exists:membership_plans,id'],
             'start_date'         => ['required', 'date'],
             'end_date'           => ['nullable', 'date', 'after:start_date'],
@@ -62,8 +56,8 @@ class MembershipController extends Controller
         }
 
         $membership = Membership::create([
-            'user_id'            => $data['user_id'] ?? null,
-            'customer_name'      => $data['customer_name'] ?? null,
+            'user_id'            => null,
+            'customer_name'      => $data['customer_name'],
             'membership_plan_id' => $planId,
             'start_date'         => $data['start_date'],
             'end_date'           => $data['end_date'],
@@ -71,7 +65,7 @@ class MembershipController extends Controller
         ]);
 
         $membership->transaction()->create([
-            'user_id'        => $data['user_id'] ?? null,
+            'user_id'        => null,
             'amount'         => $amount,
             'payment_status' => 'UNPAID',
             'checkout_url'   => url("/admin/memberships/{$membership->id}"),

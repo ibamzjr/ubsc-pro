@@ -17,12 +17,6 @@ import type {
 
 // ── Page props ────────────────────────────────────────────────────────────────
 
-interface MembershipUser {
-    id: number;
-    name: string;
-    phone_number?: string | null;
-}
-
 interface PlanOption {
     id: number;
     name: string;
@@ -32,7 +26,6 @@ interface PlanOption {
 
 type Props = PageProps<{
     memberships: AdminMembership[];
-    users: MembershipUser[];
     plans: PlanOption[];
 }>;
 
@@ -130,18 +123,13 @@ const labelBase =
 // ── Create Membership Form ────────────────────────────────────────────────────
 
 function CreateMembershipForm({
-    users,
     plans,
     onClose,
 }: {
-    users: MembershipUser[];
     plans: PlanOption[];
     onClose: () => void;
 }) {
-    const [isGuest, setIsGuest] = useState(false);
-
     const { data, setData, post, processing, errors } = useForm({
-        user_id:            "",
         customer_name:      "",
         membership_plan_id: "",
         start_date:         todayStr(),
@@ -173,67 +161,21 @@ function CreateMembershipForm({
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-5">
-            {/* Member type toggle */}
-            <div className="flex rounded-2xl bg-gray-100 p-1">
-                <button
-                    type="button"
-                    onClick={() => { setIsGuest(false); setData("customer_name", ""); }}
-                    className={cn(
-                        "flex-1 rounded-xl py-2 text-xs font-medium transition-colors",
-                        !isGuest ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700",
-                    )}
-                >
-                    Pengguna Terdaftar
-                </button>
-                <button
-                    type="button"
-                    onClick={() => { setIsGuest(true); setData("user_id", ""); }}
-                    className={cn(
-                        "flex-1 rounded-xl py-2 text-xs font-medium transition-colors",
-                        isGuest ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700",
-                    )}
-                >
-                    Tamu / Walk-in
-                </button>
+            {/* Name */}
+            <div>
+                <label className={cn(labelBase, "mb-1.5 block")}>Nama Member</label>
+                <input
+                    type="text"
+                    value={data.customer_name}
+                    onChange={(e) => setData("customer_name", e.target.value)}
+                    placeholder="Nama lengkap member…"
+                    className={inputBase}
+                    required
+                />
+                {errors.customer_name && (
+                    <p className="mt-1 text-xs text-rose-500">{errors.customer_name}</p>
+                )}
             </div>
-
-            {/* User select or guest name */}
-            {isGuest ? (
-                <div>
-                    <label className={cn(labelBase, "mb-1.5 block")}>Nama Member</label>
-                    <input
-                        type="text"
-                        value={data.customer_name}
-                        onChange={(e) => setData("customer_name", e.target.value)}
-                        placeholder="Nama lengkap tamu…"
-                        className={inputBase}
-                        required
-                    />
-                    {errors.customer_name && (
-                        <p className="mt-1 text-xs text-rose-500">{errors.customer_name}</p>
-                    )}
-                </div>
-            ) : (
-                <div>
-                    <label className={cn(labelBase, "mb-1.5 block")}>Member (User)</label>
-                    <select
-                        value={data.user_id}
-                        onChange={(e) => setData("user_id", e.target.value)}
-                        className={inputBase}
-                    >
-                        <option value="">Pilih user…</option>
-                        {users.map((u) => (
-                            <option key={u.id} value={u.id}>
-                                {u.name}
-                                {u.phone_number ? ` · ${u.phone_number}` : ""}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.user_id && (
-                        <p className="mt-1 text-xs text-rose-500">{errors.user_id}</p>
-                    )}
-                </div>
-            )}
 
             {/* Plan */}
             <div>
@@ -593,7 +535,7 @@ function ListView({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function MembershipsIndex() {
-    const { memberships, users, plans } = usePage<Props>().props;
+    const { memberships, plans } = usePage<Props>().props;
 
     const [selected, setSelected]     = useState<AdminMembership | null>(null);
     const [showCreate, setShowCreate] = useState(false);
@@ -750,7 +692,6 @@ export default function MembershipsIndex() {
             >
                 {showCreate && (
                     <CreateMembershipForm
-                        users={users}
                         plans={plans}
                         onClose={() => setShowCreate(false)}
                     />

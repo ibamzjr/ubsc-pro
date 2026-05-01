@@ -7,7 +7,6 @@ use App\Models\Booking;
 use App\Models\BookingSchedule;
 use App\Models\Facility;
 use App\Models\FacilityPrice;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,13 +29,9 @@ class BookingController extends Controller
             ->orderBy('sort_order')
             ->get(['id', 'name']);
 
-        $users = User::orderBy('name')
-            ->get(['id', 'name', 'phone_number', 'identity_category']);
-
         return Inertia::render('Admin/Bookings/Index', [
             'bookings'   => $bookings,
             'facilities' => $facilities,
-            'users'      => $users,
         ]);
     }
 
@@ -45,8 +40,7 @@ class BookingController extends Controller
         $this->authorize('manage-bookings');
 
         $data = $request->validate([
-            'user_id'       => ['nullable', 'exists:users,id'],
-            'customer_name' => ['required_without:user_id', 'nullable', 'string', 'max:255'],
+            'customer_name' => ['required', 'string', 'max:255'],
             'facility_id'   => ['required', 'exists:facilities,id'],
             'booking_date'  => ['required', 'date', 'after_or_equal:today'],
             'start_time'    => ['required', 'date_format:H:i'],
@@ -71,22 +65,16 @@ class BookingController extends Controller
             ]);
         }
 
-        // If a registered user is selected, derive the customer name from their account
-        $userId       = $data['user_id'] ?? null;
-        $customerName = $userId
-            ? User::find($userId)?->name ?? $data['customer_name'] ?? 'Guest'
-            : ($data['customer_name'] ?? 'Guest');
-
         $subtotal = $this->calculateSubtotal(
-            $userId ? (int) $userId : null,
+            null,
             (int) $data['facility_id'],
             $data['start_time'],
             $data['end_time'],
         );
 
         $booking = Booking::create([
-            'user_id'        => $userId,
-            'customer_name'  => $customerName,
+            'user_id'        => null,
+            'customer_name'  => $data['customer_name'],
             'facility_id'    => $data['facility_id'],
             'booking_date'   => $data['booking_date'],
             'start_time'     => $data['start_time'],
@@ -97,7 +85,7 @@ class BookingController extends Controller
         ]);
 
         $booking->transaction()->create([
-            'user_id'        => $userId,
+            'user_id'        => null,
             'amount'         => $subtotal,
             'payment_status' => 'UNPAID',
             'checkout_url'   => url("/admin/bookings/{$booking->id}"),
