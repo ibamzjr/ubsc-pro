@@ -22,13 +22,13 @@ export default function SectionDivider({
             }`}
         >
             <div
-                className={`flex items-center justify-between text-xs ${
+                className={`flex items-center justify-between text-[clamp(0.875rem,0.813rem+0.208vw,1rem)] ${
                     isDark ? "text-white" : "text-black"
                 }`}
             >
                 <span className="flex items-center gap-2">
                     <motion.span
-                        className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0"
+                        className="h-1.5 w-1.5 rounded-full bg-[#ff0000] flex-shrink-0"
                         animate={{
                             scale: [1, 1.7, 1],
                             boxShadow: [

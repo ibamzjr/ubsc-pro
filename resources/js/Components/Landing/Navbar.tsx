@@ -90,7 +90,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12
                 transition-all duration-500 ease-out bg-gradient-to-b to-transparent
                 ${navVisible ? "translate-y-0" : "-translate-y-full"}
-                ${scrolled ? "from-black/85" : "from-black/55"}
+                ${scrolled ? "from-black" : "from-black"}
                 `}
             >
                 <div className="flex items-center gap-2">
@@ -249,9 +249,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                         </div>
 
                         <div className="ml-auto flex items-center pr-[clamp(0.5rem,2vw,0.875rem)]">
-                            <ArrowRight
-                                className="h-[clamp(1rem,4vw,1.25rem)] w-[clamp(1rem,4vw,1.25rem)] text-navy-900 transition-transform group-hover:translate-x-0.5"
-                            />
+                            <ArrowRight className="h-[clamp(1rem,4vw,1.25rem)] w-[clamp(1rem,4vw,1.25rem)] text-navy-900 transition-transform group-hover:translate-x-0.5" />
                         </div>
                     </a>
                 </div>

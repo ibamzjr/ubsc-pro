@@ -11,7 +11,10 @@ interface ImageCarouselProps {
     loop?: boolean;
 }
 
-export default function ImageCarousel({ images, loop = false }: ImageCarouselProps) {
+export default function ImageCarousel({
+    images,
+    loop = false,
+}: ImageCarouselProps) {
     const [emblaRef] = useEmblaCarousel({
         align: "start",
         dragFree: true,

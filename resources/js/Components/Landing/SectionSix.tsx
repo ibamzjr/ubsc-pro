@@ -116,7 +116,9 @@ function FeatureItem({ label }: { label: string }) {
                     />
                 </svg>
             </div>
-            <span className="text-[clamp(0.75rem,0.83vw,16px)] font-semibold text-gray-800">{label}</span>
+            <span className="text-[clamp(0.75rem,0.83vw,16px)] font-semibold text-gray-800">
+                {label}
+            </span>
         </div>
     );
 }
@@ -157,24 +159,24 @@ export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
 
     return (
         <section id="pricing" className="w-full bg-white  pt-12 xl:pb-12">
-            <div className="mx-auto w-full px-6 sm:px-10 xl:px-24">
+            <div className="mx-auto w-full px-6 sm:px-10 xl:px-20">
                 <SectionDivider
-                    number="04"
+                    number="06"
                     title="Daftar harga"
-                    subtitle="01/ homepage"
+                    subtitle="01 homepage"
                     theme="light"
                 />
 
                 <div className="mt-16 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8">
                     <div className="col-span-1 flex flex-col xl:col-span-5">
                         <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-[clamp(0.75rem,0.83vw,16px)] font-semibold text-gray-800">
+                            <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
+                            <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
                                 Tarif Lapangan
                             </span>
                         </div>
 
-                        <h2 className="mb-4 mt-6 max-w-sm text-[clamp(1.5rem,2.7vw,52px)] font-bold leading-[1.1] tracking-[-0.021em] text-gray-900">
+                        <h2 className="mb-4 mt-6 max-w-sm text-[clamp(1.5rem,1.8vw,52px)] font-bold leading-[1.1] tracking-[-0.021em] text-gray-900">
                             Raih Performa Terbaik Dengan Paket Fasilitas
                             Unggulan
                         </h2>
