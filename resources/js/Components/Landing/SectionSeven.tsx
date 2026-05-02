@@ -67,20 +67,20 @@ export default function SectionSeven({
     return (
         <section
             id="testimonials"
-            className="w-full bg-white pt-12 pb-12 px-6 sm:px-10 lg:px-24"
+            className="w-full bg-white pt-12 pb-12 px-6 sm:px-10 lg:px-20"
         >
             <div className="mx-auto">
                 <SectionDivider
-                    number="06"
+                    number="07"
                     title="Testimoni"
-                    subtitle="01/ homepage"
+                    subtitle="01 homepage"
                     theme="light"
                 />
             </div>
 
             <div className="mb-8 flex items-center gap-2">
-                <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                <span className="font-bdo text-sm font-regular text-gray-800">
+                <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
+                <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
                     Ulasan Pengguna
                 </span>
             </div>
