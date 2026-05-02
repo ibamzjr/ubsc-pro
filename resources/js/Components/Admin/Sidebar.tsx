@@ -19,10 +19,96 @@ import {
     Users2,
     X,
 } from "lucide-react";
+import React from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import { cn } from "@/lib/utils";
-import SidebarGroup from "./SidebarGroup";
-import SidebarNavLink from "./SidebarNavLink";
+
+// ── Inlined Premium Components ───────────────────────────────────────────────
+// (Digabungkan langsung ke sini agar efek visual SaaS bisa dikontrol 100% 
+// tanpa merusak file komponen eksternal)
+
+const SidebarGroup = ({ label, children, delay }: { label: string, children: React.ReactNode, delay: string }) => (
+    <div className={`mb-6 animate-fade-in-up ${delay}`}>
+        <h4 className="px-3 mb-2 font-bdo text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+            {label}
+        </h4>
+        <div className="flex flex-col gap-1.5">
+            {children}
+        </div>
+    </div>
+);
+
+const SidebarNavLink = ({
+    icon: Icon,
+    label,
+    href,
+    active,
+    badge,
+    disabled,
+    method,
+    as
+}: any) => {
+    const isLogout = label.toLowerCase().includes("log out");
+
+    const content = (
+        <>
+            <Icon 
+                size={18} 
+                className={cn(
+                    "shrink-0 transition-all duration-300 relative z-10", 
+                    active 
+                        ? "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)] scale-110" 
+                        : isLogout
+                            ? "text-slate-400 group-hover:text-rose-500 group-hover:scale-110"
+                            : "text-slate-400 group-hover:text-blue-500 group-hover:scale-110"
+                )} 
+            />
+            <span className={cn(
+                "flex-1 font-clash font-medium text-sm relative z-10 transition-colors",
+                active ? "text-white" : isLogout ? "group-hover:text-rose-600" : "text-slate-600 group-hover:text-slate-900"
+            )}>
+                {label}
+            </span>
+            {badge && (
+                <span className={cn(
+                    "font-bdo text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md relative z-10 transition-colors", 
+                    active 
+                        ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" 
+                        : "bg-slate-100 text-slate-500 border border-slate-200 group-hover:border-slate-300"
+                )}>
+                    {badge}
+                </span>
+            )}
+            {/* Active Dark Glassmorphism + Water Caustics */}
+            {active && (
+                <div className="absolute inset-0 water-caustics-effect opacity-20 pointer-events-none rounded-xl"></div>
+            )}
+        </>
+    );
+
+    const className = cn(
+        "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 outline-none w-full text-left overflow-hidden",
+        active
+            ? "bg-[#12131c] shadow-[inset_0_-8px_15px_-5px_rgba(59,130,246,0.6),_0_5px_15px_rgba(0,0,0,0.05)] translate-x-1"
+            : isLogout 
+                ? "hover:bg-rose-50 hover:border-rose-100 border border-transparent"
+                : "hover:bg-slate-50 hover:border-slate-200/60 border border-transparent",
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none"
+    );
+
+    if (disabled || !href) {
+        return <button type="button" disabled className={className}>{content}</button>;
+    }
+
+    if (as === "button") {
+        return <Link href={href} method={method as any} as="button" type="button" className={className}>{content}</Link>;
+    }
+
+    return <Link href={href} className={className}>{content}</Link>;
+};
+
+
+// ── Original Logic & State ───────────────────────────────────────────────────
 
 interface SidebarProps {
     mobileOpen: boolean;
@@ -46,6 +132,8 @@ function safeRoute(name: string): string | undefined {
     }
 }
 
+// ── Sidebar Component ────────────────────────────────────────────────────────
+
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     const dashboardActive = isCurrent("admin.dashboard");
     const identityActive = isCurrent("admin.identity.*");
@@ -65,48 +153,61 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
     return (
         <>
-            {/* Mobile backdrop */}
+            {/* GLOBAL STYLES & CSS ANIMATIONS (Dipastikan ada jika Sidebar dirender mandiri) */}
+            <style dangerouslySetInnerHTML={{__html: `
+                .font-clash { font-family: 'Clash Display', sans-serif; }
+                .font-bdo { font-family: 'BDO Grotesk', sans-serif; }
+                @keyframes caustics { 0% { background-position: 0% 50%; opacity: 0.15; } 50% { background-position: 100% 50%; opacity: 0.35; } 100% { background-position: 0% 50%; opacity: 0.15; } }
+                .water-caustics-effect { background: radial-gradient(circle at top left, rgba(255,255,255,0.3) 0%, transparent 40%), radial-gradient(circle at bottom right, rgba(255,255,255,0.2) 0%, transparent 50%); background-size: 150% 150%; animation: caustics 8s ease-in-out infinite; mix-blend-mode: overlay; }
+                @keyframes fadeInUp { from { opacity: 0; transform: translate3d(0, 20px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+                .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; will-change: opacity, transform; }
+                .delay-100 { animation-delay: 50ms; } .delay-200 { animation-delay: 100ms; } .delay-300 { animation-delay: 150ms; }
+                .sidebar-scrollbar::-webkit-scrollbar { width: 4px; } .sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; } .sidebar-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } .sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+            `}} />
+
+            {/* Mobile backdrop with Blur */}
             <div
                 onClick={onClose}
                 className={cn(
-                    "fixed inset-0 z-30 bg-black/40 backdrop-blur-sm transition-opacity duration-200 xl:hidden",
-                    mobileOpen
-                        ? "opacity-100"
-                        : "pointer-events-none opacity-0",
+                    "fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 xl:hidden",
+                    mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
                 )}
                 aria-hidden="true"
             />
 
             <aside
                 className={cn(
-                    "fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-white transition-transform duration-300 ease-out",
-                    "xl:sticky xl:top-0 xl:h-screen xl:w-64 xl:translate-x-0",
+                    "fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-white/95 backdrop-blur-xl border-r border-slate-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-transform duration-400 ease-out",
+                    "xl:sticky xl:top-0 xl:h-screen xl:translate-x-0",
                     mobileOpen ? "translate-x-0" : "-translate-x-full",
                 )}
                 aria-label="Admin sidebar"
             >
-                <div className="flex h-16 items-center justify-between px-6">
-                    <Link href="/" className="flex items-center gap-2">
-                        <img
-                            src="/UBSC PRO.png"
-                            alt="UBSC Logo"
-                            className="h-16 w-auto"
-                        />
+                {/* Header / Logo Area */}
+                <div className="flex h-[76px] items-center justify-between px-6 border-b border-slate-100">
+                    <Link href="/" className="flex items-center gap-2 group outline-none">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full scale-50 group-hover:scale-100 transition-transform duration-500"></div>
+                            <img
+                                src="/UBSC PRO.png"
+                                alt="UBSC Logo"
+                                className="h-10 w-auto relative z-10 drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                            />
+                        </div>
                     </Link>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 xl:hidden"
+                        className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 xl:hidden transition-colors"
                         aria-label="Close sidebar"
                     >
-                        <X size={18} />
+                        <X size={20} />
                     </button>
                 </div>
 
-                <div className="border-b border-gray-100" />
-
-                <nav className="flex-1 overflow-y-auto px-3 py-4">
-                    <SidebarGroup label="Main">
+                {/* Navigation Links */}
+                <nav className="flex-1 overflow-y-auto px-4 py-6 sidebar-scrollbar">
+                    <SidebarGroup label="Main" delay="delay-100">
                         <SidebarNavLink
                             icon={LayoutDashboard}
                             label="Dashboard"
@@ -153,7 +254,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         />
                     </SidebarGroup>
 
-                    <SidebarGroup label="Content">
+                    <SidebarGroup label="Content" delay="delay-200">
                         <SidebarNavLink
                             icon={Newspaper}
                             label="News"
@@ -186,7 +287,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         />
                     </SidebarGroup>
 
-                    <SidebarGroup label="Settings">
+                    <SidebarGroup label="Settings" delay="delay-300">
                         <SidebarNavLink
                             icon={CalendarRange}
                             label="Schedule Control"
@@ -207,7 +308,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         />
                     </SidebarGroup>
 
-                    <SidebarGroup label="Other">
+                    <SidebarGroup label="Other" delay="delay-300">
                         <SidebarNavLink
                             icon={HelpCircle}
                             label="Help"
@@ -216,7 +317,8 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     </SidebarGroup>
                 </nav>
 
-                <div className="border-t border-gray-100 p-3">
+                {/* Logout Area */}
+                <div className="border-t border-slate-100 p-4 bg-white/50 backdrop-blur-sm z-10">
                     <SidebarNavLink
                         icon={LogOut}
                         label="Log out"
