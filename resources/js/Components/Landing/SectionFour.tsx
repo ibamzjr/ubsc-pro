@@ -121,9 +121,9 @@ export default function SectionFour() {
 
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
-            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24 xl:pt-12">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-20 xl:pt-12">
                 <SectionDivider
-                    number="02"
+                    number="03"
                     title="Fasilitas"
                     subtitle="01 homepage"
                 />
@@ -131,8 +131,8 @@ export default function SectionFour() {
                 <div className="mb-10 xl:mb-16 grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
                     <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                            <span className="text-[clamp(0.875rem,1.25vw,24px)] font-regular text-gray-800">
+                            <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
+                            <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
                                 Fasilitas Kami
                             </span>
                         </div>

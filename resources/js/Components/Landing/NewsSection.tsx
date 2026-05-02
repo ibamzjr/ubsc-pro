@@ -88,7 +88,7 @@ export default function NewsSection({ news = DUMMY_NEWS }: NewsSectionProps) {
         <div className="mx-auto mt-16 flex max-w-[95%] flex-col px-0 xl:px-0">
             <div className="px-8">
                 <SectionDivider
-                    number="04"
+                    number="05"
                     title="Berita"
                     subtitle="01/ homepage"
                     theme="dark"

@@ -21,7 +21,7 @@ export default function LogoMarquee() {
                 {duplicatedLogos.map((logo, i) => (
                     <div
                         key={i}
-                        className="bg-[#F7F7F7] flex items-center justify-center w-[260px] h-[130px] rounded-lg flex-shrink-0 pointer-events-none"
+                        className="bg-[#F7F7F7] flex items-center justify-center w-[290px] h-[218px] rounded-lg flex-shrink-0 pointer-events-none p-10"
                     >
                         <img
                             src={logo.img}
