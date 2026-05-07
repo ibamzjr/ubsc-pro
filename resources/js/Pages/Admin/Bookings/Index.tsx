@@ -105,34 +105,34 @@ function todayStr(): string {
     return `${now.getFullYear()}-${padTwo(now.getMonth() + 1)}-${padTwo(now.getDate())}`;
 }
 
-// ── Status maps ───────────────────────────────────────────────────────────────
+// ── Status maps (Visual Refined) ──────────────────────────────────────────────
 
 const STATUS_STYLE: Record<BookingStatus, string> = {
-    pending:   "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
-    confirmed: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
-    completed: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200",
-    cancelled: "bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-200",
+    pending:   "bg-orange-50 text-orange-700 border border-orange-200",
+    confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    completed: "bg-blue-50 text-blue-700 border border-blue-200",
+    cancelled: "bg-slate-50 text-slate-500 border border-slate-200",
 };
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
     pending:   "Pending",
-    confirmed: "Confirmed",
+    confirmed: "Konfirmasi",
     completed: "Selesai",
     cancelled: "Dibatalkan",
 };
 
 const STATUS_DOT: Record<BookingStatus, string> = {
-    pending:   "bg-amber-400",
-    confirmed: "bg-green-500",
-    completed: "bg-blue-500",
-    cancelled: "bg-gray-400",
+    pending:   "bg-orange-400 shadow-[0_0_5px_rgba(251,146,60,0.8)]",
+    confirmed: "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]",
+    completed: "bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.8)]",
+    cancelled: "bg-slate-300",
 };
 
 const PAYMENT_STATUS_STYLE: Record<PaymentStatus, string> = {
-    UNPAID:  "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
-    PAID:    "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
-    EXPIRED: "bg-orange-50 text-orange-600 ring-1 ring-inset ring-orange-200",
-    FAILED:  "bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-200",
+    UNPAID:  "bg-orange-50 text-orange-700 border border-orange-200",
+    PAID:    "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    EXPIRED: "bg-rose-50 text-rose-600 border border-rose-200",
+    FAILED:  "bg-red-50 text-red-600 border border-red-200",
 };
 
 const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
@@ -144,8 +144,8 @@ const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
 
 // Pill color per user category (calendar grid)
 const PILL_STYLE: Record<UserCategory, string> = {
-    warga_ub: "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100",
-    umum:     "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200",
+    warga_ub: "bg-blue-50/90 backdrop-blur-sm border-blue-200/60 text-blue-800 hover:bg-blue-100",
+    umum:     "bg-slate-50/90 backdrop-blur-sm border-slate-200/60 text-slate-700 hover:bg-slate-100",
 };
 
 // ── Badges ────────────────────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ function StatusBadge({ status }: { status: BookingStatus }) {
     return (
         <span
             className={cn(
-                "inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide",
+                "inline-flex rounded-md px-2.5 py-1 font-bdo text-[10px] font-bold uppercase tracking-widest",
                 STATUS_STYLE[status],
             )}
         >
@@ -168,7 +168,7 @@ function PaymentBadge({ tx }: { tx: BookingTransaction | null }) {
     return (
         <span
             className={cn(
-                "inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide",
+                "inline-flex rounded-md px-2.5 py-1 font-bdo text-[10px] font-bold uppercase tracking-widest",
                 PAYMENT_STATUS_STYLE[tx.payment_status],
             )}
         >
@@ -177,12 +177,12 @@ function PaymentBadge({ tx }: { tx: BookingTransaction | null }) {
     );
 }
 
-// ── Create Booking Form ───────────────────────────────────────────────────────
+// ── Base Forms Styling ────────────────────────────────────────────────────────
 
 const inputBase =
-    "w-full rounded-2xl border-0 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-gray-900 transition-colors";
+    "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm font-bdo text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 transition-all";
 const labelBase =
-    "font-clash text-xs font-medium uppercase tracking-wider text-gray-500";
+    "font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block";
 
 // ── Create Booking Form ───────────────────────────────────────────────────────
 
@@ -208,9 +208,9 @@ function CreateBookingForm({
     };
 
     return (
-        <form onSubmit={submit} className="flex flex-col gap-5">
+        <form onSubmit={submit} className="flex flex-col gap-5 animate-fade-in-up">
             <div>
-                <label className={cn(labelBase, "mb-1.5 block")}>Nama Pelanggan</label>
+                <label className={labelBase}>Nama Pelanggan</label>
                 <input
                     type="text"
                     value={data.customer_name}
@@ -219,9 +219,7 @@ function CreateBookingForm({
                     className={inputBase}
                     required
                 />
-                {errors.customer_name && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.customer_name}</p>
-                )}
+                {errors.customer_name && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.customer_name}</p>}
             </div>
 
             <div>
@@ -229,7 +227,7 @@ function CreateBookingForm({
                 <select
                     value={data.facility_id}
                     onChange={(e) => setData("facility_id", e.target.value)}
-                    className={`${inputBase} mt-1.5`}
+                    className={inputBase}
                 >
                     <option value="">Pilih fasilitas…</option>
                     {facilities.map((f) => (
@@ -238,9 +236,7 @@ function CreateBookingForm({
                         </option>
                     ))}
                 </select>
-                {errors.facility_id && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.facility_id}</p>
-                )}
+                {errors.facility_id && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.facility_id}</p>}
             </div>
 
             <div>
@@ -250,11 +246,9 @@ function CreateBookingForm({
                     value={data.booking_date}
                     min={todayStr()}
                     onChange={(e) => setData("booking_date", e.target.value)}
-                    className={`${inputBase} mt-1.5`}
+                    className={inputBase}
                 />
-                {errors.booking_date && (
-                    <p className="mt-1 text-xs text-rose-500">{errors.booking_date}</p>
-                )}
+                {errors.booking_date && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.booking_date}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -265,11 +259,9 @@ function CreateBookingForm({
                         value={data.start_time}
                         step="1800"
                         onChange={(e) => setData("start_time", e.target.value)}
-                        className={`${inputBase} mt-1.5`}
+                        className={inputBase}
                     />
-                    {errors.start_time && (
-                        <p className="mt-1 text-xs text-rose-500">{errors.start_time}</p>
-                    )}
+                    {errors.start_time && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.start_time}</p>}
                 </div>
                 <div>
                     <label className={labelBase}>Jam Selesai</label>
@@ -278,11 +270,9 @@ function CreateBookingForm({
                         value={data.end_time}
                         step="1800"
                         onChange={(e) => setData("end_time", e.target.value)}
-                        className={`${inputBase} mt-1.5`}
+                        className={inputBase}
                     />
-                    {errors.end_time && (
-                        <p className="mt-1 text-xs text-rose-500">{errors.end_time}</p>
-                    )}
+                    {errors.end_time && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.end_time}</p>}
                 </div>
             </div>
 
@@ -293,24 +283,24 @@ function CreateBookingForm({
                     onChange={(e) => setData("notes", e.target.value)}
                     rows={3}
                     placeholder="Informasi tambahan…"
-                    className={`${inputBase} mt-1.5 resize-none`}
+                    className={cn(inputBase, "resize-none")}
                 />
             </div>
 
-            <div className="flex items-center gap-3 pt-2">
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="flex-1 rounded-2xl bg-gray-900 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-60"
-                >
-                    {processing ? "Menyimpan…" : "Buat Booking"}
-                </button>
+            <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-2xl px-5 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                    className="flex-1 rounded-xl px-5 py-3 text-sm font-clash font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
                 >
                     Batal
+                </button>
+                <button
+                    type="submit"
+                    disabled={processing}
+                    className="flex-[2] rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 py-3 text-sm font-clash font-medium text-white transition-all shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.4)] hover:bg-slate-900 hover:scale-[0.98] disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
+                >
+                    {processing ? "Menyimpan…" : "Buat Booking"}
                 </button>
             </div>
         </form>
@@ -344,97 +334,114 @@ function BookingDetail({
     const duration = getDurationMinutes(booking.start_time, booking.end_time);
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 animate-fade-in-up">
             {/* ID + Booking Status */}
-            <div className="flex items-center justify-between">
-                <span className="font-clash text-xs font-semibold uppercase tracking-widest text-gray-400">
-                    #{String(booking.id).padStart(5, "0")}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <span className="font-bdo text-xs font-bold uppercase tracking-widest text-slate-400">
+                    ID: #{String(booking.id).padStart(5, "0")}
                 </span>
                 <StatusBadge status={booking.status} />
             </div>
 
-            {/* Customer */}
-            <section className="rounded-2xl bg-gray-50 p-4">
-                <p className="mb-2.5 font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                    Customer
-                </p>
-                <p className="font-medium text-gray-900">{booking.customer_name}</p>
-                {booking.customer_phone && (
-                    <p className="mt-0.5 text-sm text-gray-500">{booking.customer_phone}</p>
-                )}
-                <span
-                    className={cn(
-                        "mt-2 inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium",
-                        booking.user_category === "warga_ub"
-                            ? "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200"
-                            : "bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200",
+            {/* Customer Card */}
+            <section className="rounded-[20px] bg-slate-50/50 border border-slate-100 p-5 hover:border-orange-100/50 transition-colors">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-[#12131c] p-2 rounded-lg shadow-sm">
+                        <Eye className="w-4 h-4 text-orange-400" />
+                    </div>
+                    <p className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        Customer
+                    </p>
+                </div>
+                <div className="pl-1">
+                    <p className="font-clash text-lg font-medium text-slate-900">{booking.customer_name}</p>
+                    {booking.customer_phone && (
+                        <p className="mt-0.5 font-bdo text-sm text-slate-500">{booking.customer_phone}</p>
                     )}
-                >
-                    {booking.user_category === "warga_ub" ? "Warga UB" : "Umum"}
-                </span>
+                    <span
+                        className={cn(
+                            "mt-3 inline-flex rounded-md px-2.5 py-1 text-[10px] font-bdo font-bold tracking-widest uppercase",
+                            booking.user_category === "warga_ub"
+                                ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                : "bg-slate-100 text-slate-600 border border-slate-200",
+                        )}
+                    >
+                        {booking.user_category === "warga_ub" ? "Warga UB" : "Umum"}
+                    </span>
+                </div>
             </section>
 
-            {/* Booking Details */}
-            <section className="rounded-2xl bg-gray-50 p-4">
-                <p className="mb-2.5 font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                    Detail Booking
-                </p>
-                <dl className="flex flex-col gap-2.5 text-sm">
-                    <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Fasilitas</dt>
-                        <dd className="font-medium text-gray-900">{booking.facility_name}</dd>
+            {/* Booking Details Card */}
+            <section className="rounded-[20px] bg-slate-50/50 border border-slate-100 p-5 hover:border-orange-100/50 transition-colors">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-orange-100 p-2 rounded-lg shadow-sm">
+                        <LayoutGrid className="w-4 h-4 text-orange-600" />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Tanggal</dt>
-                        <dd className="font-medium text-gray-900">
+                    <p className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        Detail Reservasi
+                    </p>
+                </div>
+                <dl className="flex flex-col gap-3 font-bdo text-sm pl-1">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/50">
+                        <dt className="text-slate-500">Fasilitas</dt>
+                        <dd className="font-semibold text-slate-900">{booking.facility_name}</dd>
+                    </div>
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/50">
+                        <dt className="text-slate-500">Tanggal</dt>
+                        <dd className="font-medium text-slate-900">
                             {formatDateDisplay(booking.booking_date)}
                         </dd>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Waktu</dt>
-                        <dd className="font-medium text-gray-900">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/50">
+                        <dt className="text-slate-500">Waktu</dt>
+                        <dd className="font-medium text-slate-900">
                             {booking.start_time} – {booking.end_time}
                         </dd>
                     </div>
                     <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Durasi</dt>
-                        <dd className="font-medium text-gray-900">{formatDuration(duration)}</dd>
+                        <dt className="text-slate-500">Durasi</dt>
+                        <dd className="font-medium text-slate-900">{formatDuration(duration)}</dd>
                     </div>
                     {booking.notes && (
-                        <div className="flex items-start justify-between gap-4">
-                            <dt className="shrink-0 text-gray-500">Catatan</dt>
-                            <dd className="text-right text-gray-700">{booking.notes}</dd>
+                        <div className="flex items-start justify-between gap-4 pt-2 mt-1 border-t border-slate-200/50">
+                            <dt className="shrink-0 text-slate-500">Catatan</dt>
+                            <dd className="text-right text-slate-700 italic">"{booking.notes}"</dd>
                         </div>
                     )}
                 </dl>
             </section>
 
-            {/* Payment */}
-            <section className="rounded-2xl bg-gray-50 p-4">
-                <div className="mb-2.5 flex items-center justify-between">
-                    <p className="font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                        Pembayaran
-                    </p>
+            {/* Payment Card */}
+            <section className="rounded-[20px] bg-slate-50/50 border border-slate-100 p-5 hover:border-orange-100/50 transition-colors">
+                <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-emerald-100 p-2 rounded-lg shadow-sm">
+                            <List className="w-4 h-4 text-emerald-600" />
+                        </div>
+                        <p className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Pembayaran
+                        </p>
+                    </div>
                     <PaymentBadge tx={booking.transaction} />
                 </div>
-                <dl className="flex flex-col gap-2 text-sm">
-                    <div className="flex items-center justify-between">
-                        <dt className="text-gray-500">Subtotal</dt>
-                        <dd className="font-semibold text-gray-900">
+                <dl className="flex flex-col gap-2 font-bdo text-sm pl-1">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/50">
+                        <dt className="text-slate-500">Subtotal</dt>
+                        <dd className="font-clash text-lg font-semibold text-slate-900">
                             {formatPrice(booking.subtotal_price)}
                         </dd>
                     </div>
                     {booking.transaction?.paid_at && (
-                        <div className="flex items-center justify-between">
-                            <dt className="text-gray-500">Dibayar</dt>
-                            <dd className="text-gray-700">{booking.transaction.paid_at}</dd>
+                        <div className="flex items-center justify-between pt-1">
+                            <dt className="text-slate-500">Waktu Bayar</dt>
+                            <dd className="text-slate-700 font-medium">{booking.transaction.paid_at}</dd>
                         </div>
                     )}
                 </dl>
             </section>
 
             {/* Actions */}
-            <div className="flex flex-col gap-2.5 pt-1">
+            <div className="flex flex-col gap-3 pt-4 border-t border-slate-100 mt-2">
                 {booking.transaction?.payment_status === "UNPAID" && (
                     <button
                         type="button"
@@ -445,7 +452,7 @@ function BookingDetail({
                                 { onSuccess: onClose },
                             )
                         }
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+                        className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3.5 text-sm font-clash font-medium text-white transition-all shadow-[inset_0_-8px_15px_-5px_rgba(16,185,129,0.4)] hover:bg-emerald-600 hover:scale-[0.98]"
                     >
                         Simulasi Bayar
                     </button>
@@ -454,7 +461,7 @@ function BookingDetail({
                     <button
                         type="button"
                         onClick={() => handleUpdateStatus("confirmed")}
-                        className="flex items-center justify-center rounded-2xl bg-green-600 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                        className="flex items-center justify-center rounded-xl bg-[#12131c] py-3.5 text-sm font-clash font-medium text-white transition-all shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.4)] hover:bg-slate-900 hover:scale-[0.98]"
                     >
                         Konfirmasi Booking
                     </button>
@@ -463,7 +470,7 @@ function BookingDetail({
                     <button
                         type="button"
                         onClick={() => handleUpdateStatus("completed")}
-                        className="flex items-center justify-center rounded-2xl bg-blue-600 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                        className="flex items-center justify-center rounded-xl bg-blue-500 py-3.5 text-sm font-clash font-medium text-white transition-all shadow-[inset_0_-8px_15px_-5px_rgba(59,130,246,0.4)] hover:bg-blue-600 hover:scale-[0.98]"
                     >
                         Tandai Selesai
                     </button>
@@ -472,7 +479,7 @@ function BookingDetail({
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="flex items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
+                        className="flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 py-3.5 text-sm font-clash font-medium text-rose-600 transition-colors hover:bg-rose-100"
                     >
                         Batalkan Booking
                     </button>
@@ -480,16 +487,16 @@ function BookingDetail({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-2xl py-3 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100"
+                    className="rounded-xl py-3 text-sm font-bdo font-medium text-slate-500 transition-colors hover:bg-slate-100"
                 >
-                    Tutup
+                    Tutup Panel
                 </button>
             </div>
         </div>
     );
 }
 
-// ── Grid View ─────────────────────────────────────────────────────────────────
+// ── Grid View (Visual Refined) ────────────────────────────────────────────────
 
 function GridView({
     bookings,
@@ -510,65 +517,69 @@ function GridView({
     const dayBookings = bookings.filter((b) => b.booking_date === dateStr);
 
     return (
-        <div className="flex flex-col gap-4">
-            {/* Date navigation */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={() => setDateStr((d) => shiftDate(d, -1))}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200"
-                    >
-                        <ChevronLeft size={16} />
-                    </button>
-                    <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2">
-                        <CalendarDays size={14} className="text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">
-                            {formatDateDisplay(dateStr)}
-                        </span>
+        <div className="flex flex-col gap-5 animate-fade-in-up delay-200">
+            {/* Date navigation & Legend */}
+            <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-[20px] shadow-sm border border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+                        <button
+                            type="button"
+                            onClick={() => setDateStr((d) => shiftDate(d, -1))}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm transition-all hover:bg-slate-100 hover:scale-105"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        <div className="flex items-center gap-2.5 px-4 py-2">
+                            <CalendarDays size={16} className="text-orange-500" />
+                            <span className="font-clash text-sm font-medium text-slate-900">
+                                {formatDateDisplay(dateStr)}
+                            </span>
+                            
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setDateStr((d) => shiftDate(d, 1))}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm transition-all hover:bg-slate-100 hover:scale-105"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
                     </div>
                     <button
                         type="button"
-                        onClick={() => setDateStr((d) => shiftDate(d, 1))}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200"
+                        onClick={() => setDateStr(todayStr())}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-2 font-bdo text-[13px] font-bold text-slate-600 transition-colors hover:bg-slate-50 hover:text-orange-600 uppercase tracking-wide"
                     >
-                        <ChevronRight size={16} />
+                        Hari ini
                     </button>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setDateStr(todayStr())}
-                    className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50"
-                >
-                    Hari ini
-                </button>
+
+                {/* Legend */}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100">
+                    <span className="flex items-center gap-2">
+                        <span className="h-3.5 w-4 rounded-sm border border-blue-200 bg-blue-50" />
+                        Warga UB
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3.5 w-4 rounded-sm border border-slate-200 bg-slate-100" />
+                        Umum
+                    </span>
+                    <div className="w-[1px] h-4 bg-slate-300 mx-1 hidden sm:block"></div>
+                    <span className="flex items-center gap-3">
+                        {(["confirmed", "pending", "completed", "cancelled"] as BookingStatus[]).map(
+                            (s) => (
+                                <span key={s} className="flex items-center gap-1.5">
+                                    <span className={cn("h-2.5 w-2.5 rounded-full", STATUS_DOT[s])} />
+                                    {STATUS_LABEL[s]}
+                                </span>
+                            ),
+                        )}
+                    </span>
+                </div>
             </div>
 
-            {/* Legend */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500">
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-4 rounded-sm border border-blue-200 bg-blue-50" />
-                    Warga UB
-                </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-4 rounded-sm border border-gray-200 bg-gray-100" />
-                    Umum
-                </span>
-                <span className="flex items-center gap-3">
-                    {(["confirmed", "pending", "completed", "cancelled"] as BookingStatus[]).map(
-                        (s) => (
-                            <span key={s} className="flex items-center gap-1">
-                                <span className={cn("h-2 w-2 rounded-full", STATUS_DOT[s])} />
-                                {STATUS_LABEL[s]}
-                            </span>
-                        ),
-                    )}
-                </span>
-            </div>
-
-            {/* Calendar Grid */}
+            {/* Calendar Grid Container */}
             <div
-                className="overflow-auto rounded-2xl border border-gray-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+                className="overflow-auto rounded-[24px] border border-slate-200 bg-white shadow-sm custom-scrollbar"
                 style={{ maxHeight: "calc(100vh - 340px)" }}
             >
                 <div
@@ -576,21 +587,21 @@ function GridView({
                     style={{ minWidth: `${64 + facilities.length * 152}px` }}
                 >
                     {/* Time column */}
-                    <div className="w-16 shrink-0 bg-white">
-                        <div className="sticky top-0 z-30 h-12 border-b border-r border-gray-100 bg-white" />
+                    <div className="w-16 shrink-0 bg-slate-50 border-r border-slate-200">
+                        <div className="sticky top-0 z-30 h-14 border-b border-slate-200 bg-slate-50 backdrop-blur-md" />
                         {timeSlots.map((slot, i) => (
                             <div
                                 key={i}
                                 style={{ height: SLOT_HEIGHT }}
                                 className={cn(
-                                    "flex items-start justify-end border-r pr-2 pt-1",
+                                    "flex items-start justify-end pr-3 pt-1.5",
                                     i % 2 === 0
-                                        ? "border-b border-gray-200"
-                                        : "border-b border-gray-100",
+                                        ? "border-b border-slate-200"
+                                        : "border-b border-slate-100 border-dashed",
                                 )}
                             >
                                 {i % 2 === 0 && (
-                                    <span className="text-[10px] font-medium text-gray-400">
+                                    <span className="font-bdo text-[11px] font-bold text-slate-400">
                                         {slot}
                                     </span>
                                 )}
@@ -609,20 +620,20 @@ function GridView({
                                 className="flex flex-1 flex-col"
                                 style={{ minWidth: 152 }}
                             >
-                                <div className="sticky top-0 z-20 flex h-12 items-center justify-center border-b border-l border-gray-100 bg-white px-2">
-                                    <span className="text-center text-xs font-medium text-gray-700">
+                                <div className="sticky top-0 z-20 flex h-14 items-center justify-center border-b border-slate-200 bg-white/90 backdrop-blur-md px-2 shadow-[0_4px_10px_-10px_rgba(0,0,0,0.1)]">
+                                    <span className="text-center font-clash text-[13px] font-medium text-slate-800">
                                         {facility.name}
                                     </span>
                                 </div>
-                                <div className="relative flex-1 border-l border-gray-100">
+                                <div className="relative flex-1 border-r border-slate-100 last:border-r-0">
                                     {timeSlots.map((_, i) => (
                                         <div
                                             key={i}
                                             style={{ height: SLOT_HEIGHT }}
                                             className={
                                                 i % 2 === 0
-                                                    ? "border-b border-gray-200"
-                                                    : "border-b border-gray-100"
+                                                    ? "border-b border-slate-200"
+                                                    : "border-b border-slate-100 border-dashed"
                                             }
                                         />
                                     ))}
@@ -646,23 +657,23 @@ function GridView({
                                                     zIndex: 10,
                                                 }}
                                                 className={cn(
-                                                    "group flex flex-col items-start overflow-hidden rounded-xl border px-2 py-1.5 text-left transition-all hover:z-20 hover:shadow-md",
+                                                    "group flex flex-col items-start overflow-hidden rounded-xl border px-2.5 py-2 text-left transition-all hover:z-20 hover:shadow-lg hover:-translate-y-0.5",
                                                     isCancelled
-                                                        ? "border-gray-200 bg-gray-100 text-gray-400 opacity-50"
+                                                        ? "border-slate-200 bg-slate-50 text-slate-400 opacity-60"
                                                         : PILL_STYLE[booking.user_category],
                                                 )}
                                             >
                                                 <span
                                                     className={cn(
-                                                        "absolute right-1.5 top-1.5 h-2 w-2 rounded-full ring-1 ring-white",
+                                                        "absolute right-2 top-2 h-2.5 w-2.5 rounded-full ring-2 ring-white shadow-sm",
                                                         STATUS_DOT[booking.status],
                                                     )}
                                                 />
-                                                <p className="w-full truncate pr-3 text-[11px] font-semibold leading-tight">
+                                                <p className="w-full truncate pr-4 font-clash text-[13px] font-medium leading-tight">
                                                     {booking.customer_name}
                                                 </p>
                                                 {height >= 72 && (
-                                                    <p className="truncate text-[10px] opacity-70">
+                                                    <p className="mt-1 font-bdo truncate text-[10px] font-semibold opacity-70">
                                                         {booking.start_time}–{booking.end_time}
                                                     </p>
                                                 )}
@@ -679,7 +690,7 @@ function GridView({
     );
 }
 
-// ── List View ─────────────────────────────────────────────────────────────────
+// ── List View (Visual Refined) ────────────────────────────────────────────────
 
 const listHelper = createColumnHelper<AdminBooking>();
 
@@ -694,7 +705,7 @@ function ListView({
         listHelper.accessor("id", {
             header: "Booking ID",
             cell: (info) => (
-                <span className="font-mono text-xs font-semibold text-gray-700">
+                <span className="font-bdo text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
                     #{String(info.getValue()).padStart(5, "0")}
                 </span>
             ),
@@ -705,9 +716,9 @@ function ListView({
             cell: (info) => {
                 const b = info.row.original;
                 return (
-                    <div>
-                        <p className="text-sm font-medium text-gray-900">{b.customer_name}</p>
-                        <p className="text-[11px] text-gray-400">
+                    <div className="flex flex-col">
+                        <p className="font-clash text-sm font-medium text-slate-900">{b.customer_name}</p>
+                        <p className="font-bdo text-[11px] font-medium text-slate-400">
                             {b.customer_phone ?? "—"}
                         </p>
                     </div>
@@ -718,7 +729,7 @@ function ListView({
             header: "Fasilitas",
             enableSorting: true,
             cell: (info) => (
-                <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600">
+                <span className="rounded-lg bg-orange-50 border border-orange-100 px-2.5 py-1 font-bdo text-[11px] font-bold text-orange-600">
                     {info.getValue()}
                 </span>
             ),
@@ -730,9 +741,9 @@ function ListView({
                 const b = row.original;
                 const duration = getDurationMinutes(b.start_time, b.end_time);
                 return (
-                    <div>
-                        <p className="text-sm text-gray-700">{b.booking_date}</p>
-                        <p className="text-[11px] text-gray-400">
+                    <div className="flex flex-col">
+                        <p className="font-bdo text-[13px] font-bold text-slate-700">{b.booking_date}</p>
+                        <p className="font-bdo text-[11px] font-medium text-slate-500">
                             {b.start_time}–{b.end_time} · {formatDuration(duration)}
                         </p>
                     </div>
@@ -743,7 +754,7 @@ function ListView({
             header: "Total",
             enableSorting: true,
             cell: (info) => (
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="font-clash text-[15px] font-medium text-slate-900">
                     {formatPrice(info.getValue())}
                 </span>
             ),
@@ -764,23 +775,25 @@ function ListView({
                 <button
                     type="button"
                     onClick={() => onSelect(row.original)}
-                    className="flex h-8 w-8 items-center justify-center rounded-xl bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 border border-slate-200 transition-all hover:bg-orange-500 hover:border-orange-500 hover:text-white hover:shadow-md"
                     title="Lihat detail"
                 >
-                    <Eye size={13} />
+                    <Eye size={16} />
                 </button>
             ),
         }),
     ];
 
     return (
-        <DataTable
-            columns={columns as ColumnDef<AdminBooking, unknown>[]}
-            data={bookings}
-            searchColumn="customer_name"
-            searchPlaceholder="Cari nama pelanggan…"
-            emptyMessage="Belum ada booking."
-        />
+        <div className="animate-fade-in-up delay-200 bg-white rounded-[24px] p-2 shadow-sm border border-slate-200 overflow-hidden">
+            <DataTable
+                columns={columns as ColumnDef<AdminBooking, unknown>[]}
+                data={bookings}
+                searchColumn="customer_name"
+                searchPlaceholder="Cari nama pelanggan…"
+                emptyMessage="Belum ada booking."
+            />
+        </div>
     );
 }
 
@@ -802,63 +815,92 @@ export default function BookingsIndex() {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col gap-1 pt-4">
-                    <span className="font-clash text-xs uppercase tracking-[0.2em] text-gray-400">
+                <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
+                    {/* Menginjeksi animasi dan font agar selaras dengan Dashboard */}
+                    <style dangerouslySetInnerHTML={{__html: `
+                        .font-clash { font-family: 'Clash Display', sans-serif; }
+                        .font-bdo { font-family: 'BDO Grotesk', sans-serif; }
+                        
+                        @keyframes fadeInUp {
+                            from { opacity: 0; transform: translate3d(0, 30px, 0); }
+                            to { opacity: 1; transform: translate3d(0, 0, 0); }
+                        }
+                        .animate-fade-in-up { 
+                            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+                            opacity: 0;
+                            will-change: opacity, transform;
+                        }
+                        .delay-100 { animation-delay: 100ms; }
+                        .delay-200 { animation-delay: 200ms; }
+                        
+                        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+                        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fed7aa; border-radius: 6px; }
+                    `}} />
+
+                    <span className="font-bdo text-[11px] font-medium tracking-wide  text-orange-500">
                         Manajemen Reservasi
                     </span>
-                    <h1 className="font-monument text-3xl font-normal tracking-tight text-gray-900">
-                        Bookings
+                    <h1 className="font-clash text-3xl font-bold uppercase tracking-tight xl:text-4xl text-slate-900">
+                        Pemesanan
                     </h1>
                 </div>
             }
         >
             <Head title="Bookings" />
 
-            <div className="flex flex-col gap-5 pt-6">
-                {/* Stats row + toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 ring-1 ring-inset ring-amber-200">
-                            {pendingCount} pending
-                        </span>
-                        <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-200">
-                            {confirmedCount} confirmed
-                        </span>
+            <div className="flex flex-col gap-6 pt-6 pb-20 overflow-x-hidden">
+                {/* ── Toolbar Row ── */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up delay-100">
+                    
+                    {/* Stats Pills */}
+                    <div className="flex flex-wrap items-center gap-2.5">
+                        <div className="flex items-center gap-2 rounded-xl bg-orange-50 px-3.5 py-1.5 border border-orange-100 shadow-sm">
+                            <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                            <span className="font-bdo text-[11px] font-bold text-orange-600 uppercase tracking-wider">{pendingCount} Pending</span>
+                        </div>
+                        <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3.5 py-1.5 border border-emerald-100 shadow-sm">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span className="font-bdo text-[11px] font-bold text-emerald-600 uppercase tracking-wider">{confirmedCount} Konfirmasi</span>
+                        </div>
                         {cancelledCount > 0 && (
-                            <span className="rounded-full bg-rose-50 px-3 py-1 text-sm font-medium text-rose-600 ring-1 ring-inset ring-rose-200">
-                                {cancelledCount} cancelled
-                            </span>
+                            <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-3.5 py-1.5 border border-slate-200 shadow-sm">
+                                <span className="h-2 w-2 rounded-full bg-slate-400"></span>
+                                <span className="font-bdo text-[11px] font-bold text-slate-600 uppercase tracking-wider">{cancelledCount} Dibatalkan</span>
+                            </div>
                         )}
-                        <span className="text-sm text-gray-500">{bookings.length} total</span>
+                        <span className="font-bdo text-[11px] font-bold text-slate-400 bg-white px-3 py-1.5 rounded-xl border border-slate-200 ml-1">
+                            TOTAL: {bookings.length}
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
                         {/* View toggle */}
-                        <div className="flex items-center rounded-2xl bg-gray-100 p-1">
+                        <div className="flex items-center rounded-2xl bg-white p-1.5 border border-slate-200 shadow-sm">
                             <button
                                 type="button"
                                 onClick={() => setViewMode("grid")}
                                 className={cn(
-                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
+                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-clash font-medium transition-all",
                                     viewMode === "grid"
-                                        ? "bg-white text-gray-900 shadow-sm"
-                                        : "text-gray-500 hover:text-gray-700",
+                                        ? "bg-slate-100 text-orange-600 shadow-inner"
+                                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-50",
                                 )}
                             >
-                                <LayoutGrid size={14} />
+                                <LayoutGrid size={16} className={viewMode === "grid" ? "text-orange-500" : ""} />
                                 Grid
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setViewMode("list")}
                                 className={cn(
-                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
+                                    "flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-clash font-medium transition-all",
                                     viewMode === "list"
-                                        ? "bg-white text-gray-900 shadow-sm"
-                                        : "text-gray-500 hover:text-gray-700",
+                                        ? "bg-slate-100 text-orange-600 shadow-inner"
+                                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-50",
                                 )}
                             >
-                                <List size={14} />
+                                <List size={16} className={viewMode === "list" ? "text-orange-500" : ""} />
                                 List
                             </button>
                         </div>
@@ -867,9 +909,9 @@ export default function BookingsIndex() {
                         <button
                             type="button"
                             onClick={() => setShowCreate(true)}
-                            className="flex items-center gap-2 rounded-2xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                            className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 px-5 py-3 text-sm font-clash font-medium text-white transition-all shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.4)] hover:bg-emerald-500 hover:scale-95 active:scale-100"
                         >
-                            <Plus size={15} />
+                            <Plus size={18} className="text-white" />
                             Tambah Booking
                         </button>
                     </div>
@@ -891,11 +933,13 @@ export default function BookingsIndex() {
             <SlideOver
                 isOpen={selected !== null}
                 onClose={() => setSelected(null)}
-                title="Detail Booking"
+                title={<span className="font-clash text-xl">Detail Booking</span>}
                 description={
-                    selected
-                        ? `${selected.facility_name} · ${selected.start_time}–${selected.end_time}`
-                        : undefined
+                    selected && (
+                        <span className="font-bdo text-sm text-orange-600 font-medium">
+                            {selected.facility_name} · {selected.start_time}–{selected.end_time}
+                        </span>
+                    )
                 }
             >
                 {selected && (
@@ -911,8 +955,8 @@ export default function BookingsIndex() {
             <SlideOver
                 isOpen={showCreate}
                 onClose={() => setShowCreate(false)}
-                title="Tambah Booking"
-                description="Buat reservasi baru atas nama pelanggan."
+                title={<span className="font-clash text-xl font-bold">Tambah Booking</span>}
+                description={<span className="font-bdo text-sm text-slate-500">Buat reservasi baru secara manual ke sistem.</span>}
             >
                 {showCreate && (
                     <CreateBookingForm
@@ -923,4 +967,4 @@ export default function BookingsIndex() {
             </SlideOver>
         </AdminLayout>
     );
-}
+}   
