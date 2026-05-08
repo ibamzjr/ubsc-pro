@@ -69,7 +69,7 @@ type FinanceProps = PageProps<{
     facilityRevenue: FacilityRevenue[];
     facilityBookings: FacilityBooking[];
     dailyRevenue: number[];
-    monthlyRevenue?: number[]; // optional: 12 values (index 0 = Jan). Falls back gracefully.
+    monthlyRevenue?: number[];
     stats: FinanceStats;
     period: { month: number; year: number };
     revenueTrend: number;
@@ -366,7 +366,7 @@ function InteractiveRevenueChart({ data, monthLabel }: { data: number[]; monthLa
     );
 }
 
-// ── Monthly Revenue Bar Chart (NEW) ──────────────────────────────────────────
+// ── Monthly Revenue Bar Chart ─────────────────────────────────────────────────
 
 function MonthlyRevenueBarChart({
     data,
@@ -495,13 +495,14 @@ function MonthlyRevenueBarChart({
     );
 }
 
-// ── Finance Doughnut (unchanged) ──────────────────────────────────────────────
+// ── Finance Doughnut ──────────────────────────────────────────────────────────
 
 interface DoughnutSegment { name: string; value: number; color: string; displayValue: string; }
 
 function FinanceDoughnut({ segments, centerValue, centerSub }: { segments: DoughnutSegment[]; centerValue: string; centerSub: string }) {
     const total = segments.reduce((sum, s) => sum + s.value, 0);
     let cumulative = 0;
+    // FIX: removed duplicate `const stops` declaration — kept only one
     const stops = segments.map((s) => {
         const start = (cumulative / total) * 100;
         cumulative += s.value;
@@ -523,7 +524,7 @@ function FinanceDoughnut({ segments, centerValue, centerSub }: { segments: Dough
     );
 }
 
-// ── Facility Breakdown Row (unchanged) ────────────────────────────────────────
+// ── Facility Breakdown Row ────────────────────────────────────────────────────
 
 function FacilityRow({ color, name, share, valueLabel }: { color: string; name: string; share: number; valueLabel: string }) {
     return (
@@ -533,7 +534,7 @@ function FacilityRow({ color, name, share, valueLabel }: { color: string; name: 
                     <div className="h-3 w-3 shrink-0 rounded-full shadow-sm group-hover:scale-125 transition-transform relative" style={{ backgroundColor: color }}>
                         <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-white/60 rounded-full" />
                     </div>
-                        {name}
+                    {name}
                 </span>
                 <div className="flex items-center gap-3">
                     <span className="font-clash text-sm font-medium text-slate-900">{valueLabel}</span>
@@ -547,9 +548,9 @@ function FacilityRow({ color, name, share, valueLabel }: { color: string; name: 
     );
 }
 
-// ── Export Modal with Month Picker (NEW) ──────────────────────────────────────
+// ── Export Modal with Month Picker ────────────────────────────────────────────
 
-const YEARS_BACK = 3; // how many years back to offer
+const YEARS_BACK = 3;
 
 function ExportModal({
     isOpen,
@@ -680,7 +681,7 @@ function ExportModal({
     );
 }
 
-// ── Finance Print Template (adapted from Dashboard pattern) ───────────────────
+// ── Finance Print Template ────────────────────────────────────────────────────
 
 interface FinancePrintTemplateProps {
     stats: FinanceStats;
@@ -712,12 +713,12 @@ function FinancePrintTemplate({
     const periodLabel = `${MONTH_NAMES[exportMonth]} ${exportYear}`;
 
     const rows: { kategori: string; detail: string; satuan: string; nilai: string }[] = [
-        { kategori: "Keuangan", detail: "Total Pendapatan Periode",      satuan: periodLabel,            nilai: rp(stats.totalRevenue)  },
-        { kategori: "Keuangan", detail: "Rata-rata Pendapatan Harian",   satuan: `${activeDays} hari aktif`, nilai: rp(avgRevenue) },
-        { kategori: "Keuangan", detail: `Puncak Pendapatan (Tgl ${peakDay})`, satuan: "1 hari",          nilai: rp(peakRev)    },
-        { kategori: "Trend",    detail: "Perubahan vs Bulan Lalu",        satuan: "MoM",                  nilai: `${trendSign}${revenueTrend}%` },
-        { kategori: "Operasional", detail: "Total Reservasi Bulan Ini",   satuan: "transaksi",            nilai: num(stats.totalBookings) },
-        { kategori: "Operasional", detail: "Membership Aktif",            satuan: "anggota",              nilai: num(stats.activeMemberships) },
+        { kategori: "Keuangan",    detail: "Total Pendapatan Periode",           satuan: periodLabel,                nilai: rp(stats.totalRevenue)  },
+        { kategori: "Keuangan",    detail: "Rata-rata Pendapatan Harian",        satuan: `${activeDays} hari aktif`, nilai: rp(avgRevenue)          },
+        { kategori: "Keuangan",    detail: `Puncak Pendapatan (Tgl ${peakDay})`, satuan: "1 hari",                  nilai: rp(peakRev)             },
+        { kategori: "Trend",       detail: "Perubahan vs Bulan Lalu",            satuan: "MoM",                     nilai: `${trendSign}${revenueTrend}%` },
+        { kategori: "Operasional", detail: "Total Reservasi Bulan Ini",          satuan: "transaksi",               nilai: num(stats.totalBookings)      },
+        { kategori: "Operasional", detail: "Membership Aktif",                   satuan: "anggota",                 nilai: num(stats.activeMemberships)  },
         ...facilityRevenue.map(f => ({
             kategori: "Fasilitas", detail: f.name, satuan: `${f.share}% pangsa pasar`, nilai: rp(f.revenue),
         })),
@@ -847,11 +848,9 @@ export default function FinanceIndex() {
         name: f.name, value: f.share, color: f.color, displayValue: `${f.count} booking`,
     }));
 
-    // 12-month chart data: use provided monthlyRevenue OR derive current month from stats
     const safeMonthlyRevenue = monthlyRevenue
         ?? Array.from({ length: 12 }, (_, i) => i + 1 === period.month ? stats.totalRevenue : 0);
 
-    // Avg revenue per booking
     const avgPerBooking = stats.totalBookings > 0
         ? Math.round(stats.totalRevenue / stats.totalBookings)
         : 0;
@@ -882,7 +881,6 @@ export default function FinanceIndex() {
                             <ShinyTextBlack text="Finance Overview" speed={5} />
                         </h1>
                         <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-3">
-                            {/* Export button → opens modal */}
                             <button
                                 onClick={() => setShowExportModal(true)}
                                 className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 sm:px-5 py-2 sm:py-2.5 font-clash text-sm font-medium text-white btn-sheen shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.5)] transition-all hover:scale-[1.02] active:scale-[0.97]"
@@ -890,7 +888,6 @@ export default function FinanceIndex() {
                                 <Download size={15} className="text-white" />
                                 Export PDF
                             </button>
-                            {/* Period display */}
                             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md px-4 sm:px-5 py-2 sm:py-2.5 font-bdo text-sm font-medium text-slate-700 shadow-sm">
                                 <CalendarDays size={15} className="text-orange-400" />
                                 <span>{periodLabel}</span>
@@ -953,7 +950,7 @@ export default function FinanceIndex() {
                         </button>
                     </div>
 
-                    {/* Metrics Grid — "Periode Laporan Aktif" REMOVED as requested */}
+                    {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 content-stretch animate-fade-in-up delay-100">
                         {/* Reservasi Selesai */}
                         <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-md hover:-translate-y-1 transition-all border border-orange-200 flex flex-col justify-between card-glint shimmer-once">
@@ -975,7 +972,7 @@ export default function FinanceIndex() {
                                 <p className="font-bdo text-[10px] sm:text-[11px] text-white mt-1">Member Gym</p>
                             </div>
                         </div>
-                        {/* Avg per Booking — NEW (replaces periode card) */}
+                        {/* Avg per Booking */}
                         <div className="bg-white rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-sm border border-slate-200 hover:-translate-y-1 transition-all card-glint flex flex-col justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="bg-emerald-100 p-1.5 sm:p-2 rounded-xl">
@@ -1044,7 +1041,7 @@ export default function FinanceIndex() {
 
                 </section>
 
-                {/* ── ROW 2: Annual Monthly Revenue Chart (NEW) ── */}
+                {/* ── ROW 2: Annual Monthly Revenue Chart ── */}
                 <section className="animate-fade-in-up delay-200">
                     <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 relative overflow-hidden group card-glint">
                         <div className="absolute inset-0 bg-gradient-to-br from-orange-50/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
@@ -1092,7 +1089,8 @@ export default function FinanceIndex() {
 
                     {/* Left: Tabs & Breakdown */}
                     <div className="lg:col-span-7 flex flex-col gap-6 animate-fade-in-up delay-300">
-                    <div className="flex items-center gap-2 sm:gap-3 bg-white p-1.5 rounded-2xl w-full sm:w-fit border border-slate-200 shadow-inner overflow-hidden">
+                        {/* Tab switcher */}
+                        <div className="flex items-center gap-2 sm:gap-3 bg-white p-1.5 rounded-2xl w-full sm:w-fit border border-slate-200 shadow-inner overflow-hidden">
                             <button
                                 onClick={() => setActiveTab("revenue")}
                                 className={cn(
@@ -1119,6 +1117,7 @@ export default function FinanceIndex() {
                             </button>
                         </div>
 
+                        {/* Facility breakdown card */}
                         <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 card-glint flex-1">
                             <h3 className="font-clash text-lg font-semibold text-slate-900 mb-6 flex items-center gap-3">
                                 <div className="bg-orange-50 p-1.5 rounded-lg border border-orange-100">
@@ -1243,7 +1242,7 @@ export default function FinanceIndex() {
                 onBackendExport={handleBackendExport}
             />
 
-            {/* ── Finance Print Template (hidden on screen, visible on @media print) ── */}
+            {/* ── Finance Print Template ── */}
             <FinancePrintTemplate
                 stats={stats}
                 facilityRevenue={facilityRevenue}

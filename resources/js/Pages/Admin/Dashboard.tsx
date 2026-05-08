@@ -2019,11 +2019,15 @@ export default function Dashboard() {
 
                         {/* Feed */}
                         <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                        {/* Feed */}
+                        <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
                             <ActivityFeed items={recentActivity ?? []} />
                         </div>
                     </div>
 
+
                 </section>
+
 
             </div>
 
