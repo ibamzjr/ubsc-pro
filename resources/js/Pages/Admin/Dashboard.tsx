@@ -917,7 +917,7 @@ function PremiumIdentityQueue({ count }: { count: number }) {
                 <div className="group animate-fade-in-up" style={{ animationDelay: '320ms' }}>
                     <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 relative animate-pulse" style={{ backgroundColor: urgencyColor, boxShadow: `0 0 6px ${urgencyColor}70` }}>
+                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 relative" style={{ backgroundColor: urgencyColor, boxShadow: `0 0 6px ${urgencyColor}70` }}>
                                 <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-white/60 rounded-full"></div>
                             </div>
                             <span className="font-bdo text-[12px] font-medium text-slate-600">Pending</span>
@@ -1763,29 +1763,7 @@ export default function Dashboard() {
                                 </div>
                                 <h2 className="font-clash text-[2rem] font-bold text-white leading-none tracking-tight">
                                     Rp <ShinyText text={formatRevenue(stats.totalRevenue)} speed={4} />
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="bg-white/20 backdrop-blur-md p-1.5 rounded-lg">
-                                        <Wallet className="w-4 h-4 text-white" />
-                                    </div>
-                                    <p className="font-bdo text-[11px] font-bold text-orange-100 uppercase tracking-widest">Total Pendapatan</p>
-                                </div>
-                                <h2 className="font-clash text-[2rem] font-bold text-white leading-none tracking-tight">
-                                    Rp <ShinyText text={formatRevenue(stats.totalRevenue)} speed={4} />
                                 </h2>
-                                <div className="mt-2.5">
-                                    <div className={cn(
-                                        "inline-flex items-center gap-1 text-[11px] font-bold font-bdo px-2.5 py-1 rounded-lg backdrop-blur-md",
-                                        trendPositive
-                                            ? "bg-white/15 text-white border border-white/20"
-                                            : "bg-red-900/30 text-red-200 border border-red-700/30"
-                                    )}>
-                                        {trendPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                                        {Math.abs(revenueTrend)}% bulan ini
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bg-white/15 backdrop-blur-xl border border-white/25 p-3.5 rounded-2xl shadow-lg animate-float flex-shrink-0">
-                                <TrendingUp className="w-6 h-6 text-white" />
                                 <div className="mt-2.5">
                                     <div className={cn(
                                         "inline-flex items-center gap-1 text-[11px] font-bold font-bdo px-2.5 py-1 rounded-lg backdrop-blur-md",
@@ -2019,15 +1997,11 @@ export default function Dashboard() {
 
                         {/* Feed */}
                         <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                        {/* Feed */}
-                        <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
                             <ActivityFeed items={recentActivity ?? []} />
                         </div>
                     </div>
 
-
                 </section>
-
 
             </div>
 
