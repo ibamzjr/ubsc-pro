@@ -24,14 +24,20 @@ export default function NewsCard({
     className,
 }: NewsCardProps) {
     const isImageTop =
-        layoutOverride === "berita" ? true :
-        layoutOverride === "artikel" ? false :
-        index % 2 === 0;
+        layoutOverride === "berita"
+            ? true
+            : layoutOverride === "artikel"
+              ? false
+              : index % 2 === 0;
 
-    const outerClass = className ?? "h-[450px] w-[300px] flex-shrink-0";
+    const outerClass =
+        className ??
+        "h-[clamp(21.875rem,18rem+10vw,28.125rem)] w-[clamp(17.5rem,15rem+8vw,21.875rem)] flex-shrink-0";
 
     return (
-        <article className={`group cursor-pointer flex flex-col border border-white/10 ${outerClass}`}>
+        <article
+            className={`group cursor-pointer flex flex-col border border-white/10 ${outerClass}`}
+        >
             {isImageTop ? (
                 <>
                     <div className="relative flex-[0_0_44%] overflow-hidden">
@@ -44,7 +50,10 @@ export default function NewsCard({
                         />
                         <span
                             className="absolute left-4 top-4 px-3 py-1 text-xs font-bold text-white rounded-[5px]"
-                            style={{ background: "linear-gradient(to right, red, #790a0a)" }}
+                            style={{
+                                background:
+                                    "linear-gradient(to right, #790a0a, #FF0000)",
+                            }}
                         >
                             {category}
                         </span>
@@ -52,7 +61,7 @@ export default function NewsCard({
 
                     <div className="flex flex-1 flex-col justify-between bg-white p-6">
                         <div className="flex flex-col gap-1">
-                            <p className="line-clamp-3 font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] leading-snug text-black">
+                            <p className="line-clamp-3 font-bdo font-semibold text-[clamp(1rem,1.25vw,24px)] leading-snug text-black">
                                 {title}
                             </p>
                             {description && (
@@ -73,14 +82,14 @@ export default function NewsCard({
                             {date}
                         </span>
                         <div className="flex flex-col gap-1">
-                            <p className="line-clamp-3 font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] leading-snug text-white">
-                                {title}
-                            </p>
                             {description && (
-                                <p className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/70 line-clamp-3 mt-1">
+                                <p className="font-bdo font-normal text-[clamp(0.8rem,0.7vw,16px)] text-white/70 line-clamp-3 mt-1">
                                     {description}
                                 </p>
                             )}
+                            <p className="line-clamp-3 font-bdo font-medium text-[clamp(1rem,1.25vw,24px)] leading-snug text-white mt-3">
+                                {title}
+                            </p>
                         </div>
                     </div>
 
@@ -94,7 +103,10 @@ export default function NewsCard({
                         />
                         <span
                             className="absolute bottom-4 left-4 px-3 py-1 text-xs font-bold text-white rounded-[5px]"
-                            style={{ background: "linear-gradient(to right, #153359, #15678d)" }}
+                            style={{
+                                background:
+                                    "linear-gradient(to right, #15678d, #153359)",
+                            }}
                         >
                             {category}
                         </span>

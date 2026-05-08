@@ -14,10 +14,11 @@ export default function PricingHero() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
                 <div className="absolute bottom-8 left-8 right-8 z-20 block lg:hidden">
-                    <p className="font-bdo font-light text-[clamp(0.85rem,3.5vw,1rem)] leading-relaxed text-white/80">
+                    <p className="font-bdo font-light text-[clamp(1.125rem,1rem+2vw,1.75rem)] text-white">
                         Pilih jadwal dan paket terbaik Anda, lalu{" "}
                         <span className="font-medium text-white">
-                            mulai perjalanan menuju tubuh yang lebih kuat dan bugar.
+                            mulai perjalanan menuju tubuh yang lebih kuat dan
+                            bugar.
                         </span>
                     </p>
                 </div>
@@ -43,7 +44,10 @@ export default function PricingHero() {
                 </div>
             </div>
 
-            <section className="relative flex min-h-screen flex-col" id="pricing-hero">
+            <section
+                className="relative flex min-h-screen flex-col"
+                id="pricing-hero"
+            >
                 <div className="h-[45vh] flex-shrink-0 xl:h-[63vh]" />
 
                 <div className="relative flex flex-1 flex-col xl:flex-row">
@@ -60,10 +64,11 @@ export default function PricingHero() {
                     </div>
 
                     <div className="flex flex-1 items-center w-full lg:basis-2/3">
-                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
+                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(1.125rem,1rem+2vw,1.75rem)]leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
                             Pilih jadwal dan paket terbaik Anda, lalu{" "}
                             <span className="font-medium text-white">
-                                mulai perjalanan menuju tubuh yang lebih kuat dan bugar.
+                                mulai perjalanan menuju tubuh yang lebih kuat
+                                dan bugar.
                             </span>
                         </p>
                         <div className="block lg:hidden px-8 py-10 w-full">
@@ -86,7 +91,7 @@ export default function PricingHero() {
             <HeroBottomBar
                 variant="transparent"
                 sectionNumber="05/"
-                sectionLabel="schedulepage"
+                sectionLabel="pricing page"
                 description="Pilih paket olahraga yang sesuai dengan kebutuhan dan anggaran Anda di UB Sport Center."
                 targetId="pricing-info"
                 showVideo={false}

@@ -11,33 +11,10 @@ const CLASSES_DATA: ClassAccordionData[] = [
         title: "/ Sepak Bola",
         badgeLocation: "Veteran",
         badgeType: "Arena Luar",
-        thumbnail:
-            "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-        classCode: "/Class 003/",
-        pricingLeft: [
-            {
-                title: "Berginner",
-                warga: "Warga UB 25K",
-                umum: "Umum 230K",
-            },
-            {
-                title: "Intermediate",
-                warga: "Warga UB 23K",
-                umum: "Umum 35K",
-            },
-        ],
-        pricingRight: [
-            {
-                title: "Sewa Ruang Yoga",
-                warga: "Warga UB 100K",
-                umum: "Umum 150K",
-            },
-            {
-                title: "Sewa Event Ruang",
-                warga: "1650K/ Hari",
-                umum: "",
-                note: "* Matras Kami Fasilitasi",
-            },
+        classCode: "/Terbuka 003/",
+        pricingDetails: [
+            "1.750K / 2 Jam",
+            "Extension 875K / Jam",
         ],
     },
     {
@@ -45,33 +22,11 @@ const CLASSES_DATA: ClassAccordionData[] = [
         title: "/Basket",
         badgeLocation: "Veteran",
         badgeType: "Arena Luar",
-        thumbnail:
-            "/assets/images/gym-konten-1-olahraga-ub-sport-center.avif",
-        classCode: "/Class 004/",
-        pricingLeft: [
-            {
-                title: "Reguler",
-                warga: "Warga UB 50K",
-                umum: "Umum 70K",
-            },
-            {
-                title: "Turnamen",
-                warga: "Warga UB 80K",
-                umum: "Umum 100K",
-            },
-        ],
-        pricingRight: [
-            {
-                title: "Sewa Lapangan",
-                warga: "Warga UB 200K",
-                umum: "Umum 250K",
-            },
-            {
-                title: "Sewa Event",
-                warga: "3000K/ Hari",
-                umum: "",
-                note: "* Termasuk Penerangan",
-            },
+        classCode: "/Terbuka 004/",
+        pricingDetails: [
+            "Reguler 50K — 100K",
+            "Sewa 200K / Jam",
+            "Event 3.000K / Hari",
         ],
     },
     {
@@ -79,33 +34,11 @@ const CLASSES_DATA: ClassAccordionData[] = [
         title: "/Volly",
         badgeLocation: "Veteran",
         badgeType: "Arena Luar",
-        thumbnail:
-            "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
-        classCode: "/Class 005/",
-        pricingLeft: [
-            {
-                title: "Reguler",
-                warga: "Warga UB 40K",
-                umum: "Umum 55K",
-            },
-            {
-                title: "Kompetisi",
-                warga: "Warga UB 65K",
-                umum: "Umum 85K",
-            },
-        ],
-        pricingRight: [
-            {
-                title: "Sewa Lapangan",
-                warga: "Warga UB 180K",
-                umum: "Umum 220K",
-            },
-            {
-                title: "Sewa Event",
-                warga: "2500K/ Hari",
-                umum: "",
-                note: "* Net & Bola Tersedia",
-            },
+        classCode: "/Terbuka 005/",
+        pricingDetails: [
+            "Reguler 40K — 85K",
+            "Sewa 180K / Jam",
+            "Event 2.500K / Hari",
         ],
     },
     {
@@ -113,33 +46,11 @@ const CLASSES_DATA: ClassAccordionData[] = [
         title: "/Futsal Dieng",
         badgeLocation: "Dieng",
         badgeType: "Indoor Facility",
-        thumbnail:
-            "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-        classCode: "/Class 006/",
-        pricingLeft: [
-            {
-                title: "Pagi",
-                warga: "Warga UB 120K",
-                umum: "Umum 150K",
-            },
-            {
-                title: "Malam",
-                warga: "Warga UB 160K",
-                umum: "Umum 190K",
-            },
-        ],
-        pricingRight: [
-            {
-                title: "Sewa Lapangan",
-                warga: "Warga UB 500K",
-                umum: "Umum 650K",
-            },
-            {
-                title: "Sewa Event",
-                warga: "5000K/ Hari",
-                umum: "",
-                note: "* Bola & Rompi Tersedia",
-            },
+        classCode: "/Terbuka 006/",
+        pricingDetails: [
+            "Pagi 120K / 2 Jam",
+            "Malam 160K / 2 Jam",
+            "Event 5.000K / Hari",
         ],
     },
 ];
@@ -148,12 +59,12 @@ export default function PricingAccordionSection() {
     const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
     return (
-        <section className="bg-[#1a1a1a] overflow-x-clip" id="pricing-accordion">
+        <section className="bg-[#242424] overflow-x-clip" id="pricing-accordion">
             <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
-                number="01"
-                title="Kelas"
-                subtitle="01 schedulepage"
+                number="04"
+                title="Kelas Outdoor"
+                subtitle="05 pricing page"
                 theme="dark"
             />
             </div>

@@ -53,21 +53,21 @@ export default function FacilityHero() {
                     aria-hidden
                     className="absolute inset-0 h-full w-full object-cover object-top"
                 />
-                <div className="absolute inset-0 bg-[#0B0F18]/80" />
+                <div className="absolute inset-0 " />
             </div>
 
             <div className="relative z-10 pt-32 px-8 xl:px-20">
-                <h1 className="font-monument font-extrabold text-[clamp(3rem,5vw,4.5rem)] text-white leading-[1.2]">
+                <h1 className="font-monument font-extrabold text-[clamp(3rem,5vw,52px)] text-white leading-[1.2]">
                     Fasilitas Terbaik Kami
                 </h1>
             </div>
 
-            <div className="flex-1" />
+            <div className="flex-1 " />
 
             <div className="relative z-10">
                 <HeroBottomBar
                     variant="transparent"
-                    sectionNumber="03/"
+                    sectionNumber="04/"
                     sectionLabel="facilitypage"
                     description="Temukan fasilitas olahraga terlengkap di UB Sport Center Malang."
                     targetId="facility-content"
@@ -85,7 +85,7 @@ export default function FacilityHero() {
                             <div
                                 key={i}
                                 className={`flex-shrink-0 overflow-hidden rounded-2xl h-[260px] ${
-                                    i % 2 === 0 ? "w-[380px]" : "w-[210px]"
+                                    i % 2 === 0 ? "w-[640px]" : "w-[250px]"
                                 }`}
                             >
                                 <img

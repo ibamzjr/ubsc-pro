@@ -89,17 +89,17 @@ export default function SectionFive() {
     return (
         <section
             id="impact"
-            className="w-full py-24 text-white"
+            className="w-full py-16 text-white"
             style={{
                 background:
                     "#252525",
             }}
         >
-            <div className="mx-auto max-w px-6 sm:px-10 xl:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 xl:px-20">
                 <SectionDivider
-                    number="03"
+                    number="04"
                     title="Dampak"
-                    subtitle="01/ homepage"
+                    subtitle="01 homepage"
                     theme="dark"
                 />
 

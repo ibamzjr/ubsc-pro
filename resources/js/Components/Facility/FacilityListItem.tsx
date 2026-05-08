@@ -15,8 +15,10 @@ interface Props {
 
 export default function FacilityListItem({ item }: Props) {
     return (
-        <div className="flex items-center gap-6 xl:gap-8 py-6 border-b border-gray-200 w-full group cursor-pointer transition-colors hover:bg-gray-50 -mx-4 px-4 xl:-mx-8 xl:px-8">
-            <div className="relative w-[240px] xl:w-[320px] aspect-[16/9] rounded-xl overflow-hidden flex-shrink-0">
+        <div className="flex flex-col xl:flex-row xl:items-center gap-4 xl:gap-8 py-6 border-b border-white/10 w-full group cursor-pointer transition-colors hover:bg-white/5">
+
+            {/* Image — full width on mobile, fixed on desktop */}
+            <div className="relative w-full xl:w-[280px] aspect-video xl:aspect-[16/9] rounded-xl overflow-hidden flex-shrink-0">
                 <img
                     src={item.image}
                     alt={item.title}
@@ -30,12 +32,17 @@ export default function FacilityListItem({ item }: Props) {
                 </div>
             </div>
 
+            {/* Title */}
             <div className="flex-grow">
-                <span className="font-bdo font-light text-[clamp(1.5rem,2vw,2rem)] text-black">
+                <span
+                    className="font-bdo font-normal text-white tracking-tighter"
+                    style={{ fontSize: "clamp(2rem, 3.5vw, 2.5rem)" }}
+                >
                     {item.title}
                 </span>
             </div>
 
+            {/* Status code */}
             <span className="font-bdo font-medium text-sm text-gray-400 whitespace-nowrap">
                 {item.code}
             </span>

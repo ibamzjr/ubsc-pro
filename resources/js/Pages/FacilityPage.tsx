@@ -2,6 +2,7 @@ import Navbar from "@/Components/Landing/Navbar";
 import FacilityHero from "@/Components/Facility/FacilityHero";
 import FacilityMembership from "@/Components/Facility/FacilityMembership";
 import FacilityListSection from "@/Components/Facility/FacilityListSection";
+import FacilityClassSection from "@/Components/Facility/FacilityClassSection";
 import CurvedLoop from "@/Components/Landing/CurvedLoop";
 import bg from "@/../assets/images/bg-about.avif";
 import person from "@/../assets/images/person.avif";
@@ -36,33 +37,26 @@ export default function FacilityPage() {
                 <meta name="twitter:card" content="summary_large_image" />
             </Head>
             <main className="relative">
-                <Navbar activeSection = "Facilities"/>
+                <Navbar activeSection="Facilities" />
                 <FacilityHero />
                 <FacilityMembership />
                 <FacilityListSection />
-                <div
-                    className="relative bg-[#0B1E3B] py-32 mx-16 overflow-hidden  xl:mb-12"
-                    style={{ background: `url(${bg}) repeat` }}
-                >
-                    <CurvedLoop
-                        marqueeText="UB * SPORT CENTER * "
-                        speed={1.5}
-                        curveAmount={80}
-                        direction="left"
-                        interactive
-                    />
-
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                        <img
-                            src={person}
-                            alt="UB Sport Center athlete"
-                            className="h-64 xl:h-80 w-auto object-cover shadow-2xl"
-                        />
-                    </div>
-                </div>{" "}
-                <AboutBranches />
-                <SectionSeven />
-                <AboutSectionContact />
+                <FacilityClassSection />
+                <AboutBranches
+                    sectionNumber="04"
+                    sectionTitle="Cabang Kami"
+                    sectionSubtitle="04 facility page"
+                />
+                <SectionSeven
+                    sectionNumber="05"
+                    sectionTitle="Testimoni"
+                    sectionSubtitle="05 facility page"
+                />
+                <AboutSectionContact
+                    sectionNumber="06"
+                    sectionTitle="Informasi"
+                    sectionSubtitle="06 facility page"
+                />
             </main>
             <Footer />
         </>

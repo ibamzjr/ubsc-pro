@@ -71,14 +71,14 @@ export default function AboutHistory() {
         <section className="w-full bg-white" id="about-history">
             <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-10">
                 <SectionDivider
-                    number="02"
+                    number="01"
                     title="Sejarah Kami"
-                    subtitle="aboutpage /01"
+                    subtitle="02 aboutpage"
                     theme="light"
                 />
 
                 <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-3 xl:gap-12">
-                    <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
+                    <h2 className="font-bdo font-semibold text-[clamp(1.7rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-black">
                         Sejarah dan Perkembangan
                     </h2>
                     <p className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] leading-relaxed text-black/70 xl:pt-2">

@@ -52,9 +52,9 @@ export default function BookingReviewSection() {
         <section className="w-full bg-[#F9F9F9] py-24 overflow-hidden">
             <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24">
                 <SectionDivider
-                    number="06"
-                    title="Informasi"
-                    subtitle="02 bookingpage"
+                    number="03"
+                    title="Ulasan"
+                    subtitle="06 bookingpage"
                     theme="light"
                 />
 

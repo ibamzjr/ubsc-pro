@@ -33,7 +33,7 @@ export default function NewsPage() {
                 <div id="news-content" />
                 <ServicesSectionNews />
                 <ServicesSectionArtikel />
-                <AboutSectionContact />
+                <AboutSectionContact sectionNumber="03" sectionTitle="Informasi" sectionSubtitle="03 news page" />
             </main>
             <Footer />
         </>

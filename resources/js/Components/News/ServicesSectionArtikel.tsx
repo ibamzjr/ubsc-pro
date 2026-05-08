@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import NewsCard from "@/Components/Landing/NewsCard";
 import type { NewsItem } from "@/Components/Landing/NewsCard";
 import SectionDivider from "@/Components/Landing/SectionDivider";
-import NewsHeroBg from "@/../assets/images/news-hero.avif"
+import NewsHeroBg from "@/../assets/images/news-hero.avif";
 
 interface DummyArtikelItem extends NewsItem {
     description: string;
@@ -74,8 +74,7 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
     },
 ];
 
-const CARD_CLASS = "h-[420px] xl:h-[530px] w-full";
-
+const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
 export default function ServicesSectionArtikel() {
     const [featured, rightTop, rightBottom, ...bottom4] = DUMMY_ARTIKEL;
 
@@ -94,18 +93,18 @@ export default function ServicesSectionArtikel() {
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
-                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
+                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-[#ff0000] flex-shrink-0" />
+                            <span className="font-bdo font-regular text-[clamp(1rem,1.25vw,1.5rem)] text-black">
                                 Artikel Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
+                        <h2 className="font-bdo font-semibold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
                             Artikel Terkini Kami
                         </h2>
                     </div>
                     <a
                         href="#"
-                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-[#ff0000] self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />

@@ -18,7 +18,7 @@ const DUMMY_TESTIMONIALS: Testimonial[] = [
     {
         id: 1,
         image: gambar1,
-        quote: "Malang Tenis Academy mengapresiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
+        quote: "Malang Tenis Academy menga  presiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
         authorName: "Malang Tennis Academy",
         authorRole: "Footbal Club",
         authorLogo: author1,
@@ -40,10 +40,16 @@ const FIXED_STATS = [
 
 interface SectionSevenProps {
     testimonials?: Testimonial[];
+    sectionNumber?: string;
+    sectionTitle?: string;
+    sectionSubtitle?: string;
 }
 
 export default function SectionSeven({
     testimonials = DUMMY_TESTIMONIALS,
+    sectionNumber = "07",
+    sectionTitle = "Testimoni",
+    sectionSubtitle = "01 homepage",
 }: SectionSevenProps) {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
@@ -67,20 +73,20 @@ export default function SectionSeven({
     return (
         <section
             id="testimonials"
-            className="w-full bg-white pt-12 pb-12 px-6 sm:px-10 lg:px-24"
+            className="w-full bg-white pt-12 pb-12 px-6 sm:px-10 lg:px-20"
         >
             <div className="mx-auto">
                 <SectionDivider
-                    number="06"
-                    title="Testimoni"
-                    subtitle="01/ homepage"
+                    number={sectionNumber}
+                    title={sectionTitle}
+                    subtitle={sectionSubtitle}
                     theme="light"
                 />
             </div>
 
             <div className="mb-8 flex items-center gap-2">
-                <span className="h-3 w-3 flex-shrink-0 bg-red-600" />
-                <span className="font-bdo text-sm font-regular text-gray-800">
+                <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
+                <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
                     Ulasan Pengguna
                 </span>
             </div>

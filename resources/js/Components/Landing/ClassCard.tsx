@@ -38,7 +38,7 @@ export default function ClassCard({ item }: ClassCardProps) {
                 </span>
 
                 <div className="absolute bottom-5 left-5 z-10 flex overflow-hidden rounded-md text-xs font-clash font-semibold border-2 border-[#323232]">
-                    <span className="flex items-center gap-1 bg-[#323232] px-3 py-1.5 text-white">
+                    <span className="flex items-center gap-1 bg-[#242424] px-3 py-1.5 text-white">
                         <MapPin
                             size={10}
                             className="flex-shrink-0 opacity-75"
@@ -57,7 +57,7 @@ export default function ClassCard({ item }: ClassCardProps) {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between border border-t-0 border-neutral-700/50 bg-[#323232] p-6 md:p-8">
+            <div className="flex items-center justify-between border border-t-0 border-neutral-700/50 bg-[#242424] p-6 md:p-8">
                 <span className="text-[clamp(1.5rem,2.08vw,40px)] font-bold tracking-tight text-white">
                     {item.title}
                 </span>

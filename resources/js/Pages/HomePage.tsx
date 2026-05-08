@@ -62,9 +62,7 @@ export default function HomePage() {
                 <FadeIn>
                     <SectionThree />
                 </FadeIn>
-                <FadeIn>
-                    <SectionFour />
-                </FadeIn>
+                <SectionFour />
                 <FadeIn>
                     <SectionFive />
                 </FadeIn>
