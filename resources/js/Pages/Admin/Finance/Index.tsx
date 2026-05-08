@@ -595,7 +595,7 @@ function ExportModal({
                             <p className="font-clash text-base font-semibold text-slate-900 leading-tight">Pilih Periode</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700">
+                    <button title="X" onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700">
                         <X className="w-4 h-4" />
                     </button>
                 </div>
@@ -611,6 +611,7 @@ function ExportModal({
                         <div>
                             <label className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Bulan</label>
                             <select
+                                title="nama"
                                 value={selMonth}
                                 onChange={e => setSelMonth(Number(e.target.value))}
                                 className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-sm font-bdo text-slate-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
@@ -623,6 +624,7 @@ function ExportModal({
                         <div>
                             <label className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Tahun</label>
                             <select
+                                title="tahun"
                                 value={selYear}
                                 onChange={e => setSelYear(Number(e.target.value))}
                                 className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-sm font-bdo text-slate-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
