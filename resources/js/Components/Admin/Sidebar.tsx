@@ -604,7 +604,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
     const logoutItem: NavItem = {
         icon: LogOut, label: "Log out",
-        href: safeRoute("logout"),
+        href: safeRoute("admin.logout"),
         method: "post", as: "button",
         active: false,
     };
