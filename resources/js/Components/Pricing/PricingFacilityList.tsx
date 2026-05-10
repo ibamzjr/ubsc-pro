@@ -25,7 +25,7 @@ interface FacilityPricing {
 
 const ArrowChevron = () => (
     <svg
-        width="12"
+        width="16"
         height="20"
         viewBox="0 0 12 20"
         fill="none"
@@ -197,14 +197,14 @@ export default function PricingFacilityList() {
         <section className="bg-white overflow-x-clip" id="pricing-facilities">
             <div className="mx-auto max-w px-6 py-16 sm:px-10 lg:px-16 xl:px-24">
                 <SectionDivider
-                    number="01"
+                    number="02"
                     title="Arena Dalam"
-                    subtitle="01 schedulepage"
+                    subtitle="05 pricing page"
                     theme="light"
                 />
             </div>
 
-            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24">
+            <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-24 pb-20">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 mb-16 xl:mb-20">
                     <div className="xl:col-span-4 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
@@ -295,8 +295,12 @@ export default function PricingFacilityList() {
                                 aria-hidden
                                 className="w-10 h-10 xl:w-12 xl:h-12 object-contain"
                             />
-                            <span className="font-bdo font-medium text-[1.25rem] text-white">
-                                {activeFacility.classCode}
+                            <Clock
+                                size={20}
+                                className="text-white/80 flex-shrink-0"
+                            />
+                            <span className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-white/80">
+                                {activeFacility.timeSlot}
                             </span>
                         </div>
 
@@ -334,12 +338,8 @@ export default function PricingFacilityList() {
 
                         <div className="mt-auto pt-10 xl:pt-12 flex items-end justify-between xl:pb-12">
                             <div className="flex items-center gap-2">
-                                <Clock
-                                    size={20}
-                                    className="text-white/80 flex-shrink-0"
-                                />
-                                <span className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-white/80">
-                                    {activeFacility.timeSlot}
+                                <span className="font-bdo font-medium text-[1.1rem] text-white">
+                                    {activeFacility.classCode}
                                 </span>
                             </div>
                             <FacilityBadge

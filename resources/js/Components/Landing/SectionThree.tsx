@@ -1,6 +1,5 @@
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ScrollStack, { ScrollStackItem } from "@/Components/Landing/ScrollStack";
-import { ArrowUpRight } from "lucide-react";
 import gym from "../../../assets/hero/gym.svg";
 import branchesIcon from "../../../assets/icons/branches.svg";
 
@@ -27,13 +26,13 @@ const DUMMY_LOCATIONS: Location[] = [
         image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
         mapLink: "https://maps.app.goo.gl/RNPXp5pW2TqcE2YGA",
     },
-    {
-        id: "3",
-        name: "UB Sport Center Transmart",
-        category: "Cabang Eksklusif",
-        image: "/assets/images/cabang-eksklusif-transmart-ub-sport-center-malang.avif",
-        mapLink: "https://maps.app.goo.gl/rNEukCEQAQSZDAga6",
-    },
+    // {
+    //     id: "3",
+    //     name: "UB Sport Center Transmart",
+    //     category: "Cabang Eksklusif",
+    //     image: "/assets/images/cabang-eksklusif-transmart-ub-sport-center-malang.avif",
+    //     mapLink: "https://maps.app.goo.gl/rNEukCEQAQSZDAga6",
+    // },
 ];
 
 function LocationCard({ location }: { location: Location }) {
@@ -100,7 +99,7 @@ function LocationCard({ location }: { location: Location }) {
 
 export default function SectionThree() {
     return (
-        <section id="locations" className="w-full bg-[#F5F7F9] py-20 lg:py-24">
+        <section id="locations" className="w-full bg-[#F5F7F9] py-20 lg:py-16">
             <div className="mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
                 <SectionDivider
                     number="02"

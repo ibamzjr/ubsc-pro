@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import square from "../../../assets/hero/square.png";
+import InfoBanner from "@/Components/Landing/InfoBanner";
 
 interface NavItem {
     label: string;
@@ -86,8 +87,9 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
 
     return (
         <>
+            <InfoBanner />
             <nav
-                className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-8 py-6 lg:px-12
+                className={`fixed left-0 right-0 top-8 z-50 flex items-center justify-between px-8 py-6 lg:px-12
                 transition-all duration-500 ease-out bg-gradient-to-b to-transparent
                 ${navVisible ? "translate-y-0" : "-translate-y-full"}
                 ${scrolled ? "from-black" : "from-black"}
@@ -187,7 +189,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
             />
 
             <div
-                className={`fixed top-0 left-0 right-0 z-40 min-[1100px]:hidden transition-transform duration-500 ease-out ${
+                className={`fixed top-8 left-0 right-0 z-40 min-[1100px]:hidden transition-transform duration-500 ease-out ${
                     mobileOpen ? "translate-y-0" : "-translate-y-full"
                 }`}
                 style={{ background: "#111111" }}

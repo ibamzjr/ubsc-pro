@@ -18,7 +18,7 @@ const DUMMY_TESTIMONIALS: Testimonial[] = [
     {
         id: 1,
         image: gambar1,
-        quote: "Malang Tenis Academy mengapresiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
+        quote: "Malang Tenis Academy menga  presiasi kualitas fasilitas lapangan tenis di UB Sport Center yang terjaga baik dan memenuhi standar latihan serta pembinaan atlet profesional.",
         authorName: "Malang Tennis Academy",
         authorRole: "Footbal Club",
         authorLogo: author1,
@@ -40,10 +40,16 @@ const FIXED_STATS = [
 
 interface SectionSevenProps {
     testimonials?: Testimonial[];
+    sectionNumber?: string;
+    sectionTitle?: string;
+    sectionSubtitle?: string;
 }
 
 export default function SectionSeven({
     testimonials = DUMMY_TESTIMONIALS,
+    sectionNumber = "07",
+    sectionTitle = "Testimoni",
+    sectionSubtitle = "01 homepage",
 }: SectionSevenProps) {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
@@ -71,9 +77,9 @@ export default function SectionSeven({
         >
             <div className="mx-auto">
                 <SectionDivider
-                    number="07"
-                    title="Testimoni"
-                    subtitle="01 homepage"
+                    number={sectionNumber}
+                    title={sectionTitle}
+                    subtitle={sectionSubtitle}
                     theme="light"
                 />
             </div>

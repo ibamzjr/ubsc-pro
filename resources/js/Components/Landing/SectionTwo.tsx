@@ -140,7 +140,7 @@ export default function SectionTwo() {
                             <Star
                                 key={i}
                                 fill="currentColor"
-                                className="h-5 w-5 text-blue-600"
+                                className="h-5 w-5 text-[#15678D]"
                             />
                         ))}
                     </div>

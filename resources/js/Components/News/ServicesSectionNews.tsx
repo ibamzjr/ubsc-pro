@@ -68,8 +68,7 @@ const DUMMY_NEWS: DummyNewsItem[] = [
     },
 ];
 
-const CARD_CLASS = "h-[420px] xl:h-[530px] w-full";
-
+const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
 export default function ServicesSectionNews() {
     const [featured, standard, ...bottom4] = DUMMY_NEWS;
 
@@ -82,28 +81,32 @@ export default function ServicesSectionNews() {
                     subtitle="Newspage /01"
                     theme="light"
                 />
+
+                {/* Header Section */}
                 <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
-                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
+                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-[#ff0000] flex-shrink-0" />
+                            <span className="font-bdo font-regular text-[clamp(1rem,1.25vw,1.5rem)] text-black">
                                 Berita Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
+                        <h2 className="font-bdo font-semibold text-[clamp(2rem,2.7vw,3.25rem)] leading-[1.1] tracking-[-0.021em] text-black">
                             Berita Terkini Kami
                         </h2>
                     </div>
                     <a
                         href="#"
-                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-accent-red self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,1.5rem)] text-[#ff0000] self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />
                     </a>
                 </div>
 
+                {/* Grid Section */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8 pb-12">
+                    {/* Featured News */}
                     <div className="col-span-1 sm:col-span-2 xl:col-span-2 order-last sm:order-first xl:order-none">
                         <NewsCard
                             {...featured}
@@ -114,6 +117,7 @@ export default function ServicesSectionNews() {
                         />
                     </div>
 
+                    {/* Standard News */}
                     <div className="col-span-1">
                         <NewsCard
                             {...standard}
@@ -124,21 +128,21 @@ export default function ServicesSectionNews() {
                     </div>
 
                     <div className="col-span-1 order-[998] xl:order-none">
+                        {/* REVISI: Gunakan CARD_CLASS di sini juga agar tinggi sejajar */}
                         <div
-                            className="h-[420px] xl:h-[530px] w-full flex flex-col p-6 overflow-hidden"
+                            className={`${CARD_CLASS} flex flex-col p-6 overflow-hidden`}
                             style={{
                                 background:
                                     "linear-gradient(266deg, #15678d 3%, #173859 61%, #002244 97%)",
                             }}
                         >
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                                <p className="font-bdo font-medium text-[clamp(0.75rem,0.73vw,14px)] text-white">
+                            <div className="flex items-center justify-center gap-2 mb-2">
+                                <p className="font-bdo font-medium text-[clamp(0.75rem,0.73vw,0.875rem)] text-white text-center">
                                     Unggulan Kami
                                 </p>
                             </div>
 
-                            <p className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,16px)] text-white leading-snug max-w-[200px]">
+                            <p className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,1rem)] text-white text-center leading-snug">
                                 Dalam Pengembangan: Fitur artikel dan berita
                                 akan Segera Hadir
                             </p>
@@ -155,6 +159,7 @@ export default function ServicesSectionNews() {
                         </div>
                     </div>
 
+                    {/* Bottom 4 News */}
                     {bottom4.map((item, idx) => (
                         <div key={item.id} className="col-span-1">
                             <NewsCard

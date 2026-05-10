@@ -101,10 +101,7 @@ export default function NewsHero() {
             <div className="relative z-10 overflow-hidden" ref={emblaRef}>
                 <div className="flex">
                     {DUMMY_NEWS_SLIDES.map((slide, idx) => (
-                        <div
-                            key={slide.id}
-                            className="flex-[0_0_100%] min-w-0"
-                        >
+                        <div key={slide.id} className="flex-[0_0_100%] min-w-0">
                             {/* Top text area: transparent so static TopBg shows through */}
                             <div className="relative">
                                 <div className="h-28 xl:h-36" />
@@ -113,7 +110,10 @@ export default function NewsHero() {
                                     <div className="xl:col-span-8 flex flex-col gap-4">
                                         <div
                                             className="flex h-9 w-fit items-center rounded-md px-4"
-                                            style={{ background: "linear-gradient(to right, red, #790a0a)" }}
+                                            style={{
+                                                background:
+                                                    "linear-gradient(to right, red, #790a0a)",
+                                            }}
                                         >
                                             <span className="font-clash font-bold text-[clamp(0.875rem,0.83vw,16px)] text-white">
                                                 {slide.badge}

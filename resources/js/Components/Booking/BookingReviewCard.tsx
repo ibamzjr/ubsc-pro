@@ -15,7 +15,7 @@ const StarIcon = ({ className }: { className?: string }) => (
 
 export default function BookingReviewCard({ review }: { review: Review }) {
     return (
-        <div className="flex flex-col gap-4 w-[300px] xl:w-[380px] flex-shrink-0 bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="flex flex-col gap-4 w-[300px] xl:w-[380px] flex-shrink-0 rounded-2xl border border-gray-100 p-6 shadow-sm">
             <div className="flex items-center gap-2">
                 <div className="flex items-center gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (

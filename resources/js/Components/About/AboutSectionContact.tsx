@@ -16,27 +16,37 @@ function FeatureItem({ text }: { text: string }) {
     );
 }
 
-export default function AboutSectionContact() {
+interface AboutSectionContactProps {
+    sectionNumber?: string;
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+}
+
+export default function AboutSectionContact({
+    sectionNumber = "07",
+    sectionTitle = "Informasi",
+    sectionSubtitle = "aboutpage /06",
+}: AboutSectionContactProps = {}) {
     return (
         <section className="w-full bg-[#F5F7F9]" id="about-contact">
             <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-24">
                 <SectionDivider
-                    number="07"
-                    title="Informasi"
-                    subtitle="aboutpage /06"
+                    number={sectionNumber}
+                    title={sectionTitle}
+                    subtitle={sectionSubtitle}
                     theme="light"
                 />
 
                 <div className="grid grid-cols-1 gap-12 xl:grid-cols-12 xl:items-center">
                     <div className="xl:col-span-5 flex flex-col">
                         <div className="mb-6 flex items-center gap-2">
-                            <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-accent-red" />
+                            <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-[#FF0000]" />
                             <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-black">
                                 Pusat Bantuan
                             </span>
                         </div>
 
-                        <h2 className="mb-8 font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
+                        <h2 className="mb-8 font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-black">
                             Hubungi Kami!
                         </h2>
 

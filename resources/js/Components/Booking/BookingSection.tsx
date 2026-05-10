@@ -109,8 +109,8 @@ export default function BookingSection() {
             <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
             <SectionDivider
                 number="01"
-                title="Lokasi Kami"
-                subtitle="/01 bookingpage"
+                title="Reservasi Disini"
+                subtitle="01 bookingpage"
                 theme="light"
             />
             </div>

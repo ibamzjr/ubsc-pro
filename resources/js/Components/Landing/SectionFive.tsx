@@ -89,7 +89,7 @@ export default function SectionFive() {
     return (
         <section
             id="impact"
-            className="w-full py-24 text-white"
+            className="w-full py-16 text-white"
             style={{
                 background:
                     "#252525",

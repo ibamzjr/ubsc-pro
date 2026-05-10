@@ -103,9 +103,9 @@ export default function GymTrafficBadge({
     const StatusFlow = (
         <motion.div
             key={status}
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, filter: "blur(8px)" }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className={`relative flex items-center bg-gradient-to-r ${styles.bg} px-5 py-3 md:px-8 md:py-5 xl:px-10 xl:py-3 overflow-hidden`}
         >

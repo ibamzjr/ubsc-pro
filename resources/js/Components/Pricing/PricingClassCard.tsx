@@ -21,7 +21,7 @@ interface Props {
 
 export default function PricingClassCard({ item }: Props) {
     return (
-        <div className="flex flex-col flex-shrink-0 w-[320px] xl:w-[380px] bg-black border border-white/10 overflow-hidden rounded-2xl">
+        <div className="flex flex-col flex-shrink-0 w-[320px] xl:w-[580px] bg-black border border-white/10 overflow-hidden rounded-2xl">
             <div className="relative h-[220px] xl:h-[250px]">
                 <img
                     src={item.image}
@@ -31,17 +31,15 @@ export default function PricingClassCard({ item }: Props) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex flex-col justify-between p-5 xl:p-6">
                     <div>
-                        <p className="font-bdo font-medium text-[clamp(1rem,1.04vw,20px)] text-white leading-snug">
+                        <p className="font-bdo font-medium text-[clamp(1.75rem,1.2rem+2.5vw,2.5rem)] text-white leading-snug">
                             {item.title}
-                        </p>
-                        <p className="font-bdo font-normal text-[clamp(0.75rem,0.73vw,14px)] text-white/70 mt-1 leading-relaxed ">
-                            {item.description}
                         </p>
                     </div>
                     <div>
                         <FacilityBadge
                             location={item.badgeLocation}
                             category={item.badgeType}
+                            variant="blue-red"
                         />
                     </div>
                 </div>

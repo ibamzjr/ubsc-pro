@@ -8,10 +8,10 @@ import UpRight from "@/../assets/icons/UpRight.svg";
 const NAV_LINKS = [
     { label: "Home", number: "01", href: "/" },
     { label: "About", number: "02", href: "/about" },
-    { label: "News", number: "03", href: "#" },
-    { label: "Facilities", number: "04", href: "#facilities" },
-    { label: "Pricing", number: "05", href: "#pricing" },
-    { label: "Booking", number: "06", href: "#booking" },
+    { label: "News", number: "03", href: "/news" },
+    { label: "Facilities", number: "04", href: "/facilities" },
+    { label: "Pricing", number: "05", href: "/pricing" },
+    { label: "Booking", number: "06", href: "/booking" },
 ];
 
 const SOCIAL_LINKS = [
@@ -37,7 +37,6 @@ export default function Footer() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
     const [ctaHovered, setCtaHovered] = useState(false);
     const [rotated, setRotated] = useState(false);
-
 
     return (
         <footer
@@ -264,7 +263,6 @@ export default function Footer() {
     );
 }
 
-
 function FooterArrow() {
     return (
         <svg width={28} height={28} viewBox="0 0 64 64" fill="none">
@@ -279,29 +277,27 @@ function FooterArrow() {
     );
 }
 
-
 function ScrollUpButton({ onClick }: { onClick: () => void }) {
     return (
         <div className="group flex items-center">
-    <button
-        type="button"
-        onClick={onClick}
-        aria-label="Scroll to top"
-        className="flex items-center justify-center rounded-full border border-white/40 px-5 py-1.5 sm:px-8 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
-    >
-        <span className="font-bdo text-[0.75rem] sm:text-base font-light tracking-wide whitespace-nowrap">
-            Scroll up
-        </span>
-    </button>
-    
-    <span className="-ml-[1px] flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
-        <img
-            src={UpRight}
-            alt="Scroll Up"
-            className="w-2 xs:w-4 transition-transform duration-500 ease-in-out rotate-[5deg] group-hover:rotate-[-55deg] group-hover:[filter:grayscale(1)_brightness(0)]" 
-        />
-    </span>
-</div>
+            <button
+                type="button"
+                onClick={onClick}
+                aria-label="Scroll to top"
+                className="flex items-center justify-center rounded-full border border-white/40 px-5 py-1.5 sm:px-8 sm:py-2.5 text-white transition-all duration-300 group-hover:bg-white group-hover:text-black"
+            >
+                <span className="font-bdo text-[0.75rem] sm:text-base font-light tracking-wide whitespace-nowrap">
+                    Scroll up
+                </span>
+            </button>
 
+            <span className="-ml-[1px] flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/40 transition-all duration-300 group-hover:bg-white">
+                <img
+                    src={UpRight}
+                    alt="Scroll Up"
+                    className="w-2 xs:w-4 transition-transform duration-500 ease-in-out rotate-[5deg] group-hover:rotate-[-55deg] group-hover:[filter:grayscale(1)_brightness(0)]"
+                />
+            </span>
+        </div>
     );
 }

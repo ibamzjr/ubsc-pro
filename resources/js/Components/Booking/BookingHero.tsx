@@ -13,7 +13,6 @@ export default function BookingHero() {
                     aria-hidden
                     className="h-full w-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
             </div>
             <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-[45vh] bg-black xl:hidden" />
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-1/2 overflow-hidden xl:block">
@@ -23,7 +22,6 @@ export default function BookingHero() {
                     aria-hidden
                     className="h-full w-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
             </div>
             <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 bg-black xl:block" />
 
@@ -39,22 +37,22 @@ export default function BookingHero() {
                             aria-hidden
                             className="mb-4 h-12 w-12 xl:h-16 xl:w-16"
                         />
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
+                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
                             Booking Sekarang
                         </h1>
                     </div>
                 </div>
 
                 <div className="flex flex-col justify-center overflow-hidden px-8 py-12 xl:px-20 xl:py-20">
-                    <h2 className="font-monument font-extrabold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
+                    <h2 className="font-monument font-extrabold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
                         Fasilitas Terbaik Kami
                     </h2>
 
                     <p className="font-bdo font-light text-[clamp(0.875rem,0.94vw,18px)] text-white/70 mt-6 max-w-lg leading-relaxed">
                         Mengenal lebih dekat cerita, nilai, dan dedikasi kami{" "}
                         <span className="font-medium text-white">
-                            dalam menghadirkan layanan olahraga terbaik untuk semua
-                            kalangan.
+                            dalam menghadirkan layanan olahraga terbaik untuk
+                            semua kalangan.
                         </span>
                     </p>
 

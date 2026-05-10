@@ -17,7 +17,7 @@ export default function FaqItem({ number, question, answer }: FaqItemProps) {
         <div className="border-b border-black/10">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex w-full items-center justify-between py-6 cursor-pointer text-left"
+                className="flex w-full items-center justify-between py-12 cursor-pointer text-left"
                 aria-expanded={isOpen}
             >
                 <div className="flex items-center gap-6 xl:gap-8 min-w-0">
@@ -48,7 +48,7 @@ export default function FaqItem({ number, question, answer }: FaqItemProps) {
                         transition={{ duration: 0.38, ease: EASE }}
                         className="overflow-hidden"
                     >
-                        <p className="font-bdo font-light text-base xl:text-lg leading-relaxed text-black/60 pb-8 pl-[4.5rem] xl:pl-20">
+                        <p className="font-bdo font-regular text-[clamp(1.25rem,1.15rem+0.5vw,1.5rem)] leading-relaxed text-black/50 pb-8 xl:pb-12 pl-[4.5rem] xl:pl-20">
                             {answer}
                         </p>
                     </motion.div>

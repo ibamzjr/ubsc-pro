@@ -49,20 +49,28 @@ export default function AccordionItem({
 
                 <div
                     className={`ml-6 flex h-9 w-9 xl:h-11 xl:w-11 flex-shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
-                        isOpen ? "bg-accent-red" : "bg-black"
+                        isOpen ? "bg-[#ff0000]" : "bg-black"
                     }`}
                 >
                     <AnimatePresence mode="wait" initial={false}>
                         {isOpen ? (
                             <motion.span
                                 key="x"
-                                initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
+                                initial={{
+                                    opacity: 0,
+                                    rotate: -90,
+                                    scale: 0.7,
+                                }}
                                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                                 exit={{ opacity: 0, rotate: 90, scale: 0.7 }}
                                 transition={{ duration: 0.18, ease: EASE }}
                                 className="flex"
                             >
-                                <X size={16} className="text-white" strokeWidth={2.5} />
+                                <X
+                                    size={16}
+                                    className="text-white"
+                                    strokeWidth={2.5}
+                                />
                             </motion.span>
                         ) : (
                             <motion.span
@@ -73,7 +81,11 @@ export default function AccordionItem({
                                 transition={{ duration: 0.18, ease: EASE }}
                                 className="flex"
                             >
-                                <ChevronDown size={16} className="text-white" strokeWidth={2.5} />
+                                <ChevronDown
+                                    size={16}
+                                    className="text-white"
+                                    strokeWidth={2.5}
+                                />
                             </motion.span>
                         )}
                     </AnimatePresence>
@@ -91,7 +103,7 @@ export default function AccordionItem({
                         className="overflow-hidden"
                     >
                         <div className="pb-12">
-                            <div className="w-full h-[180px] xl:h-[354px] overflow-hidden rounded-[15px]">
+                            <div className="w-full overflow-hidden rounded-[15px]">
                                 <img
                                     src={image}
                                     alt={title}
@@ -109,10 +121,10 @@ export default function AccordionItem({
                                     </div>
 
                                     <div className="flex flex-col xl:mt-auto">
-                                        <span className="font-bdo font-medium text-[clamp(3rem,6vw,5rem)] text-accent-red leading-none">
+                                        <span className="font-bdo font-medium text-[clamp(3rem,6vw,5rem)] text-[#ff0000] leading-none">
                                             {bigNumber}
                                         </span>
-                                        <span className="font-bdo font-light text-sm text-black/50 uppercase tracking-widest mt-1">
+                                        <span className="font-bdo font-regular text-md text-black tracking-widest mt-1">
                                             {bigNumberLabel}
                                         </span>
                                     </div>
@@ -125,7 +137,7 @@ export default function AccordionItem({
 
                                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
                                         <div className="xl:col-span-3">
-                                            <span className="font-bdo text-base text-accent-red">
+                                            <span className="font-bdo text-base text-[#ff0000]">
                                                 {redLabel}
                                             </span>
                                         </div>
