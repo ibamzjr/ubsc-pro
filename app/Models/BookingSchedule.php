@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookingSchedule extends Model
 {
-    protected $fillable = ['month', 'year', 'is_open'];
+    protected $fillable = ['month', 'year', 'is_open', 'closed_dates'];
 
     protected function casts(): array
     {
         return [
-            'is_open' => 'boolean',
+            'is_open'      => 'boolean',
+            'closed_dates' => 'array',
         ];
     }
 

@@ -15,6 +15,7 @@ class Booking extends Model
         'booking_date',
         'start_time',
         'end_time',
+        'pax',
         'subtotal_price',
         'status',
         'notes',
@@ -24,6 +25,7 @@ class Booking extends Model
     {
         return [
             'booking_date' => 'date',
+            'pax'          => 'integer',
         ];
     }
 

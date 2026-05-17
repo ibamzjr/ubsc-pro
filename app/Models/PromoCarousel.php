@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -13,7 +14,6 @@ class PromoCarousel extends Model implements HasMedia
 
     protected $fillable = [
         'title',
-        'link_url',
         'is_active',
         'sort_order',
     ];
@@ -28,5 +28,15 @@ class PromoCarousel extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('slide')->singleFile();
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order');
     }
 }
