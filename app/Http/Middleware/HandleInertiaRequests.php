@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\InfoBanner;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -26,6 +28,7 @@ class HandleInertiaRequests extends Middleware
                     'name'              => $user->name,
                     'email'             => $user->email,
                     'email_verified_at' => $user->email_verified_at,
+                    'avatar'            => $user->avatar,
                     'phone_number'      => $user->phone_number,
                     'identity_category' => $user->identity_category,
                     'identity_number'   => $user->identity_number,
@@ -38,6 +41,8 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error'   => $request->session()->get('error'),
             ],
+            'announcements' => InfoBanner::active()->ordered()->pluck('message'),
+            'gym_traffic'   => SystemSetting::get('gym_traffic', 'Low Occupancy'),
         ];
     }
 }
