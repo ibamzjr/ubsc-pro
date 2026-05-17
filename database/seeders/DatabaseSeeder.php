@@ -17,6 +17,18 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndPermissionSeeder::class,
             AdminUserSeeder::class,
+            // CMS content — must run before BookingSeeder (which needs Facility)
+            FacilityCategorySeeder::class,
+            FacilitySeeder::class,
+            FacilityPriceSeeder::class,
+            NewsCategorySeeder::class,
+            NewsSeeder::class,
+            PromoCarouselSeeder::class,
+            SponsorLogoSeeder::class,
+            ReelSeeder::class,
+            InfoBannerSeeder::class,
+            TestimonialSeeder::class,
+            ReviewSeeder::class,
             BookingSeeder::class,
         ]);
     }

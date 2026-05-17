@@ -11,10 +11,9 @@ class Testimonial extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'name',
-        'instance',
-        'message',
-        'rating',
+        'author_name',
+        'author_role',
+        'quote',
         'is_active',
         'sort_order',
     ];
@@ -28,6 +27,17 @@ class Testimonial extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('avatar')->singleFile();
+        $this->addMediaCollection('image')->singleFile();
+        $this->addMediaCollection('logo')->singleFile();
+    }
+
+    public function scopeActive($q)
+    {
+        return $q->where('is_active', true);
+    }
+
+    public function scopeOrdered($q)
+    {
+        return $q->orderBy('sort_order');
     }
 }
