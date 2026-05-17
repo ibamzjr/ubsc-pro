@@ -510,17 +510,34 @@ export default function Login({ status }: LoginProps) {
                             <div className="u-card-hd">
                                 {/* Asterisk mark */}
                                 <div className="u-mark" aria-hidden="true">
-                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                        <line x1="12" y1="2"  x2="12" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                                        <line x1="2"  y1="7"  x2="22" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                                        <line x1="22" y1="7"  x2="2"  y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                                    </svg>
+                                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Ball body */}
+        <circle cx="17" cy="17" r="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" strokeWidth="1.5"/>
+        {/* Felt seam curves — left arc */}
+        <path
+            d="M 7 7 C 10 14, 10 20, 7 27"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            fill="none"
+        />
+        {/* Felt seam curves — right arc */}
+        <path
+            d="M 27 7 C 24 14, 24 20, 27 27"
+            stroke="rgba(255,255,255,0.75)"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            fill="none"
+        />
+        {/* Inner glow highlight */}
+        <ellipse cx="13" cy="12" rx="4" ry="2.5" fill="rgba(255,255,255,0.1)" transform="rotate(-20 13 12)"/>
+    </svg>
                                 </div>
 
                                 <h1 className="u-heading">
                                     {/* Shiny shimmer on "Sign in to your" */}
-                                    <span className="u-heading-shiny">Silakan akses</span>
-                                    <em className="u-heading-dim">Portal Staf</em>
+                                    <span className="u-heading-shiny text-3xl">Selamat Datang di</span>
+                                    <em className="u-heading-dim text-2xl">Portal Pegawai UB Sport Center</em>
                                 </h1>
 
                                 <p className="u-subtext">
