@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\InfoBannerController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Models\InfoBanner;
+use App\Models\SystemSetting;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FacilityCategoryController;
@@ -10,6 +13,7 @@ use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\FacilityPriceController;
 use App\Http\Controllers\Admin\IdentityQueueController;
 use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\Admin\NewsController;
@@ -17,64 +21,125 @@ use App\Http\Controllers\Admin\PromoCarouselController;
 use App\Http\Controllers\Admin\ReelController;
 use App\Http\Controllers\Admin\SponsorLogoController;
 use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\PublicBookingController;
+use App\Http\Controllers\Public\PublicFacilityController;
+use App\Http\Controllers\Public\PublicNewsController;
+use App\Http\Controllers\Public\ReviewController;
+use App\Http\Resources\Public\FacilityResource;
 use App\Models\Booking;
 use App\Models\Facility;
 use App\Models\Membership;
-use App\Models\MembershipPlan;
+use App\Models\Review;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-Route::get('/', function () {
-    return Inertia::render('HomePage', [
-        'membershipPlans' => MembershipPlan::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(fn ($p) => [
-                'id'              => $p->id,
-                'name'            => $p->name,
-                'price'           => $p->price,
-                'duration_months' => $p->duration_months,
-                'features'        => $p->features ?? [],
-            ]),
-    ]);
-});
+Route::get('/', [HomeController::class, 'index'])->middleware('throttle:60,1');
 
 Route::get('/about', function () {
     return Inertia::render('AboutPage');
 })->name('about');
 
-Route::get('/news', function () {
-    return Inertia::render('NewsPage');
-})->name('news');
+Route::get('/news', [PublicNewsController::class, 'index'])->middleware('throttle:60,1')->name('news');
 
 Route::get('/pricing', function () {
-    return Inertia::render('PricingPage');
-})->name('pricing');
+    return Inertia::render('PricingPage', [
+        'facilities' => FacilityResource::collection(
+            Facility::active()->with('category', 'prices')->orderBy('sort_order')->get()
+        )->resolve(),
+    ]);
+})->middleware('throttle:60,1')->name('pricing');
 
-Route::get('/facilities', function () {
-    return Inertia::render('FacilityPage');
-})->name('facility');
+Route::get('/facilities', [PublicFacilityController::class, 'index'])->middleware('throttle:60,1')->name('facility');
 
 Route::get('/booking', function () {
-    return Inertia::render('BookingPage');
-})->name('booking');
+    $user           = auth()->user();
+    $canReview      = $user && Booking::where('user_id', $user->id)->where('status', 'completed')->exists();
+    $existingReview = $user ? Review::where('user_id', $user->id)->first() : null;
+
+    return Inertia::render('BookingPage', [
+        'facilities' => FacilityResource::collection(
+            Facility::active()->with('category', 'prices')->orderBy('sort_order')->get()
+        )->resolve(),
+        'can_review'       => $canReview,
+        'existing_review'  => $existingReview ? [
+            'id'     => $existingReview->id,
+            'rating' => (float) $existingReview->rating,
+            'text'   => $existingReview->text,
+        ] : null,
+        'approved_reviews' => Review::approved()->with('user')->latest()->get()->map(fn ($r) => [
+            'id'         => (string) $r->id,
+            'rating'     => (float) $r->rating,
+            'text'       => $r->text,
+            'authorName' => $r->reviewer_name ?? $r->user?->name ?? 'Pengguna',
+            'authorDate' => $r->created_at->format('d M Y'),
+            'avatar'     => $r->user?->avatar
+                ? '/storage/' . $r->user->avatar
+                : '/assets/icons/ulasan-malang-tennis-academy-ubsc.avif',
+        ])->values()->all(),
+    ]);
+})->middleware('throttle:60,1')->name('booking');
+
+Route::get('/booking/slots', [PublicBookingController::class, 'slots'])
+    ->middleware('throttle:120,1')
+    ->name('booking.slots');
 
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
 })->name('coming-soon');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ─── Staff Portal Auth ────────────────────────────────────────────────────────
 
-Route::middleware('auth')->group(function () {
+Route::middleware('guest')->group(function () {
+    Route::get('/ubsc-staff/login', [AdminAuthenticatedSessionController::class, 'create'])
+        ->name('ubsc-staff.login');
+    Route::post('/ubsc-staff/login', [AdminAuthenticatedSessionController::class, 'store']);
+});
+
+Route::middleware('auth')->post('/ubsc-staff/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
+    ->name('ubsc-staff.logout');
+
+// ─── Profile & User Endpoints ─────────────────────────────────────────────────
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/user/transactions', function () {
+        $transactions = Transaction::where('user_id', auth()->id())
+            ->with('transactionable')
+            ->latest()
+            ->take(20)
+            ->get();
+
+        $transactions->each(function ($t) {
+            if ($t->transactionable instanceof Booking) {
+                $t->transactionable->loadMissing('facility');
+            }
+        });
+
+        return response()->json($transactions->map(fn ($t) => [
+            'id'             => $t->id,
+            'amount'         => $t->amount,
+            'payment_status' => $t->payment_status,
+            'checkout_url'   => $t->checkout_url,
+            'paid_at'        => $t->paid_at?->toDateTimeString(),
+            'created_at'     => $t->created_at->toDateTimeString(),
+            'facility_name'  => $t->transactionable instanceof Booking
+                ? ($t->transactionable->facility?->name ?? '-')
+                : '-',
+            'booking_date'   => $t->transactionable instanceof Booking
+                ? $t->transactionable->booking_date
+                : null,
+        ]));
+    })->name('user.transactions');
 });
 
 // ─── Admin ────────────────────────────────────────────────────────────────────
@@ -83,7 +148,7 @@ Route::middleware([
     'auth',
     'role:Administrator|Manager|Finance|Staff Front Office|Staff Central',
 ])
-    ->prefix('admin')
+    ->prefix('ubsc-staff')
     ->name('admin.')
     ->group(function () {
 
@@ -217,12 +282,19 @@ Route::middleware([
                     'totalRevenue'       => $currentRevenue,
                     'activeMemberships'  => Membership::where('status', 'active')->count(),
                 ],
-                'revenueTrend'     => $revenueTrend,
-                'dailyRevenue'     => $dailyRevenue,
-                'daysInMonth'      => $daysInMonth,
+                'revenueTrend'      => $revenueTrend,
+                'dailyRevenue'      => $dailyRevenue,
+                'daysInMonth'       => $daysInMonth,
                 'currentMonthLabel' => $now->translatedFormat('M Y'),
-                'occupancyData'    => array_values($occupancyData),
-                'recentActivity'   => $recentActivity,
+                'occupancyData'     => array_values($occupancyData),
+                'recentActivity'    => $recentActivity,
+                'gym_traffic'       => SystemSetting::get('gym_traffic', 'Low Occupancy'),
+                'info_banners'      => InfoBanner::ordered()->get()->map(fn ($b) => [
+                    'id'         => $b->id,
+                    'message'    => $b->message,
+                    'is_active'  => $b->is_active,
+                    'sort_order' => $b->sort_order,
+                ])->values()->all(),
             ]);
         })->name('dashboard');
 
@@ -243,6 +315,8 @@ Route::middleware([
             ->name('facility-categories.update');
         Route::delete('facility-categories/{facilityCategory}', [FacilityCategoryController::class, 'destroy'])
             ->name('facility-categories.destroy');
+        Route::post('facility-categories/reorder', [FacilityCategoryController::class, 'reorder'])
+            ->name('facility-categories.reorder');
 
         // Facilities
         Route::get('facilities', [FacilityController::class, 'index'])
@@ -251,6 +325,8 @@ Route::middleware([
             ->name('facilities.create');
         Route::post('facilities', [FacilityController::class, 'store'])
             ->name('facilities.store');
+        Route::post('facilities/reorder', [FacilityController::class, 'reorder'])
+            ->name('facilities.reorder');
         Route::get('facilities/{facility}/edit', [FacilityController::class, 'edit'])
             ->name('facilities.edit');
         Route::put('facilities/{facility}', [FacilityController::class, 'update'])
@@ -258,14 +334,29 @@ Route::middleware([
         Route::delete('facilities/{facility}', [FacilityController::class, 'destroy'])
             ->name('facilities.destroy');
 
-        // Facility Pricing (UI Placeholder)
-        Route::get('facilities/{facility}/pricing', function () {
-            return Inertia::render('Admin/Facilities/Pricing');
+        // Facility Pricing
+        Route::get('facilities/{facility}/pricing', function (Facility $facility) {
+            $facility->load('prices');
+            return Inertia::render('Admin/Facilities/Pricing', [
+                'facility' => ['id' => $facility->id, 'name' => $facility->name],
+                'prices'   => $facility->prices->map(fn ($p) => [
+                    'id'               => $p->id,
+                    'user_category'    => $p->user_category,
+                    'label'            => $p->label,
+                    'price'            => $p->price,
+                    'duration_minutes' => $p->duration_minutes ?? 60,
+                    'notes'            => $p->notes,
+                    'sort_order'       => $p->sort_order,
+                ])->values()->all(),
+            ]);
         })->name('facilities.pricing');
+        Route::post('facilities/{facility}/pricing/sync', [FacilityPriceController::class, 'sync'])
+            ->name('facilities.pricing.sync');
 
         // Settings — Schedule Control (Administrator only)
         Route::get('settings/schedules', [ScheduleController::class, 'index'])->name('settings.schedules');
         Route::post('settings/schedules/toggle', [ScheduleController::class, 'toggle'])->name('settings.schedules.toggle');
+        Route::post('settings/schedules/update-dates', [ScheduleController::class, 'updateClosedDates'])->name('settings.schedules.update-dates');
         Route::post('settings/schedules/quick-open-next', [ScheduleController::class, 'quickOpenNext'])->name('settings.schedules.quick-open-next');
 
         // Settings — Role & Access
@@ -286,6 +377,19 @@ Route::middleware([
         Route::delete('facilities/gallery/{media}', [FacilityController::class, 'destroyGalleryMedia'])
             ->name('facilities.gallery.destroy');
 
+        // System Settings
+        Route::put('settings/gym-traffic', function (\Illuminate\Http\Request $request) {
+            $request->validate(['value' => ['required', 'in:Low Occupancy,Medium Occupancy,High Occupancy,We Are Close']]);
+            SystemSetting::set('gym_traffic', $request->value);
+            return back();
+        })->name('settings.gym-traffic.update');
+
+        // Info Banners (mutation-only; index rendered inside admin.news.index)
+        Route::post('info-banners',               [InfoBannerController::class, 'store'])   ->name('info-banners.store');
+        Route::put('info-banners/{infoBanner}',   [InfoBannerController::class, 'update'])  ->name('info-banners.update');
+        Route::delete('info-banners/{infoBanner}',[InfoBannerController::class, 'destroy']) ->name('info-banners.destroy');
+        Route::post('info-banners/reorder',       [InfoBannerController::class, 'reorder']) ->name('info-banners.reorder');
+
         // News Categories
         Route::post('news-categories', [NewsCategoryController::class, 'store'])
             ->name('news-categories.store');
@@ -305,12 +409,14 @@ Route::middleware([
         // Promo Carousel
         Route::get('promo', [PromoCarouselController::class, 'index'])->name('promo.index');
         Route::post('promo', [PromoCarouselController::class, 'store'])->name('promo.store');
+        Route::post('promo/reorder', [PromoCarouselController::class, 'reorder'])->name('promo.reorder');
         Route::put('promo/{promoCarousel}', [PromoCarouselController::class, 'update'])->name('promo.update');
         Route::delete('promo/{promoCarousel}', [PromoCarouselController::class, 'destroy'])->name('promo.destroy');
 
         // Sponsors
         Route::get('sponsors', [SponsorLogoController::class, 'index'])->name('sponsors.index');
         Route::post('sponsors', [SponsorLogoController::class, 'store'])->name('sponsors.store');
+        Route::post('sponsors/reorder', [SponsorLogoController::class, 'reorder'])->name('sponsors.reorder');
         Route::put('sponsors/{sponsorLogo}', [SponsorLogoController::class, 'update'])->name('sponsors.update');
         Route::delete('sponsors/{sponsorLogo}', [SponsorLogoController::class, 'destroy'])->name('sponsors.destroy');
 
@@ -323,8 +429,13 @@ Route::middleware([
         // Testimonials
         Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
         Route::post('testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
+        Route::post('testimonials/reorder', [TestimonialController::class, 'reorder'])->name('testimonials.reorder');
         Route::put('testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
         Route::delete('testimonials/{testimonial}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
+
+        // Reviews (managed via Testimonials page)
+        Route::post('reviews/{review}/toggle-approve', [TestimonialController::class, 'toggleApprove'])->name('reviews.toggle-approve');
+        Route::delete('reviews/{review}', [TestimonialController::class, 'destroyReview'])->name('reviews.destroy');
     });
 
 require __DIR__.'/auth.php';

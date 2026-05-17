@@ -6,6 +6,8 @@ export interface User {
     name: string;
     email: string;
     email_verified_at?: string;
+    avatar?: string | null;
+    avatar_url?: string | null;
     phone_number?: string | null;
     identity_category?: IdentityCategory | null;
     identity_number?: string | null;
@@ -24,6 +26,8 @@ export type PageProps<
         success?: string | null;
         error?: string | null;
     };
+    announcements?: string[];
+    gym_traffic?: string;
 };
 
 // ─── Facility Types ───────────────────────────────────────────────────────────
@@ -49,6 +53,13 @@ export interface FacilityItem {
     name: string;
     slug: string;
     description?: string | null;
+    location?: string | null;
+    venue_type?: string | null;
+    capacity?: number;
+    active_slots?: Record<string, string[]> | null;
+    class_code?: string | null;
+    rating?: number;
+    display_metadata?: Record<string, unknown> | null;
     is_active: boolean;
     sort_order: number;
     category: FacilityCategory;
@@ -96,12 +107,20 @@ export interface NewsItem {
     thumbnail?: string | null;
 }
 
+// ─── InfoBanner Types ─────────────────────────────────────────────────────────
+
+export interface InfoBannerItem {
+    id: number;
+    message: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
 // ─── CMS Types ────────────────────────────────────────────────────────────────
 
 export interface PromoItem {
     id: number;
     title?: string | null;
-    link_url?: string | null;
     is_active: boolean;
     sort_order: number;
     slide_url?: string | null;
@@ -110,7 +129,6 @@ export interface PromoItem {
 export interface SponsorItem {
     id: number;
     name: string;
-    link_url?: string | null;
     is_active: boolean;
     sort_order: number;
     logo_url?: string | null;
@@ -119,23 +137,29 @@ export interface SponsorItem {
 export interface AdminReelItem {
     id: number;
     title: string;
-    subtitle?: string | null;
-    video_url: string;
-    is_featured: boolean;
     is_active: boolean;
-    sort_order: number;
     thumbnail_url?: string | null;
+    video_url?: string | null;
 }
 
 export interface TestimonialItem {
     id: number;
-    name: string;
-    instance: string;
-    message: string;
-    rating?: number | null;
+    author_name: string;
+    author_role: string;
+    quote: string;
     is_active: boolean;
     sort_order: number;
-    avatar_url?: string | null;
+    image_url?: string | null;
+    logo_url?: string | null;
+}
+
+export interface ReviewItem {
+    id: number;
+    reviewer_name: string;
+    rating: number;
+    text: string;
+    is_approved: boolean;
+    created_at: string;
 }
 
 // ─── Booking / Transaction Types ──────────────────────────────────────────────
@@ -180,6 +204,7 @@ export interface AdminBooking {
     notes: string | null;
     customer_name: string;
     customer_phone: string | null;
+    is_free: boolean;
     user_category: UserCategory;
     facility_name: string;
     transaction: BookingTransaction | null;
