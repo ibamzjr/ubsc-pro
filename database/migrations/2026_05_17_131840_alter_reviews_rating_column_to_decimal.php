@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('reels', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->decimal('rating', 3, 1)->unsigned()->change();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('reels');
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->tinyInteger('rating')->unsigned()->change();
+        });
     }
 };

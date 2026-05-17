@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('promo_carousels', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
-            $table->string('link_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();

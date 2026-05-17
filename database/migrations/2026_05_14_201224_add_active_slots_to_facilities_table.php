@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('reels', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        Schema::table('facilities', function (Blueprint $table) {
+            $table->json('active_slots')->nullable()->after('capacity');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('reels');
+        Schema::table('facilities', function (Blueprint $table) {
+            $table->dropColumn('active_slots');
+        });
     }
 };

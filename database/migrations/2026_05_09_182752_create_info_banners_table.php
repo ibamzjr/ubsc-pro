@@ -6,19 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('sponsor_logos', function (Blueprint $table) {
+        Schema::create('info_banners', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('message');
             $table->boolean('is_active')->default(true);
-            $table->unsignedInteger('sort_order')->default(0);
+            $table->unsignedSmallInteger('sort_order')->default(0);
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('sponsor_logos');
+        Schema::dropIfExists('info_banners');
     }
 };

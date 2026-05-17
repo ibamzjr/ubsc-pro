@@ -8,17 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('sponsor_logos', function (Blueprint $table) {
+        Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->boolean('is_active')->default(true);
-            $table->unsignedInteger('sort_order')->default(0);
+            $table->string('key')->unique();
+            $table->string('value')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('sponsor_logos');
+        Schema::dropIfExists('system_settings');
     }
 };
