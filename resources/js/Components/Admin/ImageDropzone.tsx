@@ -1,4 +1,4 @@
-import { ImageIcon, Trash2, UploadCloud } from "lucide-react";
+import { ImageIcon, Trash2, UploadCloud, Video } from "lucide-react";
 import { useCallback, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { cn } from "@/lib/utils";
@@ -98,6 +98,99 @@ export function SingleDropzone({
             {error && (
                 <p className="text-xs text-rose-500">{error}</p>
             )}
+        </div>
+    );
+}
+
+// ─── Video single-file dropzone ───────────────────────────────────────────────
+
+const VIDEO_MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+const VIDEO_ACCEPT = { "video/mp4": [], "video/webm": [] };
+
+interface VideoDropzoneProps {
+    label?: string;
+    currentUrl?: string | null;
+    onFileSelect: (file: File | null) => void;
+}
+
+export function VideoDropzone({
+    label = "Video",
+    currentUrl,
+    onFileSelect,
+}: VideoDropzoneProps) {
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const onDrop = useCallback(
+        (accepted: File[], rejected: FileRejection[]) => {
+            setError(null);
+            if (rejected.length > 0) {
+                const msg = rejected[0].errors[0]?.message ?? "File ditolak.";
+                setError(msg.replace("50000000 bytes", "50 MB"));
+                return;
+            }
+            if (accepted[0]) {
+                setFileName(accepted[0].name);
+                onFileSelect(accepted[0]);
+            }
+        },
+        [onFileSelect],
+    );
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: VIDEO_ACCEPT,
+        maxSize: VIDEO_MAX_SIZE,
+        maxFiles: 1,
+    });
+
+    const hasFile = fileName !== null || currentUrl;
+
+    return (
+        <div className="flex flex-col gap-2">
+            <span className="font-clash text-xs font-medium uppercase tracking-wider text-gray-500">
+                {label}
+            </span>
+
+            {hasFile ? (
+                <div className="group relative flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <Video size={18} className="shrink-0 text-slate-400" />
+                    <span className="flex-1 truncate font-bdo text-xs text-slate-600">
+                        {fileName ?? currentUrl}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFileName(null);
+                            onFileSelect(null);
+                        }}
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-white text-rose-400 shadow-sm transition hover:text-rose-600"
+                        aria-label="Hapus video"
+                    >
+                        <Trash2 size={13} />
+                    </button>
+                </div>
+            ) : (
+                <div
+                    {...getRootProps()}
+                    className={cn(
+                        "flex h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed transition-colors",
+                        isDragActive
+                            ? "border-amber-400 bg-amber-50"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50",
+                    )}
+                >
+                    <input {...getInputProps()} />
+                    <Video size={22} className="text-gray-400" />
+                    <p className="text-center text-xs text-gray-500">
+                        {isDragActive ? "Lepaskan di sini" : "Drag & drop atau klik untuk upload"}
+                        <br />
+                        <span className="text-gray-400">MP4, WebM · maks 50 MB</span>
+                    </p>
+                </div>
+            )}
+
+            {error && <p className="text-xs text-rose-500">{error}</p>}
         </div>
     );
 }

@@ -1,12 +1,12 @@
 import { X } from "lucide-react";
-import { PropsWithChildren, useEffect } from "react";
+import { type PropsWithChildren, type ReactNode, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface SlideOverProps {
     isOpen: boolean;
     onClose: () => void;
-    title: string;
-    description?: string;
+    title: ReactNode;
+    description?: ReactNode;
 }
 
 export default function SlideOver({
@@ -50,7 +50,7 @@ export default function SlideOver({
                     "fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl transition-transform duration-300 ease-out",
                     isOpen ? "translate-x-0" : "translate-x-full",
                 )}
-                aria-label={title}
+
             >
                 <div className="flex items-start justify-between border-b border-gray-100 px-6 py-5">
                     <div>

@@ -27,7 +27,7 @@ import {
     Users2,
     X,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -106,7 +106,7 @@ const SIDEBAR_STYLES = `
     }
 
     /* One-shot shimmer on sidebar panel */
-    .sb-panel-shimmer { position: relative; overflow: hidden; }
+    .sb-panel-shimmer { overflow: hidden; }
     .sb-panel-shimmer::after {
         content: '';
         position: absolute; inset: 0;
@@ -200,26 +200,46 @@ const SIDEBAR_STYLES = `
 
 function isCurrent(name: string): boolean {
     if (typeof window === "undefined") return false;
-    try { return route().current(name) ?? false; } catch { return false; }
+    try {
+        return route().current(name) ?? false;
+    } catch {
+        return false;
+    }
 }
 function safeRoute(name: string): string | undefined {
-    try { return route(name); } catch { return undefined; }
+    try {
+        return route(name);
+    } catch {
+        return undefined;
+    }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  TYPES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-interface SidebarProps { mobileOpen: boolean; onClose: () => void; }
+interface SidebarProps {
+    mobileOpen: boolean;
+    onClose: () => void;
+}
 
 interface NavChild {
-    icon: React.ElementType; label: string; href?: string;
-    active: boolean; badge?: string; disabled?: boolean;
+    icon: React.ElementType;
+    label: string;
+    href?: string;
+    active: boolean;
+    badge?: string;
+    disabled?: boolean;
 }
 interface NavItem extends NavChild {
-    method?: string; as?: string; children?: NavChild[];
+    method?: string;
+    as?: string;
+    children?: NavChild[];
 }
-interface NavGroup { label: string; items: NavItem[]; }
+interface NavGroup {
+    label: string;
+    items: NavItem[];
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  TOOLTIP (collapsed mode)
@@ -231,13 +251,19 @@ function Tooltip({ label, visible }: { label: string; visible: boolean }) {
         <div className="sb-tooltip absolute left-full top-1/2 -translate-y-1/2 ml-3 z-[9999] whitespace-nowrap">
             <div className="relative flex items-center">
                 {/* Arrow */}
-                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-0 h-0
+                <div
+                    className="absolute -left-1 top-1/2 -translate-y-1/2 w-0 h-0
                     border-t-[5px] border-b-[5px] border-r-[6px]
-                    border-t-transparent border-b-transparent border-r-white" />
+                    border-t-transparent border-b-transparent border-r-white"
+                />
                 {/* Bubble */}
-                <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2
-                    shadow-[0_8px_24px_rgba(0,0,0,0.1),0_2px_6px_rgba(0,0,0,0.06)]">
-                    <p className="font-clash text-[13px] font-semibold text-slate-800">{label}</p>
+                <div
+                    className="rounded-xl border border-slate-200 bg-white px-3.5 py-2
+                    shadow-[0_8px_24px_rgba(0,0,0,0.1),0_2px_6px_rgba(0,0,0,0.06)]"
+                >
+                    <p className="font-clash text-[13px] font-semibold text-slate-800">
+                        {label}
+                    </p>
                 </div>
             </div>
         </div>
@@ -259,14 +285,14 @@ function NavLink({
     depth?: number;
     animClass?: string;
 }) {
-    const [hovered,  setHovered]  = useState(false);
-    const [subOpen,  setSubOpen]  = useState(() =>
-        "children" in item && !!item.children?.some((c) => c.active)
+    const [hovered, setHovered] = useState(false);
+    const [subOpen, setSubOpen] = useState(
+        () => "children" in item && !!item.children?.some((c) => c.active),
     );
 
-    const isLogout    = item.label.toLowerCase().includes("log out");
+    const isLogout = item.label.toLowerCase().includes("log out");
     const hasChildren = "children" in item && !!item.children?.length;
-    const Icon        = item.icon;
+    const Icon = item.icon;
 
     // ── Wrapper classes ──────────────────────────────────────
 
@@ -274,19 +300,23 @@ function NavLink({
         "group relative flex items-center gap-3 rounded-xl",
         "transition-all duration-200 outline-none w-full text-left",
         "overflow-hidden select-none cursor-pointer",
-        collapsed ? "px-0 py-0 justify-center" : depth > 0 ? "px-3 py-2" : "px-3 py-2.5",
+        collapsed
+            ? "px-0 py-0 justify-center"
+            : depth > 0
+              ? "px-3 py-2"
+              : "px-3 py-2.5",
         // ── ORANGE active system — matches #12131c + orange shadow from pages ──
         item.active
             ? [
-                "bg-[#12131c]",
-                "shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.45),0_2px_12px_rgba(0,0,0,0.14)]",
-                "sb-active-glint",
+                  "bg-[#12131c]",
+                  "shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.45),0_2px_12px_rgba(0,0,0,0.14)]",
+                  "sb-active-glint",
               ].join(" ")
             : isLogout
-                ? "border border-transparent hover:bg-rose-50 hover:border-rose-100"
-                : depth > 0
-                    ? "hover:bg-orange-50/60 hover:border hover:border-orange-100/50"
-                    : "border border-transparent hover:bg-orange-50/40 hover:border-orange-100/40",
+              ? "border border-transparent hover:bg-rose-50 hover:border-rose-100"
+              : depth > 0
+                ? "hover:bg-orange-50/60 hover:border hover:border-orange-100/50"
+                : "border border-transparent hover:bg-orange-50/40 hover:border-orange-100/40",
         item.disabled && "opacity-40 cursor-not-allowed pointer-events-none",
         !collapsed && animClass,
     );
@@ -299,10 +329,10 @@ function NavLink({
         item.active
             ? "text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.9)] scale-105"
             : isLogout
-                ? "text-slate-400 group-hover:text-rose-500 group-hover:scale-105"
-                : depth > 0
-                    ? "text-slate-400 group-hover:text-orange-500 group-hover:scale-105"
-                    : "text-slate-400 group-hover:text-orange-500 group-hover:scale-105",
+              ? "text-slate-400 group-hover:text-rose-500 group-hover:scale-105"
+              : depth > 0
+                ? "text-slate-400 group-hover:text-orange-500 group-hover:scale-105"
+                : "text-slate-400 group-hover:text-orange-500 group-hover:scale-105",
     );
 
     // ── Label classes ────────────────────────────────────────
@@ -313,16 +343,20 @@ function NavLink({
         item.active
             ? "text-white"
             : isLogout
-                ? "text-slate-600 group-hover:text-rose-600 font-medium"
-                : depth > 0
-                    ? "text-slate-600 group-hover:text-slate-900"
-                    : "text-slate-700 group-hover:text-slate-900",
+              ? "text-slate-600 group-hover:text-rose-600 font-medium"
+              : depth > 0
+                ? "text-slate-600 group-hover:text-slate-900"
+                : "text-slate-700 group-hover:text-slate-900",
     );
 
     // ── Badge ────────────────────────────────────────────────
 
     const badgeEl = item.badge ? (
-        <span className={item.active ? "sb-badge-preview-active" : "sb-badge-preview"}>
+        <span
+            className={
+                item.active ? "sb-badge-preview-active" : "sb-badge-preview"
+            }
+        >
             {item.badge}
         </span>
     ) : null;
@@ -338,30 +372,36 @@ function NavLink({
 
             {/* Orange left accent bar on active (expanded) */}
             {item.active && !collapsed && (
-                <div className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-full bg-gradient-to-b from-orange-400 to-amber-500
-                    shadow-[0_0_6px_rgba(249,115,22,0.7)]" />
+                <div
+                    className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-full bg-gradient-to-b from-orange-400 to-amber-500
+                    shadow-[0_0_6px_rgba(249,115,22,0.7)]"
+                />
             )}
 
             {/* Icon container */}
-            <div className={cn(
-                "relative flex items-center justify-center transition-all duration-200 shrink-0",
-                collapsed
-                    ? cn(
-                        "h-10 w-10 rounded-xl",
-                        item.active
-                            ? "bg-[#12131c] shadow-[inset_0_-4px_8px_-3px_rgba(249,115,22,0.45)]"
-                            : isLogout
-                                ? "hover:bg-rose-50"
-                                : "hover:bg-orange-50",
-                      )
-                    : "h-[26px] w-[26px] rounded-lg",
-            )}>
+            <div
+                className={cn(
+                    "relative flex items-center justify-center transition-all duration-200 shrink-0",
+                    collapsed
+                        ? cn(
+                              "h-10 w-10 rounded-xl",
+                              item.active
+                                  ? "bg-[#12131c] shadow-[inset_0_-4px_8px_-3px_rgba(249,115,22,0.45)]"
+                                  : isLogout
+                                    ? "hover:bg-rose-50"
+                                    : "hover:bg-orange-50",
+                          )
+                        : "h-[26px] w-[26px] rounded-lg",
+                )}
+            >
                 <Icon size={collapsed ? 18 : 15} className={iconCls} />
 
                 {/* Active indicator dot (collapsed only) */}
                 {collapsed && item.active && (
-                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full
-                        bg-orange-400 sb-active-dot" />
+                    <span
+                        className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full
+                        bg-orange-400 sb-active-dot"
+                    />
                 )}
             </div>
 
@@ -400,23 +440,41 @@ function NavLink({
 
     const wrapped = (() => {
         if (item.disabled || !item.href) {
-            return <button type="button" disabled className={wrapperCls}>{inner}</button>;
+            return (
+                <button type="button" disabled className={wrapperCls}>
+                    {inner}
+                </button>
+            );
         }
         if (isLogoutPost) {
             return (
-                <Link href={item.href} method="post" as="button" type="button" className={wrapperCls}>
+                <Link
+                    href={item.href}
+                    method="post"
+                    as="button"
+                    type="button"
+                    className={wrapperCls}
+                >
                     {inner}
                 </Link>
             );
         }
         if (hasChildren && !collapsed) {
             return (
-                <button type="button" onClick={handleParentClick} className={wrapperCls}>
+                <button
+                    type="button"
+                    onClick={handleParentClick}
+                    className={wrapperCls}
+                >
                     {inner}
                 </button>
             );
         }
-        return <Link href={item.href} className={wrapperCls}>{inner}</Link>;
+        return (
+            <Link href={item.href} className={wrapperCls}>
+                {inner}
+            </Link>
+        );
     })();
 
     return (
@@ -429,19 +487,23 @@ function NavLink({
 
             {/* Submenu */}
             {hasChildren && !collapsed && (
-                <div className={cn(
-                    "mt-0.5 ml-5 pl-3 flex flex-col gap-0.5 border-l-2 border-orange-100",
-                    subOpen ? "sb-submenu-open" : "sb-submenu-close",
-                )}>
-                    {subOpen && "children" in item && item.children?.map((child, ci) => (
-                        <NavLink
-                            key={child.label}
-                            item={child}
-                            collapsed={false}
-                            depth={1}
-                            animClass={`sb-slide-right sb-d${ci + 1}`}
-                        />
-                    ))}
+                <div
+                    className={cn(
+                        "mt-0.5 ml-5 pl-3 flex flex-col gap-0.5 border-l-2 border-orange-100",
+                        subOpen ? "sb-submenu-open" : "sb-submenu-close",
+                    )}
+                >
+                    {subOpen &&
+                        "children" in item &&
+                        item.children?.map((child, ci) => (
+                            <NavLink
+                                key={child.label}
+                                item={child}
+                                collapsed={false}
+                                depth={1}
+                                animClass={`sb-slide-right sb-d${ci + 1}`}
+                            />
+                        ))}
                 </div>
             )}
         </div>
@@ -479,10 +541,12 @@ function NavGroup({
                 </div>
             )}
 
-            <div className={cn(
-                "flex flex-col",
-                collapsed ? "items-center gap-1.5 px-0" : "gap-0.5",
-            )}>
+            <div
+                className={cn(
+                    "flex flex-col",
+                    collapsed ? "items-center gap-1.5 px-0" : "gap-0.5",
+                )}
+            >
                 {group.items.map((item, i) => (
                     <NavLink
                         key={item.label}
@@ -501,7 +565,6 @@ function NavGroup({
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
-
     // Persist collapse state in localStorage
     const [collapsed, setCollapsed] = useState<boolean>(() => {
         if (typeof window === "undefined") return false;
@@ -515,97 +578,169 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             return next;
         });
 
-    // ── Scroll isolation — wheel handler ──────────────────────
-    // This complements the CSS fix: stops wheel events from
-    // propagating to the page when the nav can still scroll.
-    const navRef = useRef<HTMLElement>(null);
-
+    const [isDesktop, setIsDesktop] = useState(true);
     useEffect(() => {
-        const el = navRef.current;
-        if (!el) return;
-
-        const onWheel = (e: WheelEvent) => {
-            const { scrollTop, scrollHeight, clientHeight } = el;
-            const atTop    = scrollTop === 0 && e.deltaY < 0;
-            const atBottom = scrollTop + clientHeight >= scrollHeight - 1 && e.deltaY > 0;
-            // Only stop propagation if the nav is scrollable and not at boundary
-            if (!atTop && !atBottom) {
-                e.stopPropagation();
-            }
-        };
-
-        el.addEventListener("wheel", onWheel, { passive: true });
-        return () => el.removeEventListener("wheel", onWheel);
+        const handleResize = () => setIsDesktop(window.innerWidth >= 1280);
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    const effectiveCollapsed = collapsed && isDesktop;
+
     // ── Active states — IDENTICAL to original ────────────────
-    const dashboardActive    = isCurrent("admin.dashboard");
-    const identityActive     = isCurrent("admin.identity.*");
-    const facilitiesActive   = isCurrent("admin.facilities.*");
-    const bookingsActive     = isCurrent("admin.bookings.*");
-    const newsActive         = isCurrent("admin.news.*");
-    const promoActive        = isCurrent("admin.promo.*");
-    const sponsorsActive     = isCurrent("admin.sponsors.*");
-    const reelsActive        = isCurrent("admin.reels.*");
+    const dashboardActive = isCurrent("admin.dashboard");
+    const identityActive = isCurrent("admin.identity.*");
+    const facilitiesActive = isCurrent("admin.facilities.*");
+    const bookingsActive = isCurrent("admin.bookings.*");
+    const newsActive = isCurrent("admin.news.*");
+    const promoActive = isCurrent("admin.promo.*");
+    const sponsorsActive = isCurrent("admin.sponsors.*");
+    const reelsActive = isCurrent("admin.reels.*");
     const testimonialsActive = isCurrent("admin.testimonials.*");
-    const membershipsActive  = isCurrent("admin.memberships.index") || isCurrent("admin.memberships.store");
-    const plansActive        = isCurrent("admin.memberships.plans.*");
-    const financeActive      = isCurrent("admin.finance.*");
-    const schedulesActive    = isCurrent("admin.settings.schedules");
-    const rolesActive        = isCurrent("admin.settings.roles");
-    const usersActive        = isCurrent("admin.settings.users*");
+    const membershipsActive =
+        isCurrent("admin.memberships.index") ||
+        isCurrent("admin.memberships.store");
+    const plansActive = isCurrent("admin.memberships.plans.*");
+    const financeActive = isCurrent("admin.finance.*");
+    const schedulesActive = isCurrent("admin.settings.schedules");
+    const rolesActive = isCurrent("admin.settings.roles");
+    const usersActive = isCurrent("admin.settings.users*");
 
     // ── Nav structure — routes IDENTICAL to original ──────────
     const navGroups: NavGroup[] = [
         {
             label: "Main",
             items: [
-                { icon: LayoutDashboard, label: "Dashboard",      href: safeRoute("admin.dashboard"),            active: dashboardActive  },
-                { icon: BadgeCheck,      label: "Identity Queue",  href: safeRoute("admin.identity.index"),       active: identityActive   },
-                { icon: Dumbbell,        label: "Facilities",      href: safeRoute("admin.facilities.index"),     active: facilitiesActive },
-                { icon: CalendarCheck2,  label: "Bookings",        href: safeRoute("admin.bookings.index"),       active: bookingsActive,  badge: "Preview" },
                 {
-                    icon: Users2, label: "Memberships",
+                    icon: LayoutDashboard,
+                    label: "Dashboard",
+                    href: safeRoute("admin.dashboard"),
+                    active: dashboardActive,
+                },
+                {
+                    icon: BadgeCheck,
+                    label: "Identity Queue",
+                    href: safeRoute("admin.identity.index"),
+                    active: identityActive,
+                },
+                {
+                    icon: Dumbbell,
+                    label: "Facilities",
+                    href: safeRoute("admin.facilities.index"),
+                    active: facilitiesActive,
+                },
+                {
+                    icon: CalendarCheck2,
+                    label: "Bookings",
+                    href: safeRoute("admin.bookings.index"),
+                    active: bookingsActive,
+                },
+                {
+                    icon: Users2,
+                    label: "Memberships",
                     href: safeRoute("admin.memberships.index"),
                     active: membershipsActive || plansActive,
                     children: [
-                        { icon: Users2,  label: "Anggota", href: safeRoute("admin.memberships.index"),       active: membershipsActive },
-                        { icon: Package, label: "Paket",   href: safeRoute("admin.memberships.plans.index"), active: plansActive       },
+                        {
+                            icon: Users2,
+                            label: "Anggota",
+                            href: safeRoute("admin.memberships.index"),
+                            active: membershipsActive,
+                        },
+                        {
+                            icon: Package,
+                            label: "Paket",
+                            href: safeRoute("admin.memberships.plans.index"),
+                            active: plansActive,
+                        },
                     ],
                 },
-                { icon: BarChart3, label: "Finance", href: safeRoute("admin.finance.index"), active: financeActive, badge: "Preview" },
+                {
+                    icon: BarChart3,
+                    label: "Finance",
+                    href: safeRoute("admin.finance.index"),
+                    active: financeActive,
+                },
             ],
         },
         {
             label: "Content",
             items: [
-                { icon: Newspaper,     label: "News",         href: safeRoute("admin.news.index"),         active: newsActive        },
-                { icon: ImagePlus,     label: "Promo",        href: safeRoute("admin.promo.index"),        active: promoActive       },
-                { icon: Award,         label: "Sponsors",     href: safeRoute("admin.sponsors.index"),     active: sponsorsActive    },
-                { icon: Film,          label: "Reels",        href: safeRoute("admin.reels.index"),        active: reelsActive       },
-                { icon: MessageSquare, label: "Testimonials", href: safeRoute("admin.testimonials.index"), active: testimonialsActive },
+                {
+                    icon: Newspaper,
+                    label: "News",
+                    href: safeRoute("admin.news.index"),
+                    active: newsActive,
+                },
+                {
+                    icon: ImagePlus,
+                    label: "Promo",
+                    href: safeRoute("admin.promo.index"),
+                    active: promoActive,
+                },
+                {
+                    icon: Award,
+                    label: "Sponsors",
+                    href: safeRoute("admin.sponsors.index"),
+                    active: sponsorsActive,
+                },
+                {
+                    icon: Film,
+                    label: "Reels",
+                    href: safeRoute("admin.reels.index"),
+                    active: reelsActive,
+                },
+                {
+                    icon: MessageSquare,
+                    label: "Testimonials",
+                    href: safeRoute("admin.testimonials.index"),
+                    active: testimonialsActive,
+                },
             ],
         },
         {
             label: "Settings",
             items: [
-                { icon: CalendarRange, label: "Schedule Control", href: safeRoute("admin.settings.schedules"), active: schedulesActive },
-                { icon: ShieldCheck,   label: "Role & Access",    href: safeRoute("admin.settings.roles"),     active: rolesActive     },
-                { icon: UserCog,       label: "Internal Users",   href: safeRoute("admin.settings.users"),     active: usersActive     },
+                {
+                    icon: CalendarRange,
+                    label: "Schedule Control",
+                    href: safeRoute("admin.settings.schedules"),
+                    active: schedulesActive,
+                },
+                {
+                    icon: ShieldCheck,
+                    label: "Role & Access",
+                    href: safeRoute("admin.settings.roles"),
+                    active: rolesActive,
+                },
+                {
+                    icon: UserCog,
+                    label: "Internal Users",
+                    href: safeRoute("admin.settings.users"),
+                    active: usersActive,
+                },
             ],
         },
         {
             label: "Other",
             items: [
-                { icon: HelpCircle, label: "Help", disabled: true, active: false },
+                {
+                    icon: HelpCircle,
+                    label: "Help",
+                    disabled: true,
+                    active: false,
+                },
             ],
         },
     ];
 
     const logoutItem: NavItem = {
-        icon: LogOut, label: "Log out",
-        href: safeRoute("admin.logout"),
-        method: "post", as: "button",
+        icon: LogOut,
+        label: "Log out",
+        href: safeRoute("ubsc-staff.logout"),
+        method: "post",
+        as: "button",
         active: false,
     };
 
@@ -620,8 +755,10 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 onClick={onClose}
                 aria-hidden="true"
                 className={cn(
-                    "fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 xl:hidden",
-                    mobileOpen ? "opacity-100" : "pointer-events-none opacity-0",
+                    "fixed inset-0 z-[50] bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 xl:hidden",
+                    mobileOpen
+                        ? "opacity-100"
+                        : "pointer-events-none opacity-0",
                 )}
             />
 
@@ -630,17 +767,13 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <aside
                 className={cn(
-                    "fixed inset-y-0 left-0 z-40 flex flex-col",
-                    "xl:sticky xl:top-0 xl:h-screen xl:translate-x-0",
-                    "transition-[width,transform] duration-300 ease-out",
-                    collapsed ? "w-[68px]" : "w-[268px]",
-                    // Background — pure white + subtle warmth on left edge
-                    "bg-white border-r border-slate-200/80",
-                    "shadow-[4px_0_32px_rgba(0,0,0,0.05)]",
-                    // Entrance shimmer class
-                    "sb-panel-shimmer",
-                    // Mobile translate
-                    mobileOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0",
+                    "fixed inset-y-0 left-0 z-[60] flex flex-col h-full shrink-0",
+                    "w-[268px] max-w-[85vw]",
+                    mobileOpen ? "translate-x-0" : "-translate-x-full",
+                    "xl:relative xl:translate-x-0 xl:z-0",
+                    effectiveCollapsed ? "xl:w-[68px]" : "xl:w-[268px]",
+                    "bg-white border-r border-slate-200/80 shadow-2xl xl:shadow-[4px_0_32px_rgba(0,0,0,0.05)]",
+                    "transition-[transform,width] duration-300 ease-in-out sb-panel-shimmer",
                 )}
                 aria-label="Admin sidebar"
             >
@@ -653,27 +786,38 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                     HEADER
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-                <div className={cn(
-                    "flex h-[68px] shrink-0 items-center border-b border-slate-100",
-                    "transition-all duration-300 relative",
-                    collapsed ? "justify-center px-0 gap-0" : "justify-between px-5",
-                )}>
-                    <Link href="/" className="flex items-center gap-3 group outline-none min-w-0">
+                <div
+                    className={cn(
+                        "flex h-[68px] shrink-0 items-center border-b border-slate-100",
+                        "transition-all duration-300 relative",
+                        effectiveCollapsed
+                            ? "justify-center px-0 gap-0"
+                            : "justify-between px-5",
+                    )}
+                >
+                    <Link
+                        href="/"
+                        className="flex items-center gap-3 group outline-none min-w-0"
+                    >
                         {/* Logo */}
                         <div className="relative shrink-0">
-                            <div className="absolute inset-0 rounded-full bg-orange-400/15 blur-xl scale-75
-                                group-hover:scale-125 transition-transform duration-500 sb-logo-breathe" />
+                            <div
+                                className="absolute inset-0 rounded-full bg-orange-400/15 blur-xl scale-75
+                                group-hover:scale-125 transition-transform duration-500 sb-logo-breathe"
+                            />
                             <img
                                 src="/UBSC PRO.png"
                                 alt="UBSC"
-                                className="relative z-10 h-9 w-auto drop-shadow-sm
-                                    group-hover:scale-105 transition-transform duration-300"
+                                className={cn(
+                                    "relative z-10 w-auto drop-shadow-sm group-hover:scale-105 transition-all duration-300",
+                                    effectiveCollapsed ? "h-9 xl:h-3" : "h-9",
+                                )}
                             />
                         </div>
                     </Link>
 
                     {/* Mobile close button (hidden in collapsed) */}
-                    {!collapsed && (
+                    {!effectiveCollapsed && (
                         <button
                             type="button"
                             onClick={onClose}
@@ -690,12 +834,12 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     NAV — scroll isolation applied here
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
                 <nav
-                    ref={navRef}
                     className={cn(
                         // sb-scroll carries overscroll-behavior: contain (CSS above)
                         "flex-1 sb-scroll transition-all duration-300",
-                        collapsed ? "px-2 py-5" : "px-3 py-5",
+                        effectiveCollapsed ? "px-2 py-5" : "px-3 py-5",
                     )}
+                    data-lenis-prevent="true"
                 >
                     {navGroups.map((group) => {
                         const groupStart = delayCounter;
@@ -704,7 +848,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                             <NavGroup
                                 key={group.label}
                                 group={group}
-                                collapsed={collapsed}
+                                collapsed={effectiveCollapsed}
                                 startDelay={groupStart}
                             />
                         );
@@ -714,27 +858,33 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                     FOOTER — logout + collapse toggle
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-                <div className={cn(
-                    "shrink-0 border-t border-slate-100 bg-gradient-to-b from-white to-slate-50/80",
-                    collapsed ? "px-2 py-3" : "px-3 py-3",
-                )}>
+                <div
+                    className={cn(
+                        "shrink-0 border-t border-slate-100 bg-gradient-to-b from-white to-slate-50/80",
+                        effectiveCollapsed ? "px-2 py-3" : "px-3 py-3",
+                    )}
+                >
                     {/* Logout */}
-                    <NavLink item={logoutItem} collapsed={collapsed} />
+                    <NavLink item={logoutItem} collapsed={effectiveCollapsed} />
 
                     {/* Collapse toggle — desktop only */}
                     <button
                         type="button"
                         onClick={toggleCollapsed}
-                        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                        title={
+                            effectiveCollapsed
+                                ? "Expand sidebar"
+                                : "Collapse sidebar"
+                        }
                         className={cn(
                             "hidden xl:flex mt-1.5 w-full items-center gap-2.5 rounded-xl py-2",
                             "font-bdo text-[10.5px] font-bold uppercase tracking-wider text-slate-400",
                             "border border-transparent transition-all duration-200 group",
                             "hover:bg-orange-50 hover:border-orange-100 hover:text-orange-600",
-                            collapsed ? "justify-center px-0" : "px-3",
+                            effectiveCollapsed ? "justify-center px-0" : "px-3",
                         )}
                     >
-                        {collapsed ? (
+                        {effectiveCollapsed ? (
                             <PanelLeftOpen
                                 size={15}
                                 className="text-slate-400 group-hover:text-orange-500 transition-colors"
@@ -746,10 +896,12 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                                     className="shrink-0 text-slate-400 group-hover:text-orange-500 transition-colors"
                                 />
                                 <span className="sb-fade-in">Collapse</span>
-                                <span className="ml-auto font-mono text-[9px] bg-slate-100 text-slate-400
+                                <span
+                                    className="ml-auto font-mono text-[9px] bg-slate-100 text-slate-400
                                     px-1.5 py-0.5 rounded-md border border-slate-200
                                     group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-500
-                                    transition-colors">
+                                    transition-colors"
+                                >
                                     ⌘B
                                 </span>
                             </>
