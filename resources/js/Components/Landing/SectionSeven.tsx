@@ -5,16 +5,23 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import { useEmblaNav } from "@/hooks/useEmblaNav";
 import author1 from "@/../assets/icons/ulasan-malang-tennis-academy-ubsc.avif";
 import gambar1 from "@/../assets/icons/testimonial-ub-sport-center.avif";
-interface Testimonial {
+export interface PublicTestimonial {
     id: string | number;
-    image: string;
+    image?: string | null;
     quote: string;
     authorName: string;
     authorRole: string;
-    authorLogo?: string;
+    authorLogo?: string | null;
 }
 
-const DUMMY_TESTIMONIALS: Testimonial[] = [
+export interface PublicReview {
+    id: number;
+    reviewer_name: string;
+    rating: number;
+    text: string;
+}
+
+const DUMMY_TESTIMONIALS: PublicTestimonial[] = [
     {
         id: 1,
         image: gambar1,
@@ -39,7 +46,8 @@ const FIXED_STATS = [
 ];
 
 interface SectionSevenProps {
-    testimonials?: Testimonial[];
+    testimonials?: PublicTestimonial[];
+    reviews?: PublicReview[];
     sectionNumber?: string;
     sectionTitle?: string;
     sectionSubtitle?: string;
@@ -95,7 +103,7 @@ export default function SectionSeven({
                 <div className="flex flex-row items-center gap-6 mb-6">
                     <div className="w-28 h-40 md:w-36 md:h-52 rounded-xl overflow-hidden bg-gray-200 flex-shrink-0">
                         <img
-                            src={activeItem.image}
+                            src={activeItem.image ?? undefined}
                             alt={activeItem.authorName}
                             className="h-full w-full object-cover"
                             draggable={false}
@@ -182,7 +190,7 @@ export default function SectionSeven({
                                     <div className="lg:col-span-4 pt-16">
                                         <div className="aspect-[5/6] w-2/3 overflow-hidden rounded-2xl bg-gray-200">
                                             <img
-                                                src={item.image}
+                                                src={item.image ?? undefined}
                                                 alt={item.authorName}
                                                 className="h-full w-full object-cover"
                                                 draggable={false}

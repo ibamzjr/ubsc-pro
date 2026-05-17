@@ -5,6 +5,8 @@ import { Link } from "@inertiajs/react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReelsSection from "@/Components/Landing/ReelsSection";
 import NewsSection from "@/Components/Landing/NewsSection";
+import type { NewsItem } from "@/Components/Landing/NewsCard";
+import type { ReelItem } from "@/Components/Landing/ReelCard";
 
 const Arrow: React.FC<{ size?: number }> = ({ size = 32 }) => (
     <svg
@@ -84,7 +86,7 @@ function useCountUp(target: number, duration: number = 2.3) {
     return value;
 }
 
-export default function SectionFive() {
+export default function SectionFive({ news, reels }: { news?: NewsItem[]; reels?: ReelItem[] }) {
     const [hovered, setHovered] = useState(false);
     return (
         <section
@@ -204,8 +206,8 @@ export default function SectionFive() {
                 <div className="mt-24 border-t border-white/10" />
             </div>
 
-            <ReelsSection />
-            <NewsSection />
+            <ReelsSection reels={reels} />
+            <NewsSection news={news} />
         </section>
     );
 }

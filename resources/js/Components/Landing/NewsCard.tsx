@@ -70,7 +70,7 @@ export default function NewsCard({
                                 </p>
                             )}
                         </div>
-                        <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-black/70">
+                        <span className="font-bdo font-normal text-[clamp(1rem,0.75vw,20px)] text-black/70">
                             {date}
                         </span>
                     </div>
@@ -78,7 +78,7 @@ export default function NewsCard({
             ) : (
                 <>
                     <div className="flex flex-[0_0_44%] flex-col justify-between bg-black p-6">
-                        <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/70">
+                        <span className="font-bdo font-normal text-[clamp(1rem,0.75vw,20px)] text-white/70">
                             {date}
                         </span>
                         <div className="flex flex-col gap-1">

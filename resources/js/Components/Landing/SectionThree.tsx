@@ -110,26 +110,27 @@ export default function SectionThree() {
             </div>
 
             <div className="mx-auto px-6 mt-12 sm:px-10 lg:px-16 xl:px-24 flex flex-col gap-6 xl:flex-row xl:gap-32 xl:items-start">
-                {/* Left sticky sidebar */}
-                <div className="xl:sticky xl:top-32 xl:w-64 xl:flex-shrink-0 flex flex-col gap-6">
+                {/* Left — label static (scrolls away); badge viewport-center sticky */}
+                <div className="xl:w-64 xl:flex-shrink-0 xl:self-stretch">
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 flex-shrink-0 bg-[#FF0000]" />
                         <span className="font-bdo text-[15px] font-medium tracking-wide text-gray-900">
                             Eksplorasi Cabang Kami
                         </span>
                     </div>
-                    <div className="xl:hidden font-bdo font-medium text-[clamp(1.24rem,4vw,1.5rem)] leading-tight text-black">
+                    <div className="xl:hidden mt-4 font-bdo font-medium text-[clamp(1.24rem,4vw,1.5rem)] leading-tight text-black">
                         <h2>Pusat Olahraga saat ini</h2>
                         <h2>ada di Berbagai Lokasi</h2>
                     </div>
-                    {/* Badge "Cabang Kami" - Hidden on mobile, moved to bottom of cards */}
-                    <div className="hidden xl:inline-flex w-fit items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white p-1 pr-5 shadow-sm">
-                        <div className="flex h-12 w-14 items-center justify-center rounded-lg bg-gradient-to-tr from-[#002244] to-[#15678D]">
-                            <img src={gym} alt="Gym Icon" className="h-5 w-5" />
+                    <div className="hidden xl:block xl:sticky xl:top-[50vh] xl:-translate-y-1/2 xl:mt-[12rem]">
+                        <div className="inline-flex w-fit items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white p-1 pr-5 shadow-sm">
+                            <div className="flex h-12 w-14 items-center justify-center rounded-lg bg-gradient-to-tr from-[#002244] to-[#15678D]">
+                                <img src={gym} alt="Gym Icon" className="h-5 w-5" />
+                            </div>
+                            <span className="font-bdo font-semibold text-[15px] text-black">
+                                Cabang Kami
+                            </span>
                         </div>
-                        <span className="font-bdo font-semibold text-[15px] text-black">
-                            Cabang Kami
-                        </span>
                     </div>
                 </div>
 
@@ -159,10 +160,13 @@ export default function SectionThree() {
                         </span>
                     </div>
                 </div>
-                <div className="hidden xl:flex xl:sticky xl:top-32 xl:w-56 xl:flex-shrink-0 flex-col pt-1">
-                    <h2 className="font-bdo font-medium text-[20px] leading-[1.4] text-black">
-                        Pusat Olahraga saat ini ada di Berbagai Lokasi
-                    </h2>
+                {/* Right — viewport-center sticky with initial offset */}
+                <div className="hidden xl:flex xl:w-56 xl:flex-shrink-0 xl:self-stretch flex-col">
+                    <div className="xl:sticky xl:top-[50vh] xl:-translate-y-1/2 xl:mt-[12rem]">
+                        <h2 className="font-bdo font-medium text-[20px] leading-[1.4] text-black">
+                            Pusat Olahraga saat ini ada di Berbagai Lokasi
+                        </h2>
+                    </div>
                 </div>
             </div>
         </section>

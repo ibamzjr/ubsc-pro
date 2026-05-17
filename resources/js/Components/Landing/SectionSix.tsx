@@ -1,6 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import PriceCard from "@/Components/Landing/PriceCard";
@@ -8,94 +7,23 @@ import type { PriceItem } from "@/Components/Landing/PriceCard";
 
 const PAGE_SIZE = 4;
 
-const DUMMY_PRICES: PriceItem[] = [
-    {
-        id: 1,
-        title: "Lapangan Tennis",
-        price: "105.000 - 115.000 / Jam",
-        rating: 5,
-        image: "/assets/images/fasilitas-tenis-ub-sport-center.avif",
-        href: "https://ayo.co.id/v/ub-sport-center",
-    },
-    {
-        id: 2,
-        title: "Lapangan Badminton",
-        price: "50.000 - 65.000 / Jam",
-        rating: 5,
-        image: "/assets/images/fasilitas-bulutangkis-ub-sport-center.avif",
-        href: "https://ayo.co.id/v/ub-sport-center",
-    },
-    {
-        id: 3,
-        title: "Lapangan Tenis Meja",
-        price: "50.000 - 55.000 / Jam",
-        rating: 4.5,
-        image: "/assets/images/fasilitas-tennis-meja-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+melakukan+reservasi+ruang+tenis+meja.%0AMohon+informasi+terkait+ketersediaan+jadwal%2C+durasi+pemakaian%2C+serta+biaya+sewa+yang+berlaku.%0A%0ABerikut+detail+rencana+pemesanan+saya%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi%3A%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
-    },
-    {
-        id: 4,
-        title: "Lapangan Futsal",
-        price: "45.000 - 50.000 / Jam",
-        rating: 4.5,
-        image: "/assets/images/fasilitas-futsal-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+melakukan+reservasi+lapangan+futsal.%0AMohon+informasi+mengenai+ketersediaan+jadwal%2C+durasi+sewa%2C+serta+tarif+yang+berlaku.%0A%0ABerikut+detail+rencana+pemesanan+saya%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi%3A%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
-    },
-    {
-        id: 5,
-        title: "Ruang Beladiri",
-        price: "75.000 - 100.000 / Jam",
-        rating: 5,
-        image: "/assets/images/fasilitas-beladiri-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%A5%8B%0A%0ASaya+tertarik+untuk+mengikuti+kelas+BMU+Karate.+Mohon+informasi+lebih+lanjut+mengenai+jadwal%2C+durasi%2C+dan+prosedur+pendaftaran+kelas+ini.%0A%0ATerima+kasih+%F0%9F%98%8A&type=phone_number&app_absent=0",
-    },
-    {
-        id: 6,
-        title: "Yoga",
-        price: "25.000 - 35.000 / Jam",
-        rating: 5,
-        image: "/assets/images/fasilitas-yoga-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+mendapatkan+informasi+terkait+layanan+Yoga.%0AMohon+dibantu+untuk+pilihan+berikut%3A%0A%0AJenis+Permintaan%3A%0A%5B+%5D+Ikut+Kelas+Yoga%0A%5B+%5D+Reservasi+Ruang+Yoga%0A%0ABerikut+detail+yang+ingin+saya+ajukan%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi+(jika+reservasi+ruang)%3A%0A%0AMohon+informasi+mengenai+jadwal+yang+tersedia%2C+biaya%2C+serta+ketentuan+yang+berlaku.%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
-    },
-    {
-        id: 7,
-        title: "Aerobik",
-        price: "23.000 - 28.000 / Jam",
-        rating: 4.5,
-        image: "/assets/images/fasilitas-aerobik-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+mendapatkan+informasi+terkait+layanan+Aerobik.%0AMohon+bantuan+untuk+pilihan+berikut%3A%0A%0AJenis+Permintaan%3A%0A%E2%80%A2+Ikut+Kelas+Aerobik%0A%E2%80%A2+Reservasi+Ruang+Aerobik%0A%0ABerikut+detail+pengajuan+saya%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi+(khusus+reservasi+ruang)%3A%0A%0AMohon+informasi+mengenai+jadwal+yang+tersedia%2C+biaya%2C+serta+ketentuan+yang+berlaku.%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
-    },
-    {
-        id: 8,
-        title: "Zumba",
-        price: "28.000 - 33.000 / Jam",
-        rating: 4.5,
-        image: "/assets/images/fasilitas-zumba-ub-sport-center.avif",
-    },
-    {
-        id: 9,
-        title: "BMU Karate",
-        price: "100.000 - 175.000 / Jam",
-        rating: 5,
-        image: "/assets/images/fasilitas-beladiri-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send/?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%A5%8B%0A%0ASaya+tertarik+untuk+mengikuti+kelas+BMU+Karate.+Mohon+informasi+lebih+lanjut+mengenai+jadwal%2C+durasi%2C+dan+prosedur+pendaftaran+kelas+ini.%0A%0ATerima+kasih+%F0%9F%98%8A&type=phone_number&app_absent=0",
-    },
-    {
-        id: 10,
-        title: "Zona Akurasi",
-        price: "Klik Disini",
-        rating: 5,
-        image: "/assets/images/fasilitas-zona-akurasi-ub-sport-center.avif",
-        href: "https://api.whatsapp.com/send?phone=6285280809080&text=Halo+UB+Sport+Center+%F0%9F%91%8B%0A%0ASaya+ingin+melakukan+reservasi+lapangan+basket.%0AMohon+informasi+mengenai+ketersediaan+jadwal%2C+durasi+pemakaian%2C+serta+tarif+sewa+yang+berlaku.%0A%0ABerikut+detail+rencana+pemesanan+saya%3A%0ANama%3A%0ATanggal%3A%0AJam%3A%0ADurasi%3A%0A%0AMohon+konfirmasi+ketersediaannya.%0A%0ATerima+kasih+atas+bantuannya+%F0%9F%99%8F",
-    },
-    {
-        id: 11,
-        title: "Pilates",
-        price: "Coming Soon",
-        rating: 4.5,
-        image: "/assets/images/comingsoon.avif",
-    },
-];
+interface BackendFacility {
+    id: number;
+    name: string;
+    image: string;
+    rating?: number | null;
+    price_range?: string | null;
+}
+
+function facilitiesToPriceItems(facilities: BackendFacility[]): PriceItem[] {
+    return facilities.map((f) => ({
+        id: f.id,
+        title: f.name,
+        image: f.image || "/assets/images/comingsoon.avif",
+        rating: f.rating ?? 5,
+        price: f.price_range || "Harga belum tersedia",
+    }));
+}
 
 function FeatureItem({ label }: { label: string }) {
     return (
@@ -124,35 +52,20 @@ function FeatureItem({ label }: { label: string }) {
 }
 
 interface SectionSixProps {
-    prices?: PriceItem[];
+    facilities?: BackendFacility[];
 }
 
-export default function SectionSix({ prices = DUMMY_PRICES }: SectionSixProps) {
+export default function SectionSix({ facilities = [] }: SectionSixProps) {
+    const prices: PriceItem[] = facilitiesToPriceItems(facilities);
     const totalPages = Math.ceil(prices.length / PAGE_SIZE);
-    const [page, setPage] = useState(0); // 0-indexed
+    const [page, setPage] = useState(0);
     const visiblePrices = prices.slice(
         page * PAGE_SIZE,
         page * PAGE_SIZE + PAGE_SIZE,
     );
 
-    const [emblaRef, emblaApi] = useEmblaCarousel({
-        align: "start",
-        dragFree: true,
-    });
-
-    const scrollPrev = useCallback(() => {
-        // desktop
-        setPage((p) => Math.max(0, p - 1));
-        // mobile
-        emblaApi && emblaApi.scrollPrev();
-    }, [emblaApi]);
-
-    const scrollNext = useCallback(() => {
-        // desktop
-        setPage((p) => Math.min(totalPages - 1, p + 1));
-        // mobile
-        emblaApi && emblaApi.scrollNext();
-    }, [emblaApi, totalPages]);
+    const scrollPrev = () => setPage((p) => Math.max(0, p - 1));
+    const scrollNext = () => setPage((p) => Math.min(totalPages - 1, p + 1));
 
     const prevDisabled = page === 0;
     const nextDisabled = page >= totalPages - 1;

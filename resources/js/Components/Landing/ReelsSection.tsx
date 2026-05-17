@@ -6,46 +6,11 @@ import ReelCard from "@/Components/Landing/ReelCard";
 import type { ReelItem } from "@/Components/Landing/ReelCard";
 
 const DUMMY_REELS: ReelItem[] = [
-    {
-        id: 1,
-        date: "31/12 2025",
-        thumbnail: "/assets/reels/thumbnail 1.png",
-        title: "SPORT CENTER UB.",
-        isActive: true,
-        videoUrl: "/assets/reels/reels ubsc 1.mp4",
-    },
-    {
-        id: 2,
-        date: "16/12 2025",
-        thumbnail: "/assets/reels/thumbnail 2.png",
-        subtitle: "Kegiatan Latihan Arema FC Yang Berlangsung di",
-        title: "SPORT CENTER UB.",
-        videoUrl: "/assets/reels/reels ubsc 2.mp4",
-    },
-    {
-        id: 3,
-        date: "10/12 2025",
-        subtitle: "Keseruan Latihan Bersama Arema FC di SPORT CENTER UB.",
-        title: "SPORT CENTER UB.",
-        videoUrl: "/assets/reels/reels ubsc 3.mp4",
-        thumbnail: "/assets/reels/thumbnail 3.png",
-    },
-    {
-        id: 4,
-        date: "05/12 2025",
-        subtitle: "Latihan Futsal Seru di SPORT CENTER UB.",
-        title: "SPORT CENTER UB.",
-        videoUrl: "/assets/reels/reels ubsc 4.mp4",
-        thumbnail: "/assets/reels/thumbnail 4.png",
-    },
-    {
-        id: 5,
-        date: "01/12 2025",
-        subtitle: "Latihan Futsal Seru di SPORT CENTER UB.",
-        title: "SPORT CENTER UB.",
-        videoUrl: "/assets/reels/reels ubsc 5.mp4",
-        thumbnail: "/assets/reels/thumbnail 5.png",
-    },
+    { id: 1, date: "31/12 2025", title: "SPORT CENTER UB.", isActive: true, thumbnail: "/assets/reels/thumbnail 1.png", videoUrl: "/assets/reels/reels ubsc 1.mp4" },
+    { id: 2, date: "16/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 2.png", videoUrl: "/assets/reels/reels ubsc 2.mp4" },
+    { id: 3, date: "10/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 3.png", videoUrl: "/assets/reels/reels ubsc 3.mp4" },
+    { id: 4, date: "05/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 4.png", videoUrl: "/assets/reels/reels ubsc 4.mp4" },
+    { id: 5, date: "01/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 5.png", videoUrl: "/assets/reels/reels ubsc 5.mp4" },
 ];
 
 const SlideArrow: React.FC<{ size?: number; color?: string }> = ({

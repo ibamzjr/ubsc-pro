@@ -1,7 +1,7 @@
-import { Star } from "lucide-react";
 import GymTrafficBadge from "@/Components/Landing/GymTrafficBadge";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import LogoMarquee from "@/Components/Landing/LogoMarquee";
+import type { SponsorItem } from "@/Components/Landing/LogoMarquee";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import ImageCarousel from "@/Components/Landing/ImageCarousel";
 import type { CarouselImage } from "@/Components/Landing/ImageCarousel";
@@ -29,7 +29,22 @@ const DUMMY_IMAGES: CarouselImage[] = [
     },
 ];
 
-export default function SectionTwo() {
+interface SectionTwoProps {
+    promos?: CarouselImage[];
+    sponsors?: SponsorItem[];
+}
+const StarIcon = ({ className }: { className?: string }) => (
+    <svg
+        viewBox="0 0 24 24"
+        width="16"
+        height="16"
+        className={className}
+        aria-hidden
+    >
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+);
+export default function SectionTwo({ promos, sponsors }: SectionTwoProps) {
     return (
         <section id="about" className="overflow-x-clip bg-white">
             <div className="mx-auto px-6 py-8 sm:px-10 sm:py-12 xl:px-20 xl:pb-24">
@@ -125,7 +140,7 @@ export default function SectionTwo() {
 
                 {/* Embla looping image carousel */}
                 <div className="mt-24">
-                    <ImageCarousel images={DUMMY_IMAGES} loop />
+                    <ImageCarousel images={promos ?? DUMMY_IMAGES} loop />
                 </div>
 
                 {/* Jelajahi Program Kami */}
@@ -137,10 +152,9 @@ export default function SectionTwo() {
                     </div>
                     <div className="flex items-center gap-1 lg:col-span-3">
                         {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
+                            <StarIcon
                                 key={i}
-                                fill="currentColor"
-                                className="h-5 w-5 text-[#15678D]"
+                                className="h-5 w-5 text-[#15678D] fill-current"
                             />
                         ))}
                     </div>
@@ -156,7 +170,7 @@ export default function SectionTwo() {
             {/* Logo Marquee */}
             <div className="px-6 pb-12 sm:px-10 xl:px-24">
                 <hr className="mb-10 w-full border-gray-200" />
-                <LogoMarquee />
+                <LogoMarquee sponsors={sponsors} />
             </div>
         </section>
     );

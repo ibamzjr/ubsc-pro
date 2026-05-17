@@ -2,8 +2,46 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import FacilityListSection from "@/Components/Facility/FacilityListSection";
 import FacilityClassSection from "@/Components/Facility/FacilityClassSection";
+import type { FacilityItem } from "@/Components/Facility/FacilityListItem";
+import type { ClassItem } from "@/Components/Facility/FacilityClassSection";
 
-export default function SectionFour() {
+interface BackendFacility {
+    id: number;
+    name: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+}
+
+interface SectionFourProps {
+    facilities?: BackendFacility[];
+}
+
+export default function SectionFour({ facilities = [] }: SectionFourProps) {
+    const arenaFacilities: FacilityItem[] = facilities
+        .filter((f) => f.category === 'Lapangan & Arena')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: `/${f.name}.`,
+            code: f.class_code || `/Tertutup ${String(idx + 1).padStart(3, '0')}/`,
+            image: f.image || '/assets/images/comingsoon.avif',
+            badgeLocation: f.location || 'Veteran',
+            badgeType: f.venue_type || 'Indoor Facility',
+        }));
+
+    const classFacilities: ClassItem[] = facilities
+        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            name: f.name,
+            code: String(idx + 1).padStart(3, '0'),
+            image: f.image || '/assets/images/comingsoon.avif',
+            badgeLocation: f.location || 'Veteran',
+            badgeCategory: f.venue_type || 'Kebugaran',
+        }));
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
             <div className="mx-auto max-w px-6 sm:px-10 lg:px-16 xl:px-20 xl:pt-12">
@@ -59,11 +97,13 @@ export default function SectionFour() {
                 sectionNumber="03"
                 sectionTitle="Fasilitas Outdoor"
                 sectionSubtitle="01 homepage"
+                facilities={arenaFacilities.length > 0 ? arenaFacilities : undefined}
             />
             <FacilityClassSection
                 sectionNumber="04"
                 sectionTitle="Kelas Indoor"
                 sectionSubtitle="01 homepage"
+                classes={classFacilities.length > 0 ? classFacilities : undefined}
             />
         </section>
     );

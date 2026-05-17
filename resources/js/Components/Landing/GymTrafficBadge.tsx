@@ -1,28 +1,14 @@
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePage } from "@inertiajs/react";
 import gym from "../../../assets/hero/gym.svg";
+import type { PageProps } from "@/types";
 
 interface GymTrafficBadgeProps {
     variant?: "default" | "reversed";
     stretch?: boolean;
 }
 
-type StatusType =
-    | "High Occupancy"
-    | "Medium Occupancy"
-    | "Low Occupancy"
-    | "Coming Soon"
-    | "Just a Test"
-    | "Stay Tune";
-
-const STATUSES: StatusType[] = [
-    "High Occupancy",
-    "Coming Soon",
-    "Medium Occupancy",
-    "Just a Test",
-    "Low Occupancy",
-    "Stay Tune",
-];
+type StatusType = "High Occupancy" | "Medium Occupancy" | "Low Occupancy" | "We Are Close";
 
 function getStatusStyles(status: StatusType) {
     switch (status) {
@@ -36,15 +22,16 @@ function getStatusStyles(status: StatusType) {
                 bg: "from-yellow-400 via-orange-400 to-orange-500",
                 glow: "shadow-[0_0_40px_rgba(251,146,60,0.6)]",
             };
-        case "Low Occupancy":
-            return {
-                bg: "from-green-500 via-emerald-500 to-green-600",
-                glow: "shadow-[0_0_40px_rgba(34,197,94,0.6)]",
-            };
-        default:
+        case "We Are Close":
             return {
                 bg: "from-[#15678D] to-[#153359]",
                 glow: "shadow-[0_0_40px_rgba(59,130,246,0.6)]",
+            };
+        case "Low Occupancy":
+        default:
+            return {
+                bg: "from-green-500 via-emerald-500 to-green-600",
+                glow: "shadow-[0_0_40px_rgba(34,197,94,0.6)]",
             };
     }
 }
@@ -53,16 +40,9 @@ export default function GymTrafficBadge({
     variant = "default",
     stretch = false,
 }: GymTrafficBadgeProps) {
-    const [index, setIndex] = useState(0);
-    const status = STATUSES[index];
+    const raw = usePage<PageProps>().props.gym_traffic ?? "Low Occupancy";
+    const status = raw as StatusType;
     const styles = getStatusStyles(status);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prev) => (prev + 1) % STATUSES.length);
-        }, 3500);
-        return () => clearInterval(interval);
-    }, []);
 
     const Shimmer = (
         <motion.div

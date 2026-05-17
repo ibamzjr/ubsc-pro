@@ -1,7 +1,7 @@
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import FacilityBadge from "@/Components/Landing/FacilityBadge";
 
-interface ClassItem {
+export interface ClassItem {
     id: string;
     name: string;
     code: string;
@@ -62,12 +62,6 @@ const DUMMY_CLASSES: ClassItem[] = [
     },
 ];
 
-// Group into rows of 2 for scroll-stack
-const CLASS_ROWS = [
-    DUMMY_CLASSES.slice(0, 2),
-    DUMMY_CLASSES.slice(2, 4),
-    DUMMY_CLASSES.slice(4, 6),
-];
 
 // Tailwind z-index per row — later rows cover earlier rows on scroll (all screen sizes)
 const ROW_Z: string[] = ["z-10", "z-20", "z-30"];
@@ -131,13 +125,21 @@ interface FacilityClassSectionProps {
     sectionNumber?: string;
     sectionTitle?: string;
     sectionSubtitle?: string;
+    classes?: ClassItem[];
 }
 
 export default function FacilityClassSection({
     sectionNumber = "03",
     sectionTitle = "Kelas Indoor",
     sectionSubtitle = "04 facility page",
+    classes,
 }: FacilityClassSectionProps = {}) {
+    const activeClasses = classes && classes.length > 0 ? classes : DUMMY_CLASSES;
+    const CLASS_ROWS = [
+        activeClasses.slice(0, 2),
+        activeClasses.slice(2, 4),
+        activeClasses.slice(4, 6),
+    ];
     return (
         <section className="bg-white" id="facility-classes">
             <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
@@ -182,7 +184,7 @@ export default function FacilityClassSection({
 
                 {/* Mobile: 1 card per sticky unit */}
                 <div className="relative xl:hidden">
-                    {DUMMY_CLASSES.map((card, index) => (
+                    {activeClasses.map((card, index) => (
                         <div
                             key={card.id}
                             className="sticky top-[80px] bg-white pb-4"

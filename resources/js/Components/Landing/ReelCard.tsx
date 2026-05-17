@@ -5,7 +5,6 @@ export interface ReelItem {
     id: string | number;
     thumbnail?: string;
     title: string;
-    subtitle?: string;
     date: string;
     videoUrl?: string;
     isActive?: boolean;
