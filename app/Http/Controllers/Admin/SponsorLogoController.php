@@ -21,7 +21,6 @@ class SponsorLogoController extends Controller
             ->map(fn (SponsorLogo $s) => [
                 'id'         => $s->id,
                 'name'       => $s->name,
-                'link_url'   => $s->link_url,
                 'is_active'  => $s->is_active,
                 'sort_order' => $s->sort_order,
                 'logo_url'   => $s->getFirstMediaUrl('logo') ?: null,
@@ -36,7 +35,6 @@ class SponsorLogoController extends Controller
 
         $data = $request->validate([
             'name'       => ['required', 'string', 'max:255'],
-            'link_url'   => ['nullable', 'url', 'max:500'],
             'is_active'  => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
             'logo'       => ['nullable', 'image', 'max:5120'],
@@ -44,7 +42,6 @@ class SponsorLogoController extends Controller
 
         $item = SponsorLogo::create([
             'name'       => $data['name'],
-            'link_url'   => $data['link_url'] ?? null,
             'is_active'  => $data['is_active'] ?? true,
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
@@ -62,7 +59,6 @@ class SponsorLogoController extends Controller
 
         $data = $request->validate([
             'name'       => ['required', 'string', 'max:255'],
-            'link_url'   => ['nullable', 'url', 'max:500'],
             'is_active'  => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
             'logo'       => ['nullable', 'image', 'max:5120'],
@@ -70,7 +66,6 @@ class SponsorLogoController extends Controller
 
         $sponsorLogo->update([
             'name'       => $data['name'],
-            'link_url'   => $data['link_url'] ?? null,
             'is_active'  => $data['is_active'] ?? $sponsorLogo->is_active,
             'sort_order' => $data['sort_order'] ?? $sponsorLogo->sort_order,
         ]);
@@ -80,6 +75,18 @@ class SponsorLogoController extends Controller
         }
 
         return back()->with('success', 'Sponsor updated.');
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $this->authorize('manage-cms');
+
+        $ids = $request->input('ids', []);
+        foreach ($ids as $index => $id) {
+            SponsorLogo::where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+
+        return back();
     }
 
     public function destroy(SponsorLogo $sponsorLogo): RedirectResponse

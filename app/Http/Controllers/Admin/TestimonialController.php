@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Review;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,21 +16,36 @@ class TestimonialController extends Controller
     {
         $this->authorize('manage-cms');
 
-        $items = Testimonial::with('media')
+        $testimonials = Testimonial::with('media')
             ->orderBy('sort_order')
             ->get()
             ->map(fn (Testimonial $t) => [
-                'id'         => $t->id,
-                'name'       => $t->name,
-                'instance'   => $t->instance,
-                'message'    => $t->message,
-                'rating'     => $t->rating,
-                'is_active'  => $t->is_active,
-                'sort_order' => $t->sort_order,
-                'avatar_url' => $t->getFirstMediaUrl('avatar') ?: null,
+                'id'          => $t->id,
+                'author_name' => $t->author_name,
+                'author_role' => $t->author_role,
+                'quote'       => $t->quote,
+                'is_active'   => $t->is_active,
+                'sort_order'  => $t->sort_order,
+                'image_url'   => $t->getFirstMediaUrl('image') ?: null,
+                'logo_url'    => $t->getFirstMediaUrl('logo') ?: null,
             ]);
 
-        return Inertia::render('Admin/Testimonials/Index', ['items' => $items]);
+        $reviews = Review::with('user')
+            ->latest()
+            ->get()
+            ->map(fn (Review $r) => [
+                'id'            => $r->id,
+                'reviewer_name' => $r->reviewer_name ?? $r->user?->name ?? 'Guest',
+                'rating'        => $r->rating,
+                'text'          => $r->text,
+                'is_approved'   => $r->is_approved,
+                'created_at'    => $r->created_at->diffForHumans(),
+            ]);
+
+        return Inertia::render('Admin/Testimonials/Index', [
+            'testimonials' => $testimonials,
+            'reviews'      => $reviews,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -37,26 +53,29 @@ class TestimonialController extends Controller
         $this->authorize('manage-cms');
 
         $data = $request->validate([
-            'name'       => ['required', 'string', 'max:255'],
-            'instance'   => ['required', 'string', 'max:255'],
-            'message'    => ['required', 'string'],
-            'rating'     => ['nullable', 'integer', 'min:1', 'max:5'],
-            'is_active'  => ['boolean'],
-            'sort_order' => ['integer', 'min:0'],
-            'avatar'     => ['nullable', 'image', 'max:5120'],
+            'author_name' => ['required', 'string', 'max:255'],
+            'author_role' => ['required', 'string', 'max:255'],
+            'quote'       => ['required', 'string'],
+            'is_active'   => ['boolean'],
+            'sort_order'  => ['integer', 'min:0'],
+            'image'       => ['nullable', 'image', 'max:5120'],
+            'logo'        => ['nullable', 'image', 'max:5120'],
         ]);
 
         $item = Testimonial::create([
-            'name'       => $data['name'],
-            'instance'   => $data['instance'],
-            'message'    => $data['message'],
-            'rating'     => $data['rating'] ?? null,
-            'is_active'  => $data['is_active'] ?? true,
-            'sort_order' => $data['sort_order'] ?? 0,
+            'author_name' => $data['author_name'],
+            'author_role' => $data['author_role'],
+            'quote'       => $data['quote'],
+            'is_active'   => $data['is_active'] ?? true,
+            'sort_order'  => $data['sort_order'] ?? 0,
         ]);
 
-        if ($request->hasFile('avatar')) {
-            $item->addMediaFromRequest('avatar')->toMediaCollection('avatar');
+        if ($request->hasFile('image')) {
+            $item->addMediaFromRequest('image')->toMediaCollection('image');
+        }
+
+        if ($request->hasFile('logo')) {
+            $item->addMediaFromRequest('logo')->toMediaCollection('logo');
         }
 
         return back()->with('success', 'Testimonial created.');
@@ -67,26 +86,29 @@ class TestimonialController extends Controller
         $this->authorize('manage-cms');
 
         $data = $request->validate([
-            'name'       => ['required', 'string', 'max:255'],
-            'instance'   => ['required', 'string', 'max:255'],
-            'message'    => ['required', 'string'],
-            'rating'     => ['nullable', 'integer', 'min:1', 'max:5'],
-            'is_active'  => ['boolean'],
-            'sort_order' => ['integer', 'min:0'],
-            'avatar'     => ['nullable', 'image', 'max:5120'],
+            'author_name' => ['required', 'string', 'max:255'],
+            'author_role' => ['required', 'string', 'max:255'],
+            'quote'       => ['required', 'string'],
+            'is_active'   => ['boolean'],
+            'sort_order'  => ['integer', 'min:0'],
+            'image'       => ['nullable', 'image', 'max:5120'],
+            'logo'        => ['nullable', 'image', 'max:5120'],
         ]);
 
         $testimonial->update([
-            'name'       => $data['name'],
-            'instance'   => $data['instance'],
-            'message'    => $data['message'],
-            'rating'     => $data['rating'] ?? null,
-            'is_active'  => $data['is_active'] ?? $testimonial->is_active,
-            'sort_order' => $data['sort_order'] ?? $testimonial->sort_order,
+            'author_name' => $data['author_name'],
+            'author_role' => $data['author_role'],
+            'quote'       => $data['quote'],
+            'is_active'   => $data['is_active'] ?? $testimonial->is_active,
+            'sort_order'  => $data['sort_order'] ?? $testimonial->sort_order,
         ]);
 
-        if ($request->hasFile('avatar')) {
-            $testimonial->addMediaFromRequest('avatar')->toMediaCollection('avatar');
+        if ($request->hasFile('image')) {
+            $testimonial->addMediaFromRequest('image')->toMediaCollection('image');
+        }
+
+        if ($request->hasFile('logo')) {
+            $testimonial->addMediaFromRequest('logo')->toMediaCollection('logo');
         }
 
         return back()->with('success', 'Testimonial updated.');
@@ -99,5 +121,37 @@ class TestimonialController extends Controller
         $testimonial->delete();
 
         return back()->with('success', 'Testimonial deleted.');
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $this->authorize('manage-cms');
+
+        foreach ($request->input('ids', []) as $index => $id) {
+            Testimonial::where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+
+        return back();
+    }
+
+    public function toggleApprove(Review $review): RedirectResponse
+    {
+        $this->authorize('manage-cms');
+
+        $review->update(['is_approved' => ! $review->is_approved]);
+
+        return back()->with(
+            'success',
+            $review->is_approved ? 'Review disetujui.' : 'Review ditolak.',
+        );
+    }
+
+    public function destroyReview(Review $review): RedirectResponse
+    {
+        $this->authorize('manage-cms');
+
+        $review->delete();
+
+        return back()->with('success', 'Review deleted.');
     }
 }

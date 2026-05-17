@@ -16,17 +16,14 @@ class ReelController extends Controller
         $this->authorize('manage-cms');
 
         $items = Reel::with('media')
-            ->orderBy('sort_order')
+            ->latest()
             ->get()
             ->map(fn (Reel $r) => [
                 'id'            => $r->id,
                 'title'         => $r->title,
-                'subtitle'      => $r->subtitle,
-                'video_url'     => $r->video_url,
-                'is_featured'   => $r->is_featured,
                 'is_active'     => $r->is_active,
-                'sort_order'    => $r->sort_order,
                 'thumbnail_url' => $r->getFirstMediaUrl('thumbnail') ?: null,
+                'video_url'     => $r->getFirstMediaUrl('video') ?: null,
             ]);
 
         return Inertia::render('Admin/Reels/Index', ['items' => $items]);
@@ -37,26 +34,23 @@ class ReelController extends Controller
         $this->authorize('manage-cms');
 
         $data = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'subtitle'    => ['nullable', 'string', 'max:255'],
-            'video_url'   => ['required', 'string', 'max:500'],
-            'is_featured' => ['boolean'],
-            'is_active'   => ['boolean'],
-            'sort_order'  => ['integer', 'min:0'],
-            'thumbnail'   => ['nullable', 'image', 'max:5120'],
+            'title'     => ['required', 'string', 'max:255'],
+            'is_active' => ['boolean'],
+            'thumbnail' => ['nullable', 'image', 'max:5120'],
+            'video'     => ['nullable', 'mimes:mp4,webm', 'max:51200'],
         ]);
 
         $item = Reel::create([
-            'title'       => $data['title'],
-            'subtitle'    => $data['subtitle'] ?? null,
-            'video_url'   => $data['video_url'],
-            'is_featured' => $data['is_featured'] ?? false,
-            'is_active'   => $data['is_active'] ?? true,
-            'sort_order'  => $data['sort_order'] ?? 0,
+            'title'     => $data['title'],
+            'is_active' => $data['is_active'] ?? true,
         ]);
 
         if ($request->hasFile('thumbnail')) {
             $item->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
+        }
+
+        if ($request->hasFile('video')) {
+            $item->addMediaFromRequest('video')->toMediaCollection('video');
         }
 
         return back()->with('success', 'Reel created.');
@@ -67,26 +61,23 @@ class ReelController extends Controller
         $this->authorize('manage-cms');
 
         $data = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'subtitle'    => ['nullable', 'string', 'max:255'],
-            'video_url'   => ['required', 'string', 'max:500'],
-            'is_featured' => ['boolean'],
-            'is_active'   => ['boolean'],
-            'sort_order'  => ['integer', 'min:0'],
-            'thumbnail'   => ['nullable', 'image', 'max:5120'],
+            'title'     => ['required', 'string', 'max:255'],
+            'is_active' => ['boolean'],
+            'thumbnail' => ['nullable', 'image', 'max:5120'],
+            'video'     => ['nullable', 'mimes:mp4,webm', 'max:51200'],
         ]);
 
         $reel->update([
-            'title'       => $data['title'],
-            'subtitle'    => $data['subtitle'] ?? null,
-            'video_url'   => $data['video_url'],
-            'is_featured' => $data['is_featured'] ?? $reel->is_featured,
-            'is_active'   => $data['is_active'] ?? $reel->is_active,
-            'sort_order'  => $data['sort_order'] ?? $reel->sort_order,
+            'title'     => $data['title'],
+            'is_active' => $data['is_active'] ?? $reel->is_active,
         ]);
 
         if ($request->hasFile('thumbnail')) {
             $reel->addMediaFromRequest('thumbnail')->toMediaCollection('thumbnail');
+        }
+
+        if ($request->hasFile('video')) {
+            $reel->addMediaFromRequest('video')->toMediaCollection('video');
         }
 
         return back()->with('success', 'Reel updated.');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\InfoBanner;
 use App\Models\News;
 use App\Models\NewsCategory;
 use Illuminate\Http\RedirectResponse;
@@ -28,9 +29,12 @@ class NewsController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
 
+        $infoBanners = InfoBanner::orderBy('sort_order')->get(['id', 'message', 'is_active', 'sort_order']);
+
         return Inertia::render('Admin/News/Index', [
-            'news'       => $news,
-            'categories' => $categories,
+            'news'         => $news,
+            'categories'   => $categories,
+            'info_banners' => $infoBanners,
         ]);
     }
 

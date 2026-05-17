@@ -28,15 +28,16 @@ class ScheduleController extends Controller
             $month = $date->month;
             $year  = $date->year;
 
-            $isOpen = BookingSchedule::where('month', $month)
+            $schedule = BookingSchedule::where('month', $month)
                 ->where('year', $year)
-                ->value('is_open') ?? false;
+                ->first();
 
             return [
-                'month'   => $month,
-                'year'    => $year,
-                'label'   => self::MONTH_NAMES[$month] . ' ' . $year,
-                'is_open' => (bool) $isOpen,
+                'month'        => $month,
+                'year'         => $year,
+                'label'        => self::MONTH_NAMES[$month] . ' ' . $year,
+                'is_open'      => (bool) ($schedule?->is_open ?? false),
+                'closed_dates' => $schedule?->closed_dates ?? [],
             ];
         });
 
@@ -66,6 +67,25 @@ class ScheduleController extends Controller
         $status = $schedule->is_open ? 'dibuka' : 'ditutup';
 
         return back()->with('success', "Jadwal {$label} berhasil {$status}.");
+    }
+
+    public function updateClosedDates(Request $request): RedirectResponse
+    {
+        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+
+        $data = $request->validate([
+            'month'        => ['required', 'integer', 'between:1,12'],
+            'year'         => ['required', 'integer', 'min:2020', 'max:2099'],
+            'closed_dates' => ['present', 'array'],
+            'closed_dates.*' => ['date_format:Y-m-d'],
+        ]);
+
+        BookingSchedule::updateOrCreate(
+            ['month' => $data['month'], 'year' => $data['year']],
+            ['closed_dates' => $data['closed_dates']],
+        );
+
+        return back()->with('success', 'Tanggal tutup berhasil disimpan.');
     }
 
     public function quickOpenNext(): RedirectResponse

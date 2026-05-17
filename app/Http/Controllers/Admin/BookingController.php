@@ -45,6 +45,8 @@ class BookingController extends Controller
             'booking_date'  => ['required', 'date', 'after_or_equal:today'],
             'start_time'    => ['required', 'date_format:H:i'],
             'end_time'      => ['required', 'date_format:H:i'],
+            'pax'           => ['nullable', 'integer', 'min:1', 'max:9999'],
+            'is_free'       => ['boolean'],
             'notes'         => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -59,13 +61,21 @@ class BookingController extends Controller
             ]);
         }
 
-        if ($this->hasCollision($data['facility_id'], $data['booking_date'], $data['start_time'], $data['end_time'])) {
+        $schedule = BookingSchedule::where('month', $date->month)->where('year', $date->year)->first();
+        if ($schedule && in_array($date->format('Y-m-d'), $schedule->closed_dates ?? [])) {
+            return back()->withErrors([
+                'booking_date' => 'Fasilitas tutup pada tanggal ini (Libur/Pemeliharaan).',
+            ]);
+        }
+
+        if ($this->hasCollision($data['facility_id'], $data['booking_date'], $data['start_time'], $data['end_time'], (int) ($data['pax'] ?? 1))) {
             return back()->withErrors([
                 'start_time' => 'Jadwal sudah terpesan untuk fasilitas tersebut. Silakan pilih waktu lain.',
             ]);
         }
 
-        $subtotal = $this->calculateSubtotal(
+        $isFree   = (bool) ($data['is_free'] ?? false);
+        $subtotal = $isFree ? 0 : $this->calculateSubtotal(
             null,
             (int) $data['facility_id'],
             $data['start_time'],
@@ -79,15 +89,16 @@ class BookingController extends Controller
             'booking_date'   => $data['booking_date'],
             'start_time'     => $data['start_time'],
             'end_time'       => $data['end_time'],
+            'pax'            => $data['pax'] ?? 1,
             'subtotal_price' => $subtotal,
-            'status'         => 'pending',
+            'status'         => $isFree ? 'confirmed' : 'pending',
             'notes'          => $data['notes'] ?? null,
         ]);
 
         $booking->transaction()->create([
             'user_id'        => null,
             'amount'         => $subtotal,
-            'payment_status' => 'UNPAID',
+            'payment_status' => $isFree ? 'PAID' : 'UNPAID',
             'checkout_url'   => url("/admin/bookings/{$booking->id}"),
         ]);
 
@@ -129,16 +140,20 @@ class BookingController extends Controller
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    private function hasCollision(int $facilityId, string $date, string $startTime, string $endTime): bool
+    private function hasCollision(int $facilityId, string $date, string $startTime, string $endTime, int $requestedPax = 1): bool
     {
-        return Booking::where('facility_id', $facilityId)
+        $capacity = Facility::find($facilityId)?->capacity ?? 1;
+
+        $occupiedPax = Booking::where('facility_id', $facilityId)
             ->where('booking_date', $date)
             ->whereIn('status', ['pending', 'confirmed'])
             ->where(function ($q) use ($startTime, $endTime) {
                 $q->where('start_time', '<', $endTime)
                   ->where('end_time', '>', $startTime);
             })
-            ->exists();
+            ->sum('pax');
+
+        return ($occupiedPax + $requestedPax) > $capacity;
     }
 
     private function calculateSubtotal(?int $userId, int $facilityId, string $startTime, string $endTime): int
@@ -186,6 +201,7 @@ class BookingController extends Controller
             'notes'          => $booking->notes,
             'customer_name'  => $customerName,
             'customer_phone' => $customerPhone,
+            'is_free'        => $booking->subtotal_price === 0 && $booking->user_id === null,
             'user_category'  => $userCategory,
             'facility_name'  => $booking->facility->name,
             'transaction'    => $booking->transaction ? [

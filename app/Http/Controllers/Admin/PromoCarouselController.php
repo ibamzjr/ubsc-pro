@@ -21,7 +21,6 @@ class PromoCarouselController extends Controller
             ->map(fn (PromoCarousel $p) => [
                 'id'         => $p->id,
                 'title'      => $p->title,
-                'link_url'   => $p->link_url,
                 'is_active'  => $p->is_active,
                 'sort_order' => $p->sort_order,
                 'slide_url'  => $p->getFirstMediaUrl('slide') ?: null,
@@ -36,7 +35,6 @@ class PromoCarouselController extends Controller
 
         $data = $request->validate([
             'title'      => ['nullable', 'string', 'max:255'],
-            'link_url'   => ['nullable', 'url', 'max:500'],
             'is_active'  => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
             'slide'      => ['nullable', 'image', 'max:5120'],
@@ -44,7 +42,6 @@ class PromoCarouselController extends Controller
 
         $item = PromoCarousel::create([
             'title'      => $data['title'] ?? null,
-            'link_url'   => $data['link_url'] ?? null,
             'is_active'  => $data['is_active'] ?? true,
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
@@ -62,7 +59,6 @@ class PromoCarouselController extends Controller
 
         $data = $request->validate([
             'title'      => ['nullable', 'string', 'max:255'],
-            'link_url'   => ['nullable', 'url', 'max:500'],
             'is_active'  => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
             'slide'      => ['nullable', 'image', 'max:5120'],
@@ -70,7 +66,6 @@ class PromoCarouselController extends Controller
 
         $promoCarousel->update([
             'title'      => $data['title'] ?? null,
-            'link_url'   => $data['link_url'] ?? null,
             'is_active'  => $data['is_active'] ?? $promoCarousel->is_active,
             'sort_order' => $data['sort_order'] ?? $promoCarousel->sort_order,
         ]);
@@ -80,6 +75,18 @@ class PromoCarouselController extends Controller
         }
 
         return back()->with('success', 'Slide updated.');
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $this->authorize('manage-cms');
+
+        $ids = $request->input('ids', []);
+        foreach ($ids as $index => $id) {
+            PromoCarousel::where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+
+        return back();
     }
 
     public function destroy(PromoCarousel $promoCarousel): RedirectResponse

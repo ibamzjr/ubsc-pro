@@ -62,6 +62,18 @@ class FacilityCategoryController extends Controller
         return back()->with('success', 'Category updated.');
     }
 
+    public function reorder(Request $request): RedirectResponse
+    {
+        $this->authorize('manage-facilities');
+
+        $ids = $request->input('ids', []);
+        foreach ($ids as $index => $id) {
+            FacilityCategory::where('id', $id)->update(['sort_order' => $index + 1]);
+        }
+
+        return back();
+    }
+
     public function destroy(FacilityCategory $facilityCategory): RedirectResponse
     {
         $this->authorize('manage-facilities');

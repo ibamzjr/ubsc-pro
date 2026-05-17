@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -45,26 +45,26 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    /**
-     * Handle an incoming authentication request.
-     *
-     * Role-aware redirect:
-     *  - Staff users → admin dashboard
-     *  - Normal users → frontend homepage
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        $user = Auth::user();
 
-        $user = $request->user();
+        // GATE 2: Staff accounts must use the staff portal
+        if ($user->hasAnyRole(['Administrator', 'Manager', 'Finance', 'Staff Central', 'Staff Front Office'])) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        if ($user && $user->hasAnyRole(self::STAFF_ROLES)) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $request->session()->regenerate();
+
+        return redirect()->intended('/');
     }
 
     /**
