@@ -9,7 +9,7 @@ import {
     List,
     Plus,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DataTable from "@/Components/Admin/DataTable";
 import SlideOver from "@/Components/Admin/SlideOver";
 import AdminLayout from "@/Layouts/AdminLayout";
@@ -37,10 +37,10 @@ type Props = PageProps<{
 
 // ── Calendar constants ────────────────────────────────────────────────────────
 
-const SLOT_HEIGHT = 44; // px per 30-minute slot
-const START_HOUR  = 6;
-const END_HOUR    = 22;
-const TOTAL_SLOTS = (END_HOUR - START_HOUR) * 2;
+const SLOT_HEIGHT  = 64; // px per HOUR
+const START_HOUR   = 6;
+const END_HOUR     = 22;
+const TOTAL_HOURS  = END_HOUR - START_HOUR; // 16
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -65,11 +65,11 @@ function getDurationMinutes(startTime: string, endTime: string): number {
 
 function getPillTopFromTime(startTime: string): number {
     const { h, m } = parseTimeHM(startTime);
-    return ((h - START_HOUR) * 2 + m / 30) * SLOT_HEIGHT;
+    return ((h - START_HOUR) + m / 60) * SLOT_HEIGHT;
 }
 
 function getPillHeight(durationMinutes: number): number {
-    return (durationMinutes / 30) * SLOT_HEIGHT;
+    return (durationMinutes / 60) * SLOT_HEIGHT;
 }
 
 function formatPrice(amount: number): string {
@@ -142,11 +142,21 @@ const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
     FAILED:  "Gagal",
 };
 
-// Pill color per user category (calendar grid)
-const PILL_STYLE: Record<UserCategory, string> = {
-    warga_ub: "bg-blue-50/90 backdrop-blur-sm border-blue-200/60 text-blue-800 hover:bg-blue-100",
-    umum:     "bg-slate-50/90 backdrop-blur-sm border-slate-200/60 text-slate-700 hover:bg-slate-100",
-};
+// Pill color — semantic by booking origin + status
+function getPillStyle(b: AdminBooking): string {
+    let base: string;
+    if (b.user_id !== null) {
+        base = b.user_category === "warga_ub"
+            ? "bg-blue-500 text-white border-blue-600 hover:bg-blue-600"
+            : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600";
+    } else if (b.is_free) {
+        base = "bg-slate-300 text-slate-800 border-slate-400 hover:bg-slate-400";
+    } else {
+        base = "bg-slate-700 text-white border-slate-800 hover:bg-slate-800";
+    }
+    const pending = b.status === "pending" ? "opacity-60 border-2 border-dashed" : "";
+    return `${base} ${pending}`.trim();
+}
 
 // ── Badges ────────────────────────────────────────────────────────────────────
 
@@ -199,6 +209,8 @@ function CreateBookingForm({
         booking_date:  todayStr(),
         start_time:    "08:00",
         end_time:      "10:00",
+        pax:           1,
+        is_free:       false,
         notes:         "",
     });
 
@@ -277,6 +289,31 @@ function CreateBookingForm({
             </div>
 
             <div>
+                <label className={labelBase}>Jumlah Peserta</label>
+                <input
+                    type="number"
+                    min={1}
+                    value={data.pax}
+                    onChange={(e) => setData("pax", parseInt(e.target.value) || 1)}
+                    className={inputBase}
+                />
+                {errors.pax && <p className="mt-1.5 text-[11px] font-bdo text-rose-500">{errors.pax}</p>}
+            </div>
+
+            <label className="flex items-center gap-3 cursor-pointer rounded-xl bg-slate-50 px-4 py-3.5 ring-1 ring-slate-200 hover:bg-white transition-all">
+                <input
+                    type="checkbox"
+                    checked={data.is_free}
+                    onChange={(e) => setData("is_free", e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-400"
+                />
+                <div>
+                    <p className="font-clash text-sm font-semibold text-slate-800">Booking Gratis / Tamu Spesial (Rp 0)</p>
+                    <p className="font-bdo text-[11px] text-slate-400 mt-0.5">Lewati pembayaran — status langsung Confirmed & PAID</p>
+                </div>
+            </label>
+
+            <div>
                 <label className={labelBase}>Catatan (opsional)</label>
                 <textarea
                     value={data.notes}
@@ -329,6 +366,14 @@ function BookingDetail({
         router.delete(route("admin.bookings.destroy", booking.id), {
             onSuccess: onClose,
         });
+    };
+
+    const [copied, setCopied] = useState(false);
+    const handleCopyInvoice = () => {
+        if (!booking.transaction?.checkout_url) return;
+        navigator.clipboard.writeText(booking.transaction.checkout_url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const duration = getDurationMinutes(booking.start_time, booking.end_time);
@@ -438,6 +483,19 @@ function BookingDetail({
                         </div>
                     )}
                 </dl>
+                {booking.transaction?.checkout_url && (
+                    <button
+                        type="button"
+                        onClick={handleCopyInvoice}
+                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 font-bdo text-xs font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-slate-900"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                        </svg>
+                        {copied ? "Tersalin!" : "Salin Link Invoice"}
+                    </button>
+                )}
             </section>
 
             {/* Actions */}
@@ -508,13 +566,11 @@ function GridView({
     onSelect: (b: AdminBooking) => void;
 }) {
     const [dateStr, setDateStr] = useState(todayStr());
+    const datePickerRef = useRef<HTMLInputElement>(null);
 
-    const timeSlots = Array.from({ length: TOTAL_SLOTS }, (_, i) => {
-        const totalMin = START_HOUR * 60 + i * 30;
-        return formatHM(Math.floor(totalMin / 60), totalMin % 60);
-    });
-
-    const dayBookings = bookings.filter((b) => b.booking_date === dateStr);
+    const dayBookings = bookings.filter(
+        (b) => b.booking_date === dateStr && b.status !== "cancelled",
+    );
 
     return (
         <div className="flex flex-col gap-5 animate-fade-in-up delay-200">
@@ -529,12 +585,24 @@ function GridView({
                         >
                             <ChevronLeft size={18} />
                         </button>
-                        <div className="flex items-center gap-2.5 px-4 py-2">
-                            <CalendarDays size={16} className="text-orange-500" />
+                        <div
+                            className="relative flex items-center gap-2.5 px-4 py-2 transition-colors rounded-lg hover:bg-slate-200/50 cursor-pointer group"
+                            onClick={() => (datePickerRef.current as any)?.showPicker?.()}
+                        >
+                            <CalendarDays size={16} className="text-orange-500 transition-transform group-hover:scale-110" />
                             <span className="font-clash text-sm font-medium text-slate-900">
                                 {formatDateDisplay(dateStr)}
                             </span>
-                            
+                            <input
+                                ref={datePickerRef}
+                                type="date"
+                                value={dateStr}
+                                onChange={(e) => {
+                                    if (e.target.value) setDateStr(e.target.value);
+                                }}
+                                className="sr-only"
+                                aria-label="Pilih tanggal"
+                            />
                         </div>
                         <button
                             type="button"
@@ -556,16 +624,24 @@ function GridView({
                 {/* Legend */}
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100">
                     <span className="flex items-center gap-2">
-                        <span className="h-3.5 w-4 rounded-sm border border-blue-200 bg-blue-50" />
+                        <span className="h-3.5 w-4 rounded-sm border border-blue-600 bg-blue-500" />
                         Warga UB
                     </span>
                     <span className="flex items-center gap-2">
-                        <span className="h-3.5 w-4 rounded-sm border border-slate-200 bg-slate-100" />
+                        <span className="h-3.5 w-4 rounded-sm border border-emerald-600 bg-emerald-500" />
                         Umum
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3.5 w-4 rounded-sm border border-slate-800 bg-slate-700" />
+                        Admin (berbayar)
+                    </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3.5 w-4 rounded-sm border border-slate-400 bg-slate-300" />
+                        Admin (gratis)
                     </span>
                     <div className="w-[1px] h-4 bg-slate-300 mx-1 hidden sm:block"></div>
                     <span className="flex items-center gap-3">
-                        {(["confirmed", "pending", "completed", "cancelled"] as BookingStatus[]).map(
+                        {(["confirmed", "pending", "completed"] as BookingStatus[]).map(
                             (s) => (
                                 <span key={s} className="flex items-center gap-1.5">
                                     <span className={cn("h-2.5 w-2.5 rounded-full", STATUS_DOT[s])} />
@@ -589,24 +665,21 @@ function GridView({
                     {/* Time column */}
                     <div className="w-16 shrink-0 bg-slate-50 border-r border-slate-200">
                         <div className="sticky top-0 z-30 h-14 border-b border-slate-200 bg-slate-50 backdrop-blur-md" />
-                        {timeSlots.map((slot, i) => (
-                            <div
-                                key={i}
-                                style={{ height: SLOT_HEIGHT }}
-                                className={cn(
-                                    "flex items-start justify-end pr-3 pt-1.5",
-                                    i % 2 === 0
-                                        ? "border-b border-slate-200"
-                                        : "border-b border-slate-100 border-dashed",
-                                )}
-                            >
-                                {i % 2 === 0 && (
+                        {Array.from({ length: TOTAL_HOURS }, (_, i) => {
+                            const h = START_HOUR + i;
+                            return (
+                                <div
+                                    key={h}
+                                    style={{ height: SLOT_HEIGHT }}
+                                    className="relative flex items-start justify-end border-b border-slate-200 pr-3 pt-1.5"
+                                >
                                     <span className="font-bdo text-[11px] font-bold text-slate-400">
-                                        {slot}
+                                        {padTwo(h)}:00
                                     </span>
-                                )}
-                            </div>
-                        ))}
+                                    <div className="absolute bottom-1/2 left-0 right-0 border-b border-dashed border-slate-100" />
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Facility columns */}
@@ -626,22 +699,19 @@ function GridView({
                                     </span>
                                 </div>
                                 <div className="relative flex-1 border-r border-slate-100 last:border-r-0">
-                                    {timeSlots.map((_, i) => (
+                                    {Array.from({ length: TOTAL_HOURS }, (_, i) => (
                                         <div
                                             key={i}
                                             style={{ height: SLOT_HEIGHT }}
-                                            className={
-                                                i % 2 === 0
-                                                    ? "border-b border-slate-200"
-                                                    : "border-b border-slate-100 border-dashed"
-                                            }
-                                        />
+                                            className="relative border-b border-slate-200"
+                                        >
+                                            <div className="absolute bottom-1/2 left-0 right-0 border-b border-dashed border-slate-100" />
+                                        </div>
                                     ))}
                                     {facilityBookings.map((booking) => {
                                         const top      = getPillTopFromTime(booking.start_time);
                                         const duration = getDurationMinutes(booking.start_time, booking.end_time);
                                         const height   = getPillHeight(duration);
-                                        const isCancelled = booking.status === "cancelled";
 
                                         return (
                                             <button
@@ -658,9 +728,7 @@ function GridView({
                                                 }}
                                                 className={cn(
                                                     "group flex flex-col items-start overflow-hidden rounded-xl border px-2.5 py-2 text-left transition-all hover:z-20 hover:shadow-lg hover:-translate-y-0.5",
-                                                    isCancelled
-                                                        ? "border-slate-200 bg-slate-50 text-slate-400 opacity-60"
-                                                        : PILL_STYLE[booking.user_category],
+                                                    getPillStyle(booking),
                                                 )}
                                             >
                                                 <span

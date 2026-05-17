@@ -1,6 +1,5 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import {
-    CalendarDays,
     Clock,
     Pencil,
     Plus,
@@ -12,6 +11,24 @@ import SlideOver from "@/Components/Admin/SlideOver";
 import { ADMIN_TOKENS } from "@/Components/Admin/tokens";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
+import type { PageProps } from "@/types";
+
+// ── Inertia props ─────────────────────────────────────────────────────────────
+
+interface PriceRow {
+    id?: number;
+    user_category: string;
+    label: string;
+    price: number;
+    duration_minutes: number;
+    notes?: string | null;
+    sort_order?: number;
+}
+
+type PricingPageProps = PageProps<{
+    facility: { id: number; name: string };
+    prices: PriceRow[];
+}>;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -200,28 +217,57 @@ function SectionHeader({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function FacilityPricing() {
+    const { facility, prices: initialPrices } = usePage<PricingPageProps>().props;
+
+    const findReguler = (cat: string) => initialPrices.find(
+        (p) => p.user_category === cat && p.label === 'Reguler'
+    );
+    const wargaReguler = findReguler('warga_ub');
+    const umumReguler  = findReguler('umum');
+
+    const [saving, setSaving] = useState(false);
+
     // ── Master tab
     const [activeTab, setActiveTab] = useState<ActiveTab>("warga_ub");
 
     // ── Section A — per-tab independent state
     const [regulerState, setRegulerState] = useState<Record<ActiveTab, RegulerState>>({
-        warga_ub: { durasi: "60", harga: "75000",  hargaCoretEnabled: false, hargaDiskon: "", statusAktif: true },
-        umum:     { durasi: "60", harga: "100000", hargaCoretEnabled: false, hargaDiskon: "", statusAktif: true },
+        warga_ub: {
+            durasi:            String((wargaReguler?.duration_minutes ?? 60)) as DurasiOption,
+            harga:             String(wargaReguler?.price ?? 75000),
+            hargaCoretEnabled: false,
+            hargaDiskon:       "",
+            statusAktif:       true,
+        },
+        umum: {
+            durasi:            String((umumReguler?.duration_minutes ?? 60)) as DurasiOption,
+            harga:             String(umumReguler?.price ?? 100000),
+            hargaCoretEnabled: false,
+            hargaDiskon:       "",
+            statusAktif:       true,
+        },
     });
 
     const reguler = regulerState[activeTab];
     const setReguler = (updates: Partial<RegulerState>) =>
         setRegulerState((prev) => ({ ...prev, [activeTab]: { ...prev[activeTab], ...updates } }));
 
-    // ── Section B
-    const [showHolidaySlideOver, setShowHolidaySlideOver] = useState(false);
-    const [holidayPrice, setHolidayPrice] = useState<Record<ActiveTab, string>>({
-        warga_ub: "100000",
-        umum:     "120000",
-    });
+    // ── Section C — init from DB prices that aren't "Reguler"
+    const mapKhusus = (cat: string): KhususItem[] =>
+        initialPrices
+            .filter((p) => p.user_category === cat && p.label !== 'Reguler')
+            .map((p) => ({
+                id:           p.id ?? Date.now(),
+                nama:         p.label,
+                harga:        p.price,
+                durasi:       String(p.duration_minutes ?? 60) as DurasiOption,
+                scheduleType: "hari" as ScheduleType,
+            }));
 
-    // ── Section C
-    const [khususItems, setKhususItems] = useState<Record<ActiveTab, KhususItem[]>>(DUMMY_KHUSUS);
+    const [khususItems, setKhususItems] = useState<Record<ActiveTab, KhususItem[]>>({
+        warga_ub: mapKhusus('warga_ub').length > 0 ? mapKhusus('warga_ub') : DUMMY_KHUSUS.warga_ub,
+        umum:     mapKhusus('umum').length > 0     ? mapKhusus('umum')     : DUMMY_KHUSUS.umum,
+    });
     const [showCreateSlideOver, setShowCreateSlideOver] = useState(false);
 
     // SlideOver C form state
@@ -304,7 +350,7 @@ export default function FacilityPricing() {
                             Facilities
                         </Link>
                         <span>/</span>
-                        <span className="text-gray-600">Lapangan Tennis 1</span>
+                        <span className="text-gray-600">{facility.name}</span>
                         <span>/</span>
                         <span className="font-medium text-gray-900">Harga</span>
                     </div>
@@ -314,7 +360,7 @@ export default function FacilityPricing() {
                 </div>
             }
         >
-            <Head title="Pengaturan Harga — Lapangan Tennis 1" />
+            <Head title={`Pengaturan Harga — ${facility.name}`} />
 
             <div className="flex flex-col gap-6 pt-6">
 
@@ -460,50 +506,11 @@ export default function FacilityPricing() {
                     </div>
                 </div>
 
-                {/* ── Section B: Harga Libur Nasional ────────────────────────── */}
-                <div className={`${ADMIN_TOKENS.CARD_LARGE} p-6`}>
-                    <SectionHeader
-                        letter="B"
-                        title="Harga Libur Nasional"
-                        subtitle="Berlaku otomatis saat tanggal terdeteksi sebagai hari libur nasional Indonesia"
-                        className="mb-5"
-                    />
-
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                                <CalendarDays size={17} className="text-amber-500" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-900">
-                                    {holidayPrice[activeTab]
-                                        ? formatPrice(parseInt(holidayPrice[activeTab]) || 0)
-                                        : "Belum diatur"}
-                                    <span className="ml-1.5 text-[11px] font-normal text-gray-400">
-                                        / sesi
-                                    </span>
-                                </p>
-                                <p className="mt-0.5 text-[11px] text-gray-400">
-                                    {activeTab === "warga_ub" ? "Warga UB" : "Umum"} · Durasi 60 Menit
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setShowHolidaySlideOver(true)}
-                            className="flex shrink-0 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-[0_2px_8px_rgb(0,0,0,0.04)] transition-colors hover:bg-gray-50 hover:shadow-none"
-                        >
-                            <Pencil size={13} />
-                            Atur Harga Libur Nasional
-                        </button>
-                    </div>
-                </div>
-
-                {/* ── Section C: Harga Khusus ─────────────────────────────────── */}
+                {/* ── Section B: Harga Khusus ─────────────────────────────────── */}
                 <div className={`${ADMIN_TOKENS.CARD_LARGE} p-6`}>
                     <div className="mb-5 flex items-start justify-between gap-4">
                         <SectionHeader
-                            letter="C"
+                            letter="B"
                             title="Harga Khusus"
                             subtitle="Tarif berbasis waktu yang menggantikan harga reguler secara otomatis"
                         />
@@ -598,17 +605,32 @@ export default function FacilityPricing() {
                         Perubahan hanya berlaku setelah disimpan.
                     </p>
                     <div className="flex items-center gap-2.5">
-                        <button
-                            type="button"
+                        <Link
+                            href={route("admin.facilities.index")}
                             className="rounded-2xl px-5 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
                         >
                             Batal
-                        </button>
+                        </Link>
                         <button
                             type="button"
-                            className="rounded-2xl bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                            disabled={saving}
+                            onClick={() => {
+                                const prices: PriceRow[] = [
+                                    { user_category: 'warga_ub', label: 'Reguler', price: parseInt(regulerState.warga_ub.harga) || 0, duration_minutes: parseInt(regulerState.warga_ub.durasi), sort_order: 0 },
+                                    { user_category: 'umum',     label: 'Reguler', price: parseInt(regulerState.umum.harga) || 0,     duration_minutes: parseInt(regulerState.umum.durasi),     sort_order: 1 },
+                                    ...khususItems.warga_ub.map((item, i) => ({ user_category: 'warga_ub', label: item.nama, price: item.harga, duration_minutes: parseInt(item.durasi), sort_order: i + 10 })),
+                                    ...khususItems.umum.map((item, i)     => ({ user_category: 'umum',     label: item.nama, price: item.harga, duration_minutes: parseInt(item.durasi), sort_order: i + 10 })),
+                                ];
+                                setSaving(true);
+                                router.post(
+                                    route('admin.facilities.pricing.sync', facility.id),
+                                    { prices } as any,
+                                    { onFinish: () => setSaving(false) }
+                                );
+                            }}
+                            className="rounded-2xl bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            Simpan Perubahan
+                            {saving ? 'Menyimpan…' : 'Simpan Perubahan'}
                         </button>
                     </div>
                 </div>
@@ -616,98 +638,7 @@ export default function FacilityPricing() {
             </div>
 
             {/* ═══════════════════════════════════════════════════════════════
-                SlideOver B — Harga Libur Nasional
-            ══════════════════════════════════════════════════════════════════ */}
-            <SlideOver
-                isOpen={showHolidaySlideOver}
-                onClose={() => setShowHolidaySlideOver(false)}
-                title="Harga Libur Nasional"
-                description={`Tarif khusus untuk ${activeTab === "warga_ub" ? "Warga UB" : "Umum"} saat hari libur nasional`}
-            >
-                {showHolidaySlideOver && (
-                    <div className="flex flex-col gap-5">
-                        {/* Info banner */}
-                        <div className="rounded-2xl bg-amber-50 px-4 py-3.5 ring-1 ring-inset ring-amber-100">
-                            <div className="flex items-start gap-2.5">
-                                <CalendarDays size={14} className="mt-0.5 shrink-0 text-amber-500" />
-                                <p className="text-xs leading-relaxed text-amber-700">
-                                    Harga ini aktif secara otomatis pada tanggal-tanggal yang
-                                    terdaftar sebagai hari libur nasional. Tidak perlu mengatur
-                                    manual setiap tahun.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Current price */}
-                        <div className="rounded-2xl bg-gray-50 p-4">
-                            <p className="mb-3 font-clash text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                                Harga Berlaku Saat Ini
-                            </p>
-                            <dl className="flex flex-col gap-2.5 text-sm">
-                                <div className="flex items-center justify-between">
-                                    <dt className="text-gray-500">Tarif Libur</dt>
-                                    <dd className="font-semibold text-gray-900">
-                                        {formatPrice(parseInt(holidayPrice[activeTab]) || 0)}
-                                    </dd>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <dt className="text-gray-500">Durasi Per Sesi</dt>
-                                    <dd className="text-gray-700">60 Menit</dd>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <dt className="text-gray-500">Berlaku Untuk</dt>
-                                    <dd className="text-gray-700">
-                                        {activeTab === "warga_ub" ? "Warga UB" : "Umum"}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-
-                        {/* Edit input */}
-                        <div>
-                            <label className={labelBase}>Ubah Harga Libur Nasional</label>
-                            <div className="relative mt-1.5">
-                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                                    Rp
-                                </span>
-                                <input
-                                    type="number"
-                                    value={holidayPrice[activeTab]}
-                                    min="0"
-                                    step="1000"
-                                    onChange={(e) =>
-                                        setHolidayPrice((prev) => ({
-                                            ...prev,
-                                            [activeTab]: e.target.value,
-                                        }))
-                                    }
-                                    className={`${inputBase} pl-10`}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={() => setShowHolidaySlideOver(false)}
-                                className="flex-1 rounded-2xl bg-gray-900 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-                            >
-                                Simpan Harga
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowHolidaySlideOver(false)}
-                                className="rounded-2xl px-5 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
-                            >
-                                Batal
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </SlideOver>
-
-            {/* ═══════════════════════════════════════════════════════════════
-                SlideOver C — Buat Harga Khusus
+                SlideOver B — Buat Harga Khusus
             ══════════════════════════════════════════════════════════════════ */}
             <SlideOver
                 isOpen={showCreateSlideOver}
