@@ -3,6 +3,19 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import AnimatedBookingLink from "@/Components/News/AnimatedBookingLink";
 import PricingClassCard, { ClassPricing } from "./PricingClassCard";
 
+interface BackendFacility {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+    display_metadata?: Record<string, unknown> | null;
+}
+
 const ArrowLeft = () => (
     <svg
         width="20"
@@ -33,138 +46,34 @@ const ArrowRight = () => (
     </svg>
 );
 
-const CLASSES_DATA: ClassPricing[] = [
-    {
-        id: "01",
-        title: "/Yoga.",
-        description:
-            "Tingkatkan fleksibilitas dan keseimbangan dengan latihan yoga yang dipandu instruktur berpengalaman.",
-        image: "/assets/images/fasilitas-yoga-ub-sport-center.avif",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        daftarHarga: {
-            left: [
-                { label: "Beginner" },
-                { label: "Warga UB 25K" },
-                { label: "Umum 23K" },
-            ],
-            right: [{ label: "Intermediate" }, { label: "Umum 35K" }],
-        },
-        persewaan: {
-            left: [
-                { label: "Sewa Ruang Yoga" },
-                { label: "Warga UB 100K" },
-                { label: "Umum 150K" },
-            ],
-            right: [
-                { label: "Sewa Event Ruang" },
-                { label: "1650K Hari" },
-                { label: "(Matras Kami Fasilitasi)" },
-            ],
-        },
-    },
-    {
-        id: "02",
-        title: "/Zumba.",
-        description:
-            "Bakar kalori dengan gerakan dansa energik yang menyenangkan bersama komunitas aktif UB Sport Center.",
-        image: "/assets/images/fasilitas-zumba-ub-sport-center.avif",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        daftarHarga: {
-            left: [
-                { label: "Reguler" },
-                { label: "Warga UB 30K" },
-                { label: "Umum 40K" },
-            ],
-            right: [
-                { label: "Paket 10x" },
-                { label: "Warga UB 250K" },
-                { label: "Umum 350K" },
-            ],
-        },
-        persewaan: {
-            left: [
-                { label: "Sewa Ruang Zumba" },
-                { label: "Warga UB 120K" },
-                { label: "Umum 170K" },
-            ],
-            right: [
-                { label: "Sewa Event" },
-                { label: "2000K Hari" },
-                { label: "(Sound System Tersedia)" },
-            ],
-        },
-    },
-    {
-        id: "03",
-        title: "/Aerobik.",
-        description:
-            "Latihan kardio intensitas tinggi untuk meningkatkan stamina dan kesehatan jantung secara optimal.",
-        image: "/assets/images/fasilitas-aerobik-ub-sport-center.avif",
-        badgeLocation: "Dieng",
-        badgeType: "Indoor Facility",
-        daftarHarga: {
-            left: [
-                { label: "Low Impact" },
-                { label: "Warga UB 25K" },
-                { label: "Umum 35K" },
-            ],
-            right: [
-                { label: "High Impact" },
-                { label: "Warga UB 35K" },
-                { label: "Umum 45K" },
-            ],
-        },
-        persewaan: {
-            left: [
-                { label: "Sewa Ruang Aerobik" },
-                { label: "Warga UB 110K" },
-                { label: "Umum 160K" },
-            ],
-            right: [
-                { label: "Sewa Event" },
-                { label: "1800K Hari" },
-                { label: "(Stereo System Tersedia)" },
-            ],
-        },
-    },
-    {
-        id: "04",
-        title: "/Pilates.",
-        description:
-            "Perkuat otot inti dan perbaiki postur tubuh dengan metode Pilates yang telah terbukti secara ilmiah.",
-        image: "/assets/images/comingsoon.avif",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        daftarHarga: {
-            left: [
-                { label: "Mat Pilates" },
-                { label: "Warga UB 35K" },
-                { label: "Umum 45K" },
-            ],
-            right: [
-                { label: "Reformer" },
-                { label: "Warga UB 55K" },
-                { label: "Umum 70K" },
-            ],
-        },
-        persewaan: {
-            left: [
-                { label: "Sewa Ruang Pilates" },
-                { label: "Warga UB 130K" },
-                { label: "Umum 180K" },
-            ],
-            right: [
-                { label: "Sewa Event" },
-                { label: "2200K Hari" },
-                { label: "(Peralatan Tersedia)" },
-            ],
-        },
-    },
-];
 
-export default function PricingClassSection() {
+interface Props {
+    facilities?: BackendFacility[];
+}
+
+export default function PricingClassSection({ facilities = [] }: Props) {
+    // Map real facilities to ClassPricing format, filter to fitness classes only
+    const classesData: ClassPricing[] = facilities
+        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: `/${f.name}.`,
+            description: `Ikuti kelas ${f.name} yang dipandu instruktur berpengalaman di UB Sport Center.`,
+            image: f.image || '/assets/images/comingsoon.avif',
+            badgeLocation: f.location ?? 'Veteran',
+            badgeType: f.venue_type ?? 'Indoor Facility',
+            daftarHarga: (f.display_metadata as any)?.daftarHarga || {
+                left: [{ label: "Reguler" }, { label: "Warga UB 25K" }, { label: "Umum 35K" }],
+                right: [{ label: "Paket" }, { label: "Diskon Tersedia" }],
+            },
+            persewaan: (f.display_metadata as any)?.persewaan || {
+                left: [{ label: "Sewa Ruang" }, { label: "Hubungi Kami" }],
+                right: [{ label: "Event" }, { label: "Custom Quote" }],
+            },
+        }));
+
+    // Use real data if available, fallback to DUMMY data
+    const activeClasses: ClassPricing[] = classesData;
     const [emblaRef, emblaApi] = useEmblaCarousel({
         align: "start",
         dragFree: true,
@@ -221,7 +130,7 @@ export default function PricingClassSection() {
 
                 <div className="min-w-0 overflow-hidden" ref={emblaRef}>
                     <div className="flex gap-4 xl:gap-6">
-                        {CLASSES_DATA.map((item) => (
+                        {activeClasses.map((item) => (
                             <PricingClassCard key={item.id} item={item} />
                         ))}
                     </div>

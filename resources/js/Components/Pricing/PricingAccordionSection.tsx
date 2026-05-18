@@ -5,57 +5,35 @@ import PricingAccordionItem, {
     ClassAccordionData,
 } from "./PricingAccordionItem";
 
-const CLASSES_DATA: ClassAccordionData[] = [
-    {
-        id: "01",
-        title: "/ Sepak Bola",
-        badgeLocation: "Veteran",
-        badgeType: "Arena Luar",
-        classCode: "/Terbuka 003/",
-        pricingDetails: [
-            "1.750K / 2 Jam",
-            "Extension 875K / Jam",
-        ],
-    },
-    {
-        id: "02",
-        title: "/Basket",
-        badgeLocation: "Veteran",
-        badgeType: "Arena Luar",
-        classCode: "/Terbuka 004/",
-        pricingDetails: [
-            "Reguler 50K — 100K",
-            "Sewa 200K / Jam",
-            "Event 3.000K / Hari",
-        ],
-    },
-    {
-        id: "03",
-        title: "/Volly",
-        badgeLocation: "Veteran",
-        badgeType: "Arena Luar",
-        classCode: "/Terbuka 005/",
-        pricingDetails: [
-            "Reguler 40K — 85K",
-            "Sewa 180K / Jam",
-            "Event 2.500K / Hari",
-        ],
-    },
-    {
-        id: "04",
-        title: "/Futsal Dieng",
-        badgeLocation: "Dieng",
-        badgeType: "Indoor Facility",
-        classCode: "/Terbuka 006/",
-        pricingDetails: [
-            "Pagi 120K / 2 Jam",
-            "Malam 160K / 2 Jam",
-            "Event 5.000K / Hari",
-        ],
-    },
-];
+interface BackendFacility {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+    display_metadata?: Record<string, unknown> | null;
+}
 
-export default function PricingAccordionSection() {
+interface Props {
+    facilities?: BackendFacility[];
+}
+
+export default function PricingAccordionSection({ facilities = [] }: Props) {
+    const accordionData: ClassAccordionData[] = facilities
+        .filter((f) => f.category === 'Lapangan & Arena' && Array.isArray((f.display_metadata as any)?.pricingDetails))
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: `/${f.name}`,
+            badgeLocation: f.location ?? 'Veteran',
+            badgeType: f.venue_type ?? 'Arena Luar',
+            classCode: f.class_code ?? `/Terbuka ${String(idx + 3).padStart(3, '0')}/`,
+            pricingDetails: (f.display_metadata as any)?.pricingDetails ?? [],
+        }));
+
     const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
     return (
@@ -99,7 +77,7 @@ export default function PricingAccordionSection() {
 
                         <div className="mt-16 flex flex-col">
                             <div className="border-t border-white/10" />
-                            {CLASSES_DATA.map((item, idx) => (
+                            {accordionData.map((item, idx) => (
                                 <PricingAccordionItem
                                     key={item.id}
                                     item={item}

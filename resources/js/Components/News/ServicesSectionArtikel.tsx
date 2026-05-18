@@ -75,8 +75,8 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
 ];
 
 const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
-export default function ServicesSectionArtikel() {
-    const [featured, rightTop, rightBottom, ...bottom4] = DUMMY_ARTIKEL;
+export default function ServicesSectionArtikel({ articles }: { articles?: DummyArtikelItem[] }) {
+    const [featured, rightTop, rightBottom, ...bottom4] = articles && articles.length > 0 ? articles : DUMMY_ARTIKEL;
 
     return (
         <section

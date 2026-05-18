@@ -23,6 +23,19 @@ interface FacilityPricing {
     image: string;
 }
 
+interface BackendFacility {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+    display_metadata?: Record<string, unknown> | null;
+}
+
 const ArrowChevron = () => (
     <svg
         width="16"
@@ -41,157 +54,40 @@ const ArrowChevron = () => (
     </svg>
 );
 
-const FACILITIES_DATA: FacilityPricing[] = [
-    {
-        id: "01",
-        name: "/Tennis Reborn.",
-        classCode: "/Class 003/",
-        periods: [
-            {
-                label: "Pagi/ 06.00 - 12.00",
-                wargaPrice: "Warga UB 95K/ Jam",
-                umumPrice: "Umum 105K/ Jam",
-            },
-            {
-                label: "Malam/ 16.00 - 22.00",
-                wargaPrice: "Warga UB 105K/ Jam",
-                umumPrice: "Umum 115K/ Jam",
-            },
-            {
-                label: "Sabtu - Minggu\nMalam/ 18.00 - 22.00",
-                wargaPrice: "Warga UB 50K/ Jam",
-                umumPrice: "Umum 65K/ Jam",
-            },
-        ],
-        additionalDetails: [
-            "Sewa Event 8500K/ Hari",
-            "Sewa Raket 10K/ Max. 2 Jam",
-            "Sewa Event Non Sport 25000K/ Hari",
-        ],
-        timeSlot: "16.00 - 18.00",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-    },
-    {
-        id: "02",
-        name: "/Badminton.",
-        classCode: "/Class 001/",
-        periods: [
-            {
-                label: "Pagi/ 06.00 - 12.00",
-                wargaPrice: "Warga UB 40K/ Jam",
-                umumPrice: "Umum 50K/ Jam",
-            },
-            {
-                label: "Siang/ 12.00 - 17.00",
-                wargaPrice: "Warga UB 50K/ Jam",
-                umumPrice: "Umum 60K/ Jam",
-            },
-            {
-                label: "Malam/ 17.00 - 22.00",
-                wargaPrice: "Warga UB 55K/ Jam",
-                umumPrice: "Umum 65K/ Jam",
-            },
-        ],
-        additionalDetails: [
-            "Sewa Event 7500K/ Hari",
-            "Sewa Raket 8K/ Max. 2 Jam",
-        ],
-        timeSlot: "07.00 - 22.00",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-    },
-    {
-        id: "03",
-        name: "/Table Tennis.",
-        classCode: "/Class 002/",
-        periods: [
-            {
-                label: "Pagi/ 06.00 - 12.00",
-                wargaPrice: "Warga UB 25K/ Jam",
-                umumPrice: "Umum 35K/ Jam",
-            },
-            {
-                label: "Siang/ 12.00 - 17.00",
-                wargaPrice: "Warga UB 30K/ Jam",
-                umumPrice: "Umum 40K/ Jam",
-            },
-            {
-                label: "Malam/ 17.00 - 22.00",
-                wargaPrice: "Warga UB 35K/ Jam",
-                umumPrice: "Umum 45K/ Jam",
-            },
-        ],
-        additionalDetails: ["Sewa Event 5000K/ Hari", "Peminjaman Bet 5K"],
-        timeSlot: "07.00 - 22.00",
-        badgeLocation: "Dieng",
-        badgeType: "Indoor Facility",
-        image: "/assets/images/ub-sport-center-kantor-pusat-malang.avif",
-    },
-    {
-        id: "04",
-        name: "/Futsal Veteran.",
-        classCode: "/Class 004/",
-        periods: [
-            {
-                label: "Pagi/ 06.00 - 12.00",
-                wargaPrice: "Warga UB 120K/ Jam",
-                umumPrice: "Umum 150K/ Jam",
-            },
-            {
-                label: "Siang/ 12.00 - 17.00",
-                wargaPrice: "Warga UB 140K/ Jam",
-                umumPrice: "Umum 170K/ Jam",
-            },
-            {
-                label: "Malam/ 17.00 - 22.00",
-                wargaPrice: "Warga UB 160K/ Jam",
-                umumPrice: "Umum 190K/ Jam",
-            },
-        ],
-        additionalDetails: ["Sewa Event 15000K/ Hari", "Sewa Bola 10K"],
-        timeSlot: "06.00 - 22.00",
-        badgeLocation: "Veteran",
-        badgeType: "Outdoor Facility",
-        image: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
-    },
-    {
-        id: "05",
-        name: "/Ruang Beladiri.",
-        classCode: "/Class 005/",
-        periods: [
-            {
-                label: "Pagi/ 06.00 - 12.00",
-                wargaPrice: "Warga UB 60K/ Sesi",
-                umumPrice: "Umum 75K/ Sesi",
-            },
-            {
-                label: "Sore/ 15.00 - 18.00",
-                wargaPrice: "Warga UB 70K/ Sesi",
-                umumPrice: "Umum 85K/ Sesi",
-            },
-            {
-                label: "Malam/ 18.00 - 21.00",
-                wargaPrice: "Warga UB 80K/ Sesi",
-                umumPrice: "Umum 95K/ Sesi",
-            },
-        ],
-        additionalDetails: ["Sewa Ruang 8000K/ Hari", "Matras Ekstra 15K"],
-        timeSlot: "06.00 - 21.00",
-        badgeLocation: "Veteran",
-        badgeType: "Indoor Facility",
-        image: "/assets/images/gym-konten-1-olahraga-ub-sport-center.avif",
-    },
-];
 
-export default function PricingFacilityList() {
+interface Props {
+    facilities?: BackendFacility[];
+}
+
+export default function PricingFacilityList({ facilities = [] }: Props) {
+    // Map real facilities to PricingFacility format, filter to arena facilities only
+    const facilitiesData: FacilityPricing[] = facilities
+        .filter((f) => f.category === 'Lapangan & Arena')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            name: `/${f.name}.`,
+            classCode: f.class_code || `/Class ${String(idx + 1).padStart(3, '0')}/`,
+            periods: (f.display_metadata as any)?.periods || [
+                {
+                    label: "Pagi/ 06.00 - 12.00",
+                    wargaPrice: "Warga UB 95K/ Jam",
+                    umumPrice: "Umum 105K/ Jam",
+                },
+            ],
+            additionalDetails: (f.display_metadata as any)?.additionalDetails || ["Sewa Event 8500K/ Hari"],
+            timeSlot: "06.00 - 22.00",
+            badgeLocation: f.location ?? 'Veteran',
+            badgeType: f.venue_type ?? 'Indoor Facility',
+            image: f.image || '/assets/images/comingsoon.avif',
+        }))
+        .slice(0, 5); // Limit to 5 items
+
+    const activeData: FacilityPricing[] = facilitiesData;
     const [activeIndex, setActiveIndex] = useState(0);
-    const activeFacility = FACILITIES_DATA[activeIndex];
+    const activeFacility = activeData[activeIndex];
 
-    const leftItems = FACILITIES_DATA.slice(0, 3);
-    const rightItems = FACILITIES_DATA.slice(3);
+    const leftItems = activeData.slice(0, 3);
+    const rightItems = activeData.slice(3);
 
     return (
         <section className="bg-white overflow-x-clip" id="pricing-facilities">

@@ -41,8 +41,8 @@ const NextArrow = () => (
     </svg>
 );
 
-interface NewsSlide {
-    id: number;
+export interface NewsSlide {
+    id: number | string;
     badge: string;
     title: string;
     description: string;
@@ -80,7 +80,8 @@ const DUMMY_NEWS_SLIDES: NewsSlide[] = [
     },
 ];
 
-export default function NewsHero() {
+export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
+    const activeSlides = slides && slides.length > 0 ? slides : DUMMY_NEWS_SLIDES;
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
     const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
     const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
@@ -100,7 +101,7 @@ export default function NewsHero() {
             {/* Embla carousel — slides sit above the static bg */}
             <div className="relative z-10 overflow-hidden" ref={emblaRef}>
                 <div className="flex">
-                    {DUMMY_NEWS_SLIDES.map((slide, idx) => (
+                    {activeSlides.map((slide, idx) => (
                         <div key={slide.id} className="flex-[0_0_100%] min-w-0">
                             {/* Top text area: transparent so static TopBg shows through */}
                             <div className="relative">

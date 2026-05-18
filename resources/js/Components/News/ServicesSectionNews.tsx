@@ -69,8 +69,8 @@ const DUMMY_NEWS: DummyNewsItem[] = [
 ];
 
 const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
-export default function ServicesSectionNews() {
-    const [featured, standard, ...bottom4] = DUMMY_NEWS;
+export default function ServicesSectionNews({ news }: { news?: DummyNewsItem[] }) {
+    const [featured, standard, ...bottom4] = news && news.length > 0 ? news : DUMMY_NEWS;
 
     return (
         <section className="bg-[#F5F7F9] overflow-x-clip" id="news-content">
