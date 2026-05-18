@@ -3,16 +3,58 @@ import FacilityHero from "@/Components/Facility/FacilityHero";
 import FacilityMembership from "@/Components/Facility/FacilityMembership";
 import FacilityListSection from "@/Components/Facility/FacilityListSection";
 import FacilityClassSection from "@/Components/Facility/FacilityClassSection";
-import CurvedLoop from "@/Components/Landing/CurvedLoop";
-import bg from "@/../assets/images/bg-about.avif";
-import person from "@/../assets/images/person.avif";
+import type { ClassItem } from "@/Components/Facility/FacilityClassSection";
+import type { FacilityItem } from "@/Components/Facility/FacilityListItem";
 import AboutBranches from "@/Components/About/AboutBranches";
 import SectionSeven from "@/Components/Landing/SectionSeven";
 import AboutSectionContact from "@/Components/About/AboutSectionContact";
 import Footer from "@/Components/Landing/Footer";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
+import type { PageProps } from "@/types";
+
+interface BackendFacility {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+    display_metadata?: Record<string, unknown> | null;
+}
+
+type FacilityPageProps = PageProps<{
+    facilities?: BackendFacility[];
+    categories?: { id: number; name: string; slug: string }[];
+}>;
 
 export default function FacilityPage() {
+    const { facilities = [] } = usePage<FacilityPageProps>().props;
+
+    const arenaFacilities: FacilityItem[] = facilities
+        .filter((f) => f.category === 'Lapangan & Arena')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: `/${f.name}.`,
+            code: f.class_code ? `/${f.class_code}/` : `/Tertutup ${String(idx + 1).padStart(3, '0')}/`,
+            image: f.image || '/assets/images/comingsoon.avif',
+            badgeLocation: f.location ?? 'Veteran',
+            badgeType: f.venue_type ?? 'Indoor Facility',
+        }));
+
+    const classFacilities: ClassItem[] = facilities
+        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .map((f, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            name: f.name,
+            code: f.class_code ?? String(idx + 1).padStart(3, '0'),
+            image: f.image || '/assets/images/comingsoon.avif',
+            badgeLocation: f.location ?? 'Veteran',
+            badgeCategory: 'Kebugaran',
+        }));
+
     return (
         <>
             <Head>
@@ -38,10 +80,11 @@ export default function FacilityPage() {
             </Head>
             <main className="relative">
                 <Navbar activeSection="Facilities" />
+                <Navbar activeSection="Facilities" />
                 <FacilityHero />
                 <FacilityMembership />
-                <FacilityListSection />
-                <FacilityClassSection />
+                <FacilityListSection facilities={arenaFacilities} />
+                <FacilityClassSection classes={classFacilities} />
                 <AboutBranches
                     sectionNumber="04"
                     sectionTitle="Cabang Kami"

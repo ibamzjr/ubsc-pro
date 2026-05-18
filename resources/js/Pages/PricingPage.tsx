@@ -6,9 +6,26 @@ import PricingClassSection from "@/Components/Pricing/PricingClassSection";
 import PricingAccordionSection from "@/Components/Pricing/PricingAccordionSection";
 import AboutSectionContact from "@/Components/About/AboutSectionContact";
 import Footer from "@/Components/Landing/Footer";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
+import type { PageProps } from "@/types";
+
+type PricingPageProps = PageProps<{
+    facilities?: Array<{
+        id: number;
+        name: string;
+        slug: string;
+        image: string;
+        category: string;
+        location?: string | null;
+        venue_type?: string | null;
+        class_code?: string | null;
+        rating?: number | null;
+        display_metadata?: Record<string, unknown> | null;
+    }>;
+}>;
 
 export default function PricingPage() {
+    const { facilities = [] } = usePage<PricingPageProps>().props;
     return (
         <>
             <Head>
@@ -34,11 +51,12 @@ export default function PricingPage() {
             </Head>
             <main className="relative">
                 <Navbar activeSection="Pricing" />
+                <Navbar activeSection="Pricing" />
                 <PricingHero />
                 <PricingInfo />
-                <PricingFacilityList />
-                <PricingClassSection />
-                <PricingAccordionSection />
+                <PricingFacilityList facilities={facilities} />
+                <PricingClassSection facilities={facilities} />
+                <PricingAccordionSection facilities={facilities} />
                 <AboutSectionContact
                     sectionNumber="05"
                     sectionTitle="Informasi"
