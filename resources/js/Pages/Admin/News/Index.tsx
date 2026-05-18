@@ -141,6 +141,18 @@ const GLOBAL_STYLES = `
         to   { opacity: 1; transform: scale(1); }
     }
     .thumb-load { animation: thumbLoad 0.4s ease-out forwards; }
+
+    /* ── Modal backdrop ── */
+    @keyframes backdropIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.95) translateY(8px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-backdrop { animation: backdropIn 0.2s ease forwards; }
+    .modal-panel    { animation: modalIn    0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
 `;
 
 // ── Status config ──────────────────────────────────────────────────────────────
@@ -177,6 +189,20 @@ function ShinyIcon({ children, className }: { children: React.ReactNode; classNa
             {children}
             <span className="pointer-events-none absolute top-[3px] left-[5px] right-[5px] h-[5px] rounded-full bg-white/20 blur-[1px]" />
         </div>
+    );
+}
+
+function ActiveBadge({ active }: { active: boolean }) {
+    return active ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-bdo text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Aktif
+        </span>
+    ) : (
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 font-bdo text-[10px] font-semibold text-slate-500 ring-1 ring-inset ring-slate-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+            Nonaktif
+        </span>
     );
 }
 
@@ -230,7 +256,6 @@ const columns = [
             const a = info.row.original;
             return (
                 <div className="flex items-center gap-3 min-w-0">
-                    {/* Thumbnail */}
                     {a.thumbnail ? (
                         <img
                             src={a.thumbnail}
@@ -242,7 +267,6 @@ const columns = [
                             <FileText size={14} />
                         </div>
                     )}
-                    {/* Text */}
                     <div className="min-w-0">
                         <p className="font-clash text-sm font-semibold text-slate-800 line-clamp-1 leading-tight">
                             {a.title}
@@ -306,7 +330,7 @@ function CategoriesPanel({
 }: {
     categories: (NewsCategory & { news_count: number })[];
 }) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     return (
         <div className={cn(
@@ -314,7 +338,6 @@ function CategoriesPanel({
             "relative card-glint overflow-hidden rounded-2xl border border-slate-200/80 bg-white",
             "shadow-[0_1px_4px_rgba(0,0,0,0.05)]",
         )}>
-            {/* Collapsed / expanded toggle header */}
             <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}
@@ -332,7 +355,6 @@ function CategoriesPanel({
                             Kategori Berita
                         </p>
                     </div>
-                    {/* Count chip */}
                     <span className="ml-1 flex h-6 w-6 items-center justify-center rounded-lg bg-amber-50 font-bdo text-[11px] font-bold text-amber-500 ring-1 ring-amber-200/70">
                         {categories.length}
                     </span>
@@ -349,7 +371,6 @@ function CategoriesPanel({
                 </div>
             </button>
 
-            {/* Expanded content */}
             {open && (
                 <div className="border-t border-slate-100/80 px-5 pb-5 pt-4 animate-fade-in-up">
                     {categories.length === 0 ? (
@@ -411,69 +432,44 @@ export default function NewsIndex() {
 
             <div className="flex flex-col gap-5 pt-6 pb-20 overflow-x-hidden">
 
-                {/* ── Stat chips + CTA row ─────────────────────────────────── */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between animate-fade-in-up delay-100">
-
-                    {/* Stat chips */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        {/* Published */}
-                        <div className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 ring-1 ring-emerald-200/70 shadow-sm">
-                            <span className="relative flex h-2 w-2">
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                            </span>
-                            <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-emerald-700 tabular-nums">
-                                {published} Published
-                            </span>
-                        </div>
-
-                        {/* Draft */}
-                        {drafted > 0 && (
-                            <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-1.5 ring-1 ring-slate-200/70 shadow-sm">
-                                <span className="h-2 w-2 rounded-full bg-slate-400" />
-                                <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 tabular-nums">
-                                    {drafted} Draft
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Archived */}
-                        {archived > 0 && (
-                            <div className="flex items-center gap-1.5 rounded-xl bg-amber-50 px-3 py-1.5 ring-1 ring-amber-200/70 shadow-sm">
-                                <span className="h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]" />
-                                <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-amber-700 tabular-nums">
-                                    {archived} Archived
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Total */}
-                        <div className="flex items-center rounded-xl bg-white px-3 py-1.5 ring-1 ring-slate-200/70 shadow-sm">
-                            <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-400 tabular-nums">
-                                {news.length} Total
-                            </span>
-                        </div>
+                {/* ── Stat chips row ───────────────────────────────────────── */}
+                <div className="flex flex-wrap items-center gap-2 animate-fade-in-up delay-100">
+                    <div className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 ring-1 ring-emerald-200/70 shadow-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                        </span>
+                        <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-emerald-700 tabular-nums">
+                            {published} Published
+                        </span>
                     </div>
 
-                    {/* New Article CTA */}
-                    <Link
-                        href={route("admin.news.create")}
-                        className={cn(
-                            "btn-sheen relative inline-flex shrink-0 items-center gap-2 self-start sm:self-auto",
-                            "rounded-xl px-5 py-2.5 font-clash text-sm font-semibold text-white",
-                            "bg-gradient-to-br from-emerald-500 to-emerald-600",
-                            "shadow-[0_4px_14px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.1)]",
-                            "transition-all duration-200 hover:shadow-[0_6px_20px_rgba(15,23,42,0.28)] hover:-translate-y-0.5 active:translate-y-0",
-                        )}
-                    >
-                        {/* Top glint */}
-                        <span className="pointer-events-none absolute top-0 left-0 right-0 h-px rounded-t-xl bg-white/20" />
-                        <Plus size={15} />
-                        New Article
-                    </Link>
+                    {drafted > 0 && (
+                        <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-1.5 ring-1 ring-slate-200/70 shadow-sm">
+                            <span className="h-2 w-2 rounded-full bg-slate-400" />
+                            <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 tabular-nums">
+                                {drafted} Draft
+                            </span>
+                        </div>
+                    )}
+
+                    {archived > 0 && (
+                        <div className="flex items-center gap-1.5 rounded-xl bg-amber-50 px-3 py-1.5 ring-1 ring-amber-200/70 shadow-sm">
+                            <span className="h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]" />
+                            <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-amber-700 tabular-nums">
+                                {archived} Archived
+                            </span>
+                        </div>
+                    )}
+
+                    <div className="flex items-center rounded-xl bg-white px-3 py-1.5 ring-1 ring-slate-200/70 shadow-sm">
+                        <span className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-400 tabular-nums">
+                            {news.length} Total
+                        </span>
+                    </div>
                 </div>
 
-                {/* ── Categories collapsible panel ─────────────────────────── */}
+                {/* ── Categories panel (full-width) ────────────────────────── */}
                 <CategoriesPanel categories={categories} />
 
                 {/* ── Data table card ──────────────────────────────────────── */}
@@ -482,10 +478,8 @@ export default function NewsIndex() {
                     "relative card-glint overflow-hidden rounded-2xl border border-slate-200/80 bg-white",
                     "shadow-[0_1px_4px_rgba(0,0,0,0.05)] shimmer-once",
                 )}>
-                    {/* Card top highlight */}
                     <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200/70 to-transparent" />
 
-                    {/* Card internal header */}
                     <div className="flex flex-col gap-3 border-b border-slate-100/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                             <ShinyIcon className="h-9 w-9">
@@ -500,11 +494,8 @@ export default function NewsIndex() {
                                 </p>
                             </div>
                         </div>
-
-                        {/* Inline search + toolbar rendered by DataTable via `toolbar` prop below */}
                     </div>
 
-                    {/* DataTable — toolbar slot carries "New Article" link (original) + search */}
                     <div className="p-4 sm:p-5">
                         <DataTable
                             columns={columns as ColumnDef<NewsItem, unknown>[]}
@@ -513,8 +504,6 @@ export default function NewsIndex() {
                             searchPlaceholder="Cari artikel…"
                             emptyMessage="Belum ada artikel."
                             toolbar={
-                                /* Toolbar slot — rendered inside DataTable's header row.
-                                   We keep the original Link intact; only the visual styling changes. */
                                 <Link
                                     href={route("admin.news.create")}
                                     className={cn(

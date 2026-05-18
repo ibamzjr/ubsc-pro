@@ -20,44 +20,28 @@ export default function AdminLayout({
         return () => window.removeEventListener("keydown", onKeyDown);
     }, []);
 
-    useEffect(() => {
-        if (mobileSidebarOpen) {
-            document.body.classList.add("overflow-hidden", "xl:overflow-auto");
-        } else {
-            document.body.classList.remove(
-                "overflow-hidden",
-                "xl:overflow-auto",
-            );
-        }
-        return () => {
-            document.body.classList.remove(
-                "overflow-hidden",
-                "xl:overflow-auto",
-            );
-        };
-    }, [mobileSidebarOpen]);
-
     return (
-        <div className="min-h-screen bg-[#F8F9FA] font-bdo text-gray-900">
-            <div className="flex">
-                <Sidebar
-                    mobileOpen={mobileSidebarOpen}
-                    onClose={() => setMobileSidebarOpen(false)}
+        <div className="relative flex h-[100dvh] w-full max-w-[100vw] overflow-hidden bg-[#F8F9FA] font-bdo text-gray-900">
+            <Sidebar
+                mobileOpen={mobileSidebarOpen}
+                onClose={() => setMobileSidebarOpen(false)}
+            />
+
+            <div
+                className="relative z-10 flex h-full w-full min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
+                data-lenis-prevent="true"
+            >
+                <Topbar
+                    onMobileMenuClick={() => setMobileSidebarOpen(true)}
                 />
 
-                <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-                    <Topbar
-                        onMobileMenuClick={() => setMobileSidebarOpen(true)}
-                    />
+                {header && (
+                    <div className="px-4 pt-2 xl:px-8">{header}</div>
+                )}
 
-                    {header && (
-                        <div className="px-4 pt-2 xl:px-8">{header}</div>
-                    )}
-
-                    <main className="flex-1 px-4 pb-10 pt-2 xl:px-8">
-                        {children}
-                    </main>
-                </div>
+                <main className="max-w-full flex-1 px-4 pb-10 pt-2 xl:px-8">
+                    {children}
+                </main>
             </div>
         </div>
     );

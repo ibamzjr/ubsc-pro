@@ -1,9 +1,9 @@
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { Film, Pencil, Play, Plus, Star, Trash2, Tv2 } from "lucide-react";
+import { Film, Pencil, Play, Plus, Trash2, Tv2 } from "lucide-react";
 import { useState } from "react";
 import DataTable from "@/Components/Admin/DataTable";
-import { SingleDropzone } from "@/Components/Admin/ImageDropzone";
+import { SingleDropzone, VideoDropzone } from "@/Components/Admin/ImageDropzone";
 import { ActiveBadge } from "@/Components/Admin/StatusBadge";
 import SlideOver from "@/Components/Admin/SlideOver";
 import AdminLayout from "@/Layouts/AdminLayout";
@@ -186,12 +186,9 @@ const labelBase =
 
 type FormData = {
     title: string;
-    subtitle: string;
-    video_url: string;
-    is_featured: boolean;
     is_active: boolean;
-    sort_order: number;
     thumbnail: File | null;
+    video: File | null;
     _method?: string;
 };
 
@@ -288,12 +285,9 @@ function ReelForm({
 
     const { data, setData, post, processing, errors } = useForm<FormData>({
         title: item?.title ?? "",
-        subtitle: item?.subtitle ?? "",
-        video_url: item?.video_url ?? "",
-        is_featured: item?.is_featured ?? false,
         is_active: item?.is_active ?? true,
-        sort_order: item?.sort_order ?? 0,
         thumbnail: null,
+        video: null,
         ...(isEdit ? { _method: "PUT" } : {}),
     });
 
@@ -307,6 +301,7 @@ function ReelForm({
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-5">
+            {/* Judul */}
             <div>
                 <label className={labelBase}>Judul</label>
                 <input
@@ -321,72 +316,21 @@ function ReelForm({
                 )}
             </div>
 
-            <div>
-                <label className={labelBase}>Subjudul</label>
+            {/* Status Aktif */}
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                 <input
-                    type="text"
-                    value={data.subtitle}
-                    onChange={(e) => setData("subtitle", e.target.value)}
-                    placeholder="Tanggal atau keterangan (opsional)…"
-                    className={`${inputBase} mt-1.5`}
+                    id="reel-active"
+                    type="checkbox"
+                    checked={data.is_active}
+                    onChange={(e) => setData("is_active", e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-400"
                 />
+                <label htmlFor="reel-active" className={`${labelBase} cursor-pointer`}>
+                    Tampilkan di Publik (Aktif)
+                </label>
             </div>
 
-            <div>
-                <label className={labelBase}>URL Video</label>
-                <input
-                    type="text"
-                    value={data.video_url}
-                    onChange={(e) => setData("video_url", e.target.value)}
-                    placeholder="/reels/namafile.mp4 atau URL YouTube…"
-                    className={`${inputBase} mt-1.5`}
-                />
-                {errors.video_url && (
-                    <p className="mt-1 text-xs text-rose-500">
-                        {errors.video_url}
-                    </p>
-                )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className={labelBase}>Urutan Tampil</label>
-                    <input
-                        type="number"
-                        min={0}
-                        value={data.sort_order}
-                        onChange={(e) =>
-                            setData("sort_order", Number(e.target.value))
-                        }
-                        className={`${inputBase} mt-1.5`}
-                    />
-                </div>
-                <div className="flex flex-col justify-end gap-2 pb-1">
-                    <label className="flex cursor-pointer items-center gap-3">
-                        <input
-                            type="checkbox"
-                            checked={data.is_featured}
-                            onChange={(e) =>
-                                setData("is_featured", e.target.checked)
-                            }
-                            className="h-4 w-4 rounded border-slate-300 text-amber-300 focus:ring-amber-300"
-                        />
-                        <span className={labelBase}>Unggulan</span>
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-3">
-                        <input
-                            type="checkbox"
-                            checked={data.is_active}
-                            onChange={(e) =>
-                                setData("is_active", e.target.checked)
-                            }
-                            className="h-4 w-4 rounded border-slate-300 text-zinc-700 focus:ring-zinc-400"
-                        />
-                        <span className={labelBase}>Aktif</span>
-                    </label>
-                </div>
-            </div>
-
+            {/* Thumbnail */}
             <div>
                 <label className={`${labelBase} mb-1.5 block`}>Thumbnail</label>
                 <SingleDropzone
@@ -395,9 +339,20 @@ function ReelForm({
                     onFileSelect={(f) => setData("thumbnail", f)}
                 />
                 {errors.thumbnail && (
-                    <p className="mt-1 text-xs text-rose-500">
-                        {errors.thumbnail}
-                    </p>
+                    <p className="mt-1 text-xs text-rose-500">{errors.thumbnail}</p>
+                )}
+            </div>
+
+            {/* Video */}
+            <div>
+                <label className={`${labelBase} mb-1.5 block`}>Video</label>
+                <VideoDropzone
+                    label=""
+                    currentUrl={item?.video_url ?? null}
+                    onFileSelect={(f) => setData("video", f)}
+                />
+                {errors.video && (
+                    <p className="mt-1 text-xs text-rose-500">{errors.video}</p>
                 )}
             </div>
 
@@ -408,11 +363,7 @@ function ReelForm({
                     className="btn-sheen relative flex-1 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 py-3 text-sm font-medium text-white shadow-[0_4px_14px_rgba(99,102,241,0.35),inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-200 hover:shadow-[0_6px_20px_rgba(99,102,241,0.45)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
                 >
                     <span className="pointer-events-none absolute top-0 left-0 right-0 h-px rounded-t-2xl bg-white/25" />
-                    {processing
-                        ? "Menyimpan…"
-                        : isEdit
-                          ? "Simpan Perubahan"
-                          : "Tambah Reel"}
+                    {processing ? "Menyimpan…" : isEdit ? "Simpan Perubahan" : "Tambah Reel"}
                 </button>
                 <button
                     type="button"
@@ -482,51 +433,31 @@ export default function ReelsIndex() {
                         <p className="font-clash text-sm font-semibold text-slate-800 line-clamp-1">
                             {r.title}
                         </p>
-                        {r.subtitle && (
-                            <p className="font-bdo text-[11px] text-slate-400 mt-0.5 line-clamp-1">
-                                {r.subtitle}
-                            </p>
-                        )}
                     </div>
                 );
             },
         }),
         helper.accessor("video_url", {
             header: () => (
-                <span className="font-clash text-[10px] uppercase tracking-widest text-slate-500">URL Video</span>
+                <span className="font-clash text-[10px] uppercase tracking-widest text-slate-500">Video</span>
             ),
-            cell: (info) => (
-                <span className="font-bdo max-w-[140px] truncate text-xs text-slate-500 block">
-                    {info.getValue()}
-                </span>
-            ),
-        }),
-        helper.accessor("is_featured", {
-            header: () => (
-                <span className="font-clash text-[10px] uppercase tracking-widest text-slate-500">Unggulan</span>
-            ),
-            cell: (info) =>
-                info.getValue() ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 font-bdo text-[10px] font-semibold text-amber-700 ring-1 ring-inset ring-amber-200">
-                        <Star size={9} className="fill-amber-500 text-amber-500" />
-                        Unggulan
+            cell: (info) => {
+                const url = info.getValue();
+                return url ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-bdo text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                        <Play size={9} className="fill-emerald-500 text-emerald-500" />
+                        Terupload
                     </span>
-                ) : null,
+                ) : (
+                    <span className="font-bdo text-[10px] italic text-slate-400">—</span>
+                );
+            },
         }),
         helper.accessor("is_active", {
             header: () => (
                 <span className="font-clash text-[10px] uppercase tracking-widest text-slate-500">Status</span>
             ),
             cell: (info) => <ActiveBadge active={info.getValue()} />,
-        }),
-        helper.accessor("sort_order", {
-            header: () => (
-                <span className="font-clash text-[10px] uppercase tracking-widest text-slate-500">Urutan</span>
-            ),
-            enableSorting: true,
-            cell: (info) => (
-                <span className="font-bdo text-xs text-slate-500 tabular-nums">{info.getValue()}</span>
-            ),
         }),
         helper.display({
             id: "actions",
@@ -555,7 +486,7 @@ export default function ReelsIndex() {
     ];
 
     const active = items.filter((i) => i.is_active).length;
-    const featured = items.filter((i) => i.is_featured).length;
+    const withVideo = items.filter((i) => i.video_url).length;
 
     return (
         <AdminLayout
@@ -581,7 +512,7 @@ export default function ReelsIndex() {
         >
             <Head title="Video Reels" />
 
-            <div className="pt-6s pb-20 mx-auto max-w-6xl">
+            <div className="pt-6 pb-20">
 
                 {/* ── Info Banner ─────────────────────────────────────────────── */}
                 <div className="shimmer-once card-glint animate-fade-in-up delay-100 relative mb-5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
@@ -618,7 +549,7 @@ export default function ReelsIndex() {
                 {/* ── Stat Cards ──────────────────────────────────────────────── */}
                 <div className="mb-5 grid grid-cols-3 gap-3">
                     <StatCard label="Aktif" value={active} accent="emerald" delay="delay-150" icon={<Film size={16} />} />
-                    <StatCard label="Unggulan" value={featured} accent="amber" delay="delay-200" icon={<Star size={16} />} />
+                    <StatCard label="Ada Video" value={withVideo} accent="amber" delay="delay-200" icon={<Play size={16} />} />
                     <StatCard label="Total" value={items.length} accent="slate" delay="delay-300" icon={<Tv2 size={16} />} />
                 </div>
 
@@ -658,12 +589,6 @@ export default function ReelsIndex() {
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                         </span>
                         <span className="font-bdo text-[11px] text-slate-500 font-medium">Aktif — Ditampilkan kepada pengguna</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-50 ring-1 ring-amber-200">
-                            <Star size={8} className="fill-amber-400 text-amber-400" />
-                        </span>
-                        <span className="font-bdo text-[11px] text-slate-500 font-medium">Unggulan — Diprioritaskan di tampilan utama</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-200">
