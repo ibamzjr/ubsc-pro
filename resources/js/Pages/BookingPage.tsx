@@ -5,9 +5,37 @@ import BookingFacilitiesSection from "@/Components/Booking/BookingFacilitiesSect
 import BookingReviewSection from "@/Components/Booking/BookingReviewSection";
 import AboutSectionContact from "@/Components/About/AboutSectionContact";
 import Footer from "@/Components/Landing/Footer";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
+import type { PageProps } from "@/types";
+
+interface BookingFacilityProp {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    category: string;
+    location?: string | null;
+    venue_type?: string | null;
+    class_code?: string | null;
+    rating?: number | null;
+    display_metadata?: Record<string, unknown> | null;
+    prices?: Array<{ id: number; user_category: string; label: string; price: number; notes?: string | null }>;
+}
+
+export interface UserExistingReview {
+    id: number;
+    rating: number;
+    text: string;
+}
+
+type BookingPageProps = PageProps<{
+    facilities?: BookingFacilityProp[];
+    can_review?: boolean;
+    existing_review?: UserExistingReview | null;
+}>;
 
 export default function BookingPage() {
+    const { facilities = [] } = usePage<BookingPageProps>().props;
     return (
         <>
             <Head>
@@ -31,7 +59,7 @@ export default function BookingPage() {
             <main className="relative">
                 <Navbar activeSection = "Booking"/>
                 <BookingHero />
-                <BookingSection />
+                <BookingSection facilities={facilities} />
                 <BookingFacilitiesSection />
                 <BookingReviewSection />
                 <AboutSectionContact />

@@ -10,6 +10,7 @@ interface TimeSlot {
 
 export interface BookingFacility {
     id: string;
+    facilityId: number;
     title: string;
     code: string;
     image: string;
@@ -22,23 +23,13 @@ interface Props {
     item: BookingFacility;
     isOpen: boolean;
     onToggle: () => void;
+    selectedDate: string;
+    onDateChange: (date: string) => void;
+    loadingSlots?: boolean;
+    slotError?: string | null;
 }
 
 const EASE = [0.76, 0, 0.24, 1] as const;
-
-const DAYS = [
-    { day: "Sen", date: "01" },
-    { day: "Sol", date: "02" },
-    { day: "Rao", date: "03" },
-    { day: "Kam", date: "04" },
-    { day: "Jum", date: "05" },
-    { day: "Sab", date: "06" },
-    { day: "Min", date: "07" },
-    { day: "Sen", date: "08" },
-    { day: "Sol", date: "09" },
-];
-const SELECTED_DAY = "04";
-const MONTH_LABEL = "Februari 2025";
 
 const ChevronDown = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -52,100 +43,109 @@ const XIcon = () => (
     </svg>
 );
 
-const ChevronLeft = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 18l-6-6 6-6" />
-    </svg>
-);
+function CalendarUI({
+    slots,
+    selectedDate,
+    onDateChange,
+    loading,
+    slotError,
+}: {
+    slots: TimeSlot[];
+    selectedDate: string;
+    onDateChange: (date: string) => void;
+    loading?: boolean;
+    slotError?: string | null;
+}) {
+    const today = (() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    })();
 
-const ChevronRight = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 18l6-6-6-6" />
-    </svg>
-);
-
-function CalendarUI({ slots }: { slots: TimeSlot[] }) {
     return (
         <div className="rounded-2xl border border-gray-200 p-6 xl:p-8">
-            <div className="flex justify-between items-center mb-6">
-                <button
-                    type="button"
-                    className="flex items-center gap-2 border border-gray-200 rounded-lg px-4 py-2 font-bdo text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                    {MONTH_LABEL}
-                    <ChevronDown />
-                </button>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        className="flex size-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
-                    >
-                        <ChevronLeft />
-                    </button>
-                    <button
-                        type="button"
-                        className="flex size-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
-                    >
-                        <ChevronRight />
-                    </button>
-                </div>
+            {/* Date picker */}
+            <div className="flex items-center justify-between mb-6">
+                <label className="font-bdo text-sm font-medium text-gray-600">
+                    Pilih Tanggal
+                </label>
+                <input
+                    type="date"
+                    value={selectedDate}
+                    min={today}
+                    onChange={(e) => { if (e.target.value) onDateChange(e.target.value); }}
+                    className="rounded-lg border border-gray-200 px-3 py-2 font-bdo text-sm text-gray-700 hover:bg-gray-50 focus:border-slate-400 focus:outline-none transition-colors"
+                />
             </div>
 
-            <div className="flex gap-2 xl:gap-3 mb-8 overflow-x-auto pb-2">
-                {DAYS.map((d) => (
-                    <div
-                        key={d.date}
-                        className={`flex flex-col items-center justify-center py-3 px-3 xl:px-4 rounded-xl border flex-shrink-0 min-w-[52px] xl:min-w-[60px] select-none ${
-                            d.date === SELECTED_DAY
-                                ? "bg-slate-500 border-transparent text-white"
-                                : "bg-white border-gray-200 text-gray-400"
-                        }`}
-                    >
-                        <span className="font-bdo text-xs">{d.day}</span>
-                        <span className="font-bdo font-medium text-sm xl:text-base">{d.date}</span>
+            {/* Loading state */}
+            {loading && (
+                <div className="flex items-center justify-center py-12 text-gray-400">
+                    <svg className="animate-spin h-6 w-6 mr-3" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span className="font-bdo text-sm">Memuat jadwal…</span>
+                </div>
+            )}
+
+            {/* Error state */}
+            {!loading && slotError && (
+                <div className="flex items-center justify-center py-10">
+                    <p className="font-bdo text-sm text-rose-500 text-center">{slotError}</p>
+                </div>
+            )}
+
+            {/* Empty state */}
+            {!loading && !slotError && slots.length === 0 && (
+                <div className="flex items-center justify-center py-10">
+                    <p className="font-bdo text-sm text-gray-400 text-center">Tidak ada jadwal tersedia untuk tanggal ini.</p>
+                </div>
+            )}
+
+            {/* Slot grid */}
+            {!loading && !slotError && slots.length > 0 && (
+                <>
+                    <p className="font-bdo font-medium text-base text-gray-600 mb-4">
+                        Waktu Yang Tersedia
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+                        {slots.map((slot, i) => {
+                            const isBooked = slot.status === "booked";
+                            return (
+                                <div
+                                    key={i}
+                                    className={`relative flex flex-col items-center py-4 px-2 rounded-xl text-sm transition-colors ${
+                                        isBooked
+                                            ? "bg-rose-50 text-rose-300 pointer-events-none opacity-40 cursor-not-allowed"
+                                            : slot.status === "selected"
+                                            ? "bg-slate-500 text-white cursor-pointer"
+                                            : "bg-gray-50 text-gray-400 cursor-pointer hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {isBooked && (
+                                        <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-rose-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                                            Penuh
+                                        </span>
+                                    )}
+                                    <span className="font-bdo font-medium text-xs xl:text-sm">
+                                        {slot.time}
+                                    </span>
+                                    {!isBooked && (
+                                        <span className="font-bdo font-light text-xs opacity-70 mt-1">
+                                            {slot.price}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
-                ))}
-            </div>
-
-            <p className="font-bdo font-medium text-base text-gray-600 mb-4">
-                Waktu Yang Tersedia
-            </p>
-            <div className="relative">
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
-                    {slots.map((slot, i) => (
-                        <div
-                            key={i}
-                            className={`flex flex-col items-center py-4 px-2 rounded-xl text-sm transition-colors ${
-                                slot.status === "selected"
-                                    ? "bg-slate-500 text-white"
-                                    : slot.status === "booked"
-                                    ? "bg-rose-200 text-rose-800"
-                                    : "bg-gray-50 text-gray-400"
-                            }`}
-                        >
-                            <span className="font-bdo font-medium text-xs xl:text-sm">
-                                {slot.status === "booked" ? "DIPESAN" : slot.time}
-                            </span>
-                            {slot.status !== "booked" && (
-                                <span className="font-bdo font-light text-xs opacity-70 mt-1">
-                                    {slot.price}
-                                </span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/40 backdrop-blur-[2px]">
-                    <div className="bg-[#B90000] text-white text-[clamp(1.5rem,3vw,2.5rem)] font-black italic tracking-wider px-8 py-4 rounded-md shadow-2xl -rotate-2">
-                        COMING SOON
-                    </div>
-                </div>
-            </div>
+                </>
+            )}
         </div>
     );
 }
 
-export default function BookingListItem({ item, isOpen, onToggle }: Props) {
+export default function BookingListItem({ item, isOpen, onToggle, selectedDate, onDateChange, loadingSlots, slotError }: Props) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 xl:gap-8 py-6 border-b border-gray-200 w-full items-start">
 
@@ -207,7 +207,13 @@ export default function BookingListItem({ item, isOpen, onToggle }: Props) {
                                     />
                                 </div>
 
-                                <CalendarUI slots={item.availableSlots} />
+                                <CalendarUI
+                                    slots={item.availableSlots}
+                                    selectedDate={selectedDate}
+                                    onDateChange={onDateChange}
+                                    loading={loadingSlots}
+                                    slotError={slotError}
+                                />
                             </div>
                         </motion.div>
                     )}
