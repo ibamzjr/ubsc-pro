@@ -1,25 +1,42 @@
-    import React, { useState, useEffect } from "react";
-    import { Head, usePage } from "@inertiajs/react";
-    import {
-        Activity,
-        ArrowDownRight,
-        ArrowUpRight,
-        CalendarCheck2,
-        CreditCard,
-        LayoutGrid,
-        TrendingUp,
-        Users,
-        Wallet,
-        MoreHorizontal,
-        Coins,
-        Ticket,
-        Star,
-        UserCheck,
-        ChevronRight,
-        BarChart3,
-        FileText,
-        X,
-    } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
+import {
+    Activity,
+    ArrowDownRight,
+    ArrowUpRight,
+    CalendarCheck2,
+    CreditCard,
+    LayoutGrid,
+    Megaphone,
+    Pencil,
+    Plus,
+    TrendingUp,
+    Trash2,
+    Users,
+    Wallet,
+    MoreHorizontal,
+    Coins,
+    Ticket,
+    Star,
+    UserCheck,
+    ChevronRight,
+    BarChart3,
+    FileText,
+    X,
+} from "lucide-react";
+import {
+    DndContext,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    SortableContext,
+    arrayMove,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import SortableListItem from "@/Components/Admin/SortableListItem";
 
     // --- FALLBACK REACT BITS (preserved) ---
     const SplitText = ({ text, className, delay = 50 }: { text: string, className?: string, delay?: number }) => (
@@ -32,9 +49,9 @@
         <span className={`animate-shiny-text ${className}`} style={{ animationDuration: `${speed}s` }}>{text}</span>
     );
 
-    import AdminLayout from "@/Layouts/AdminLayout";
-    import { cn } from "@/lib/utils";
-    import type { PageProps, RecentActivity } from "@/types";
+import AdminLayout from "@/Layouts/AdminLayout";
+import { cn } from "@/lib/utils";
+import type { InfoBannerItem, PageProps, RecentActivity } from "@/types";
 
     // ── Types (preserved) ──────────────────────────────────────────────────────────
 
@@ -52,15 +69,17 @@
         color: string;
     }
 
-    type DashboardProps = PageProps<{
-        stats: DashboardStats;
-        revenueTrend: number;
-        dailyRevenue: number[];
-        daysInMonth: number;
-        currentMonthLabel: string;
-        occupancyData: OccupancyFacility[];
-        recentActivity: RecentActivity[];
-    }>;
+type DashboardProps = PageProps<{
+    stats: DashboardStats;
+    revenueTrend: number;
+    dailyRevenue: number[];
+    daysInMonth: number;
+    currentMonthLabel: string;
+    occupancyData: OccupancyFacility[];
+    recentActivity: RecentActivity[];
+    gym_traffic: string;
+    info_banners: InfoBannerItem[];
+}>;
 
     // ── Helpers (preserved) ───────────────────────────────────────────────────────
 
@@ -1701,40 +1720,331 @@
                         <span style={{ fontSize: '7.5pt', color: '#888' }}>Dicetak: {dateStr}</span>
                     </div>
 
+            </div>
+        </div>
+    );
+}
+
+// ── Gym Traffic Widget ────────────────────────────────────────────────────────
+
+type GymTrafficLevel = "Low Occupancy" | "Medium Occupancy" | "High Occupancy" | "We Are Close";
+
+const TRAFFIC_OPTIONS: { label: string; value: GymTrafficLevel; color: string; active: string }[] = [
+    { label: "Low",       value: "Low Occupancy",    color: "text-emerald-600 bg-emerald-50 ring-emerald-200/80", active: "bg-emerald-500 text-white shadow-lg shadow-emerald-200/50" },
+    { label: "Medium",    value: "Medium Occupancy", color: "text-amber-600 bg-amber-50 ring-amber-200/80",       active: "bg-amber-500 text-white shadow-lg shadow-amber-200/50" },
+    { label: "High",      value: "High Occupancy",   color: "text-rose-600 bg-rose-50 ring-rose-200/80",         active: "bg-rose-500 text-white shadow-lg shadow-rose-200/50" },
+    { label: "We Are Close", value: "We Are Close",  color: "text-sky-600 bg-sky-50 ring-sky-200/80",            active: "bg-[#15678D] text-white shadow-lg shadow-sky-200/50" },
+];
+
+function GymTrafficWidget({ current }: { current: string }) {
+    const [saving, setSaving] = useState(false);
+
+    const set = (value: GymTrafficLevel) => {
+        if (value === current || saving) return;
+        setSaving(true);
+        router.put(route("admin.settings.gym-traffic.update"), { value }, {
+            preserveScroll: true,
+            onFinish: () => setSaving(false),
+        });
+    };
+
+    return (
+        <div className="animate-scale-in relative card-glint overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center gap-3 border-b border-slate-100/80 px-5 py-4">
+                <ShinyIcon className="h-9 w-9">
+                    <Activity size={14} className="text-amber-50" />
+                </ShinyIcon>
+                <div>
+                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Operasional</p>
+                    <p className="font-clash text-sm font-semibold text-slate-800 leading-tight">Gym Traffic</p>
                 </div>
             </div>
-        );
-    }
+            <div className="px-5 py-5 flex flex-col gap-3">
+                <p className="font-bdo text-[11px] text-slate-500">
+                    Status kepadatan yang ditampilkan di halaman publik.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                    {TRAFFIC_OPTIONS.map((opt) => {
+                        const isActive = current === opt.value;
+                        return (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                disabled={saving}
+                                onClick={() => set(opt.value)}
+                                className={cn(
+                                    "rounded-xl px-3 py-3 font-clash text-sm font-semibold ring-1 transition-all duration-200",
+                                    "hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed",
+                                    isActive ? opt.active : opt.color,
+                                )}
+                            >
+                                {opt.label}
+                            </button>
+                        );
+                    })}
+                </div>
+                <p className="font-bdo text-[10px] text-slate-400 text-center">
+                    Aktif: <span className="font-semibold text-slate-600">{current}</span>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ── Banner Modal (Dashboard) ──────────────────────────────────────────────────
+
+interface BannerModalState {
+    open: boolean;
+    editing: InfoBannerItem | null;
+}
+
+function DashBannerModal({ state, onClose }: { state: BannerModalState; onClose: () => void }) {
+    const { editing } = state;
+    const { data, setData, post, put, processing } = useForm({
+        message:    editing?.message    ?? "",
+        is_active:  editing?.is_active  ?? true,
+        sort_order: editing?.sort_order ?? 0,
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editing) {
+            put(route("admin.info-banners.update", editing.id), { onSuccess: onClose });
+        } else {
+            post(route("admin.info-banners.store"), { onSuccess: onClose });
+        }
+    };
+
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        >
+            <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
+                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <ShinyIcon className="h-9 w-9">
+                            <Megaphone size={14} className="text-amber-50" />
+                        </ShinyIcon>
+                        <div>
+                            <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Info Banner</p>
+                            <p className="font-clash text-sm font-semibold text-slate-800 leading-tight">
+                                {editing ? "Edit Banner" : "Tambah Banner"}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    >
+                        <X size={15} />
+                    </button>
+                </div>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-6 py-5">
+                    <div className="flex flex-col gap-1.5">
+                        <label className="font-bdo text-[11px] font-bold uppercase tracking-widest text-slate-500">Pesan</label>
+                        <textarea
+                            value={data.message}
+                            onChange={(e) => setData("message", e.target.value)}
+                            rows={3}
+                            maxLength={255}
+                            required
+                            placeholder="Contoh: UB Sport Center Buka Setiap Hari: 06.00 - 21.00 WIB"
+                            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-bdo text-sm text-slate-800 placeholder-slate-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all duration-150"
+                        />
+                        <p className="text-right font-bdo text-[10px] text-slate-400 tabular-nums">{data.message.length}/255</p>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                        <label className="font-bdo text-[11px] font-bold uppercase tracking-widest text-slate-500">Urutan</label>
+                        <input
+                            type="number"
+                            min={0}
+                            value={data.sort_order}
+                            onChange={(e) => setData("sort_order", parseInt(e.target.value, 10) || 0)}
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-bdo text-sm text-slate-800 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all duration-150"
+                        />
+                    </div>
+                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-colors hover:bg-slate-100/80">
+                        <input
+                            type="checkbox"
+                            checked={data.is_active}
+                            onChange={(e) => setData("is_active", e.target.checked)}
+                            className="h-4 w-4 accent-orange-500"
+                        />
+                        <span className="font-bdo text-sm text-slate-700">Tampilkan banner (aktif)</span>
+                    </label>
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="rounded-xl bg-slate-100 px-4 py-2.5 font-clash text-sm font-semibold text-slate-600 ring-1 ring-slate-200/70 transition-all hover:bg-slate-200 hover:-translate-y-px"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={processing || !data.message.trim()}
+                            className="relative rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 px-5 py-2.5 font-clash text-sm font-semibold text-white shadow-[0_3px_10px_rgba(15,23,42,0.2),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:shadow-[0_5px_16px_rgba(15,23,42,0.26)] hover:-translate-y-px disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <span className="pointer-events-none absolute left-0 right-0 top-0 h-px rounded-t-xl bg-white/20" />
+                            {processing ? "Menyimpan…" : editing ? "Simpan Perubahan" : "Tambah Banner"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
+// ── InfoBanner Panel (Dashboard) ──────────────────────────────────────────────
+
+function DashInfoBannerPanel({
+    banners,
+    onAdd,
+    onEdit,
+}: {
+    banners: InfoBannerItem[];
+    onAdd: () => void;
+    onEdit: (b: InfoBannerItem) => void;
+}) {
+    const [items, setItems] = useState<InfoBannerItem[]>(banners);
+    useEffect(() => setItems(banners), [banners]);
+
+    const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+        const oldIdx = items.findIndex((i) => i.id.toString() === active.id);
+        const newIdx = items.findIndex((i) => i.id.toString() === over.id);
+        const reordered = arrayMove(items, oldIdx, newIdx);
+        setItems(reordered);
+        router.post(route("admin.info-banners.reorder"), { ids: reordered.map((i) => i.id) }, { preserveScroll: true });
+    };
+
+    const handleDelete = (b: InfoBannerItem) => {
+        if (!confirm(`Hapus banner "${b.message.substring(0, 40)}…"?`)) return;
+        router.delete(route("admin.info-banners.destroy", b.id), { preserveScroll: true });
+    };
+
+    return (
+        <div className="animate-scale-in delay-100 relative card-glint overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center justify-between px-5 py-4">
+                <div className="flex items-center gap-3">
+                    <ShinyIcon className="h-9 w-9">
+                        <Megaphone size={14} className="text-amber-50" />
+                    </ShinyIcon>
+                    <div>
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Konten</p>
+                        <p className="font-clash text-sm font-semibold text-slate-800 leading-tight">Info Banner</p>
+                    </div>
+                    <span className="ml-1 flex h-6 w-6 items-center justify-center rounded-lg bg-amber-50 font-bdo text-[11px] font-bold text-amber-500 ring-1 ring-amber-200/70">
+                        {banners.length}
+                    </span>
+                </div>
+                <button
+                    type="button"
+                    onClick={onAdd}
+                    className="relative inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 px-3 py-2 font-clash text-[11px] font-semibold text-white shadow-[0_2px_8px_rgba(15,23,42,0.18),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:shadow-[0_4px_12px_rgba(15,23,42,0.24)] hover:-translate-y-px"
+                >
+                    <span className="pointer-events-none absolute left-0 right-0 top-0 h-px rounded-t-xl bg-white/20" />
+                    <Plus size={12} />
+                    Tambah
+                </button>
+            </div>
+            <div className="border-t border-slate-100/80 px-5 pb-5 pt-4">
+                {items.length === 0 ? (
+                    <div className="flex items-center justify-center py-8">
+                        <p className="font-bdo text-sm text-slate-400">Belum ada banner.</p>
+                    </div>
+                ) : (
+                    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                        <SortableContext items={items.map((i) => i.id.toString())} strategy={verticalListSortingStrategy}>
+                            <div className="flex flex-col gap-2">
+                                {items.map((b) => (
+                                    <SortableListItem key={b.id} id={b.id.toString()}>
+                                        <div className="flex items-start justify-between gap-3 rounded-xl bg-slate-50 px-3.5 py-3 ring-1 ring-slate-200/70 transition-colors hover:bg-slate-100/60">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="line-clamp-2 font-bdo text-sm leading-snug text-slate-700">{b.message}</p>
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    {b.is_active ? (
+                                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-bdo text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />Aktif
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 font-bdo text-[10px] font-semibold text-slate-500 ring-1 ring-inset ring-slate-200">
+                                                            <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />Nonaktif
+                                                        </span>
+                                                    )}
+                                                    <span className="font-bdo text-[10px] text-slate-400 tabular-nums">#{b.sort_order}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex shrink-0 items-center gap-1.5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onEdit(b)}
+                                                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-slate-500 ring-1 ring-slate-200/70 transition-all hover:bg-amber-50 hover:text-amber-600 hover:-translate-y-px"
+                                                >
+                                                    <Pencil size={12} />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDelete(b)}
+                                                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-400 ring-1 ring-rose-200/70 transition-all hover:bg-rose-100 hover:text-rose-600 hover:-translate-y-px"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </SortableListItem>
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </DndContext>
+                )}
+            </div>
+        </div>
+    );
+}
 
     // ── Page ──────────────────────────────────────────────────────────────────────
 
-    export default function Dashboard() {
-        const {
-            auth, stats, revenueTrend, dailyRevenue, daysInMonth,
-            currentMonthLabel, occupancyData, recentActivity,
-        } = usePage<DashboardProps>().props;
+export default function Dashboard() {
+    const {
+        auth, stats, revenueTrend, dailyRevenue, daysInMonth,
+        currentMonthLabel, occupancyData, recentActivity, gym_traffic, info_banners,
+    } = usePage<DashboardProps>().props;
 
         const firstName    = auth.user?.name?.split(" ")[0] ?? "Admin";
         const trendPositive = revenueTrend >= 0;
 
-        // ── Visual-only UI state ─────────────────────────────────────────────────
-        const [showAnalytics, setShowAnalytics] = useState(false);
+    // ── Visual-only UI state ─────────────────────────────────────────────────
+    const [showAnalytics, setShowAnalytics] = useState(false);
+    const [bannerModal, setBannerModal] = useState<BannerModalState>({ open: false, editing: null });
+    const openBannerCreate = () => setBannerModal({ open: true, editing: null });
+    const openBannerEdit   = (b: InfoBannerItem) => setBannerModal({ open: true, editing: b });
+    const closeBannerModal = () => setBannerModal({ open: false, editing: null });
 
-        return (
-            <AdminLayout
-                header={
-                    <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
-                        <style dangerouslySetInnerHTML={{ __html: DASHBOARD_STYLES }} />
-                        <span className="font-bdo text-[11px] font-medium tracking-wide text-orange-500">
-                            Selamat Datang Kembali, {firstName}
-                        </span>
-                        <h1 className="font-clash text-3xl font-bold uppercase tracking-tight xl:text-4xl">
-                            <ShinyTextBlack text="UB Sport System" speed={5} />
-                        </h1>
-                    </div>
-                }
-            >
-                <Head title="Admin Dashboard" />
+    return (
+        <AdminLayout
+            header={
+                <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
+                    <style dangerouslySetInnerHTML={{ __html: DASHBOARD_STYLES }} />
+                    <span className="font-bdo text-[11px] font-medium tracking-wide text-orange-500">
+                        Selamat Datang Kembali, {firstName}
+                    </span>
+                    <h1 className="font-clash text-3xl font-bold uppercase tracking-tight xl:text-4xl">
+                        <ShinyTextBlack text="UB Sport System" speed={5} />
+                    </h1>
+                </div>
+            }
+        >
+            <Head title="Admin Dashboard" />
+
+            {bannerModal.open && (
+                <DashBannerModal state={bannerModal} onClose={closeBannerModal} />
+            )}
 
                 <div className="flex flex-col gap-6 pt-6 pb-20 overflow-x-hidden">
 
@@ -1959,11 +2269,23 @@
                         />
                     )}
 
-                    {/* ══════════════════════════════════════════════════════════════
-                        ROW 2 — Dua kolom: Left Stack | Activity Feed
-                        Mobile: stacked · Tablet+: 1fr | 2fr
-                    ══════════════════════════════════════════════════════════════ */}
-                    <section className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-start">
+                {/* ══════════════════════════════════════════════════════════════
+                    ROW 2 — Two columns: Gym Traffic | Info Banner
+                ══════════════════════════════════════════════════════════════ */}
+                <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <GymTrafficWidget current={gym_traffic ?? "Low Occupancy"} />
+                    <DashInfoBannerPanel
+                        banners={info_banners ?? []}
+                        onAdd={openBannerCreate}
+                        onEdit={openBannerEdit}
+                    />
+                </section>
+
+                {/* ══════════════════════════════════════════════════════════════
+                    ROW 3 — Dua kolom: Left Stack | Activity Feed
+                    Mobile: stacked · Tablet+: 1fr | 2fr
+                ══════════════════════════════════════════════════════════════ */}
+                <section className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-start">
 
                         {/* ── Left: OccupancyCard + Identity Queue stacked ── */}
                         <div className="flex flex-col gap-6">
@@ -2003,7 +2325,8 @@
 
                     </section>
 
-                </div>
+
+            </div>
 
                 {/* Print-only — hidden on screen, sole content on @media print */}
                 <ReportPrintTemplate
