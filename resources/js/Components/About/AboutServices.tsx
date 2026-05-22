@@ -55,7 +55,7 @@ export default function AboutServices() {
                     theme="light"
                 />
 
-                <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+                <div className="mt-10 grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
                     <div className="xl:col-span-3">
                         <div className="flex items-center gap-2">
                             <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-[#FF0000]" />

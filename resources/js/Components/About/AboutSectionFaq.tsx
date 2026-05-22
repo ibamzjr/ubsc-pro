@@ -58,7 +58,7 @@ export default function AboutSectionFaq() {
                     theme="light"
                 />
 
-                <div className="grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8 xl:items-start">
+                <div className="mt-10 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-8 xl:items-start">
                     <div className="xl:col-span-4 xl:sticky xl:top-24">
                         <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-black">
                             General FAQs

@@ -66,7 +66,23 @@ function StatItem({
     );
 }
 
+function useResponsiveCurve(mobile: number, desktop: number): number {
+    const [curve, setCurve] = useState<number>(() =>
+        typeof window !== "undefined" && window.innerWidth < 1280
+            ? mobile
+            : desktop,
+    );
+    useEffect(() => {
+        const update = () =>
+            setCurve(window.innerWidth < 1280 ? mobile : desktop);
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, [mobile, desktop]);
+    return curve;
+}
+
 export default function AboutHistory() {
+    const curveAmount = useResponsiveCurve(120, 200);
     return (
         <section className="w-full bg-white" id="about-history">
             <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:px-24 xl:py-10">
@@ -105,23 +121,28 @@ export default function AboutHistory() {
             </div>
 
             <div
-                className="relative bg-[#0B1E3B] py-52 mx-16 overflow-hidden  xl:mb-12"
-                style={{ background: `url(${bg}) repeat` }}
+                className="relative mx-4 overflow-hidden py-36 xl:mx-16 xl:mb-12 xl:py-52"
+                style={{
+                    backgroundImage: `url(${bg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                }}
             >
                 <CurvedLoop
                     marqueeText="UB   ✦   SPORT  ✦  CENTER   ✦   UBSC   ✦   "
                     speed={1.5}
-                    curveAmount={200}
+                    curveAmount={curveAmount}
                     direction="left"
                     interactive
-                    className="z-100 absolute -top-16 h-full"
+                    className="z-100 absolute -top-12 h-full xl:-top-16"
                 />
 
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <img
                         src={person}
                         alt="UB Sport Center athlete"
-                        className="h-64 xl:h-80 w-auto object-cover shadow-2xl"
+                        className="h-44 w-auto object-cover shadow-2xl md:h-64 xl:h-80"
                     />
                 </div>
             </div>

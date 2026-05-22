@@ -5,29 +5,20 @@ import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 export default function AboutHero() {
     return (
         <div className="relative overflow-hidden">
-            <div className="pointer-events-none absolute left-0 right-0 top-0 h-[45vh] overflow-hidden bg-black xl:h-[63vh]">
+            {/* === ABSOLUTE BACKGROUNDS === */}
+
+            {/* Top blue gradient: 75vh on mobile, 63vh on desktop */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-[75vh] overflow-hidden bg-black xl:h-[63vh]">
                 <img
                     src={TopBg}
                     alt=""
                     aria-hidden
                     className="absolute inset-0 h-full w-full object-cover object-top"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
-                <div className="absolute bottom-8 left-8 right-8 z-20 block lg:hidden">
-                    <p className="font-bdo font-light text-[clamp(0.85rem,3.5vw,1rem)] leading-relaxed text-white/80">
-                        Welcome to the UB Sport where people work on{" "}
-                        <span className="font-medium text-white">
-                            strength body where people on{" "}
-                        </span>
-                        <span className="font-medium text-white">
-                            strengthening body
-                        </span>
-                        .
-                    </p>
-                </div>
             </div>
 
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-[45vh] xl:top-[63vh]">
+            {/* Bottom photo: from 75vh on mobile, from 63vh on desktop */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[75vh] xl:top-[63vh]">
                 <div className="absolute inset-0 bg-black" />
                 <img
                     src={RightBg}
@@ -35,7 +26,7 @@ export default function AboutHero() {
                     aria-hidden
                     className="absolute inset-0 h-full w-full object-cover object-center xl:hidden"
                 />
-                <div className="absolute inset-0 bg-black/45 xl:hidden" />
+                {/* Desktop: right 2/3 photo panel only */}
                 <div className="absolute inset-y-0 right-0 hidden w-2/3 xl:block">
                     <img
                         src={RightBg}
@@ -43,57 +34,79 @@ export default function AboutHero() {
                         aria-hidden
                         className="h-full w-full object-cover object-center"
                     />
-                    <div className="absolute inset-0 bg-black/35" />
                 </div>
             </div>
 
-            {/* Relative content */}
+            {/* === RELATIVE CONTENT === */}
             <section
-                className="relative flex min-h-screen flex-col"
+                className="relative flex h-screen flex-col"
                 id="about-hero"
             >
-                <div className="h-[45vh] flex-shrink-0 xl:h-[63vh]" />
-
-                <div className="relative flex flex-1 flex-col xl:flex-row">
-                    {/* Left Black Block: hidden on mobile, shown on lg+ */}
-                    <div className="hidden lg:flex flex-col justify-center bg-black px-8 py-10 xl:basis-1/3 xl:bg-transparent xl:px-14 xl:py-0">
-                        <div className="pointer-events-none mb-3 xl:mb-6">
-                            <img
-                                src="/assets/hero/star.png"
-                                alt=""
-                                aria-hidden
-                                className="h-12 w-12 object-contain opacity-90 xl:h-20 xl:w-20"
-                            />
-                        </div>
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
+                {/* ---- MOBILE LAYOUT: hidden on xl+ ---- */}
+                <div className="flex flex-1 flex-col xl:hidden">
+                    {/* Top 75% — blue block — star + heading anchored to bottom */}
+                    <div className="flex flex-[3] flex-col justify-end px-6 pb-8">
+                        <img
+                            src="/assets/hero/star.png"
+                            alt=""
+                            aria-hidden
+                            className="mb-3 h-12 w-12 object-contain opacity-90"
+                        />
+                        <h1 className="font-bdo font-medium text-[clamp(2.5rem,8vw,4rem)] leading-tight text-white">
                             Tentang Kami
                         </h1>
                     </div>
 
-                    {/* Right Photo Block: full width on mobile, 2/3 on desktop */}
-                    <div className="flex flex-1 items-center w-full lg:basis-2/3">
-                        {/* Desktop: description text (right-aligned) */}
-                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
+                    {/* Bottom 25% — photo block — description centered */}
+                    <div className="flex flex-[1] items-center px-6 max-w-72">
+                        <p className="font-bdo font-light text-sm leading-relaxed text-white/80">
                             Welcome to the UB Sport where people work on{" "}
                             <span className="font-medium text-white">
-                                strength body
+                                strength body where people on{" "}
                             </span>
                             <span className="font-medium text-white">
-                                where people on strengthening body
+                                strengthening body
                             </span>
                             .
                         </p>
-                        {/* Mobile: star + title over photo */}
-                        <div className="block lg:hidden px-8 py-10 w-full">
-                            <img
-                                src="/assets/hero/star.png"
-                                alt=""
-                                aria-hidden
-                                className="h-12 w-12 object-contain opacity-90 mb-4"
-                            />
-                            <h1 className="font-bdo font-medium text-[clamp(2rem,8vw,3rem)] leading-tight text-white">
+                    </div>
+                </div>
+
+                {/* ---- DESKTOP LAYOUT: hidden on mobile, shown on xl+ ---- */}
+                <div className="hidden xl:flex xl:flex-1 xl:flex-col">
+                    {/* Spacer fills the blue section */}
+                    <div className="h-[63vh] flex-shrink-0" />
+
+                    {/* Two-column content row in the black/photo section */}
+                    <div className="relative flex flex-1 flex-row">
+                        {/* Left: star + title */}
+                        <div className="flex flex-col justify-center px-14 xl:basis-1/3">
+                            <div className="pointer-events-none mb-6">
+                                <img
+                                    src="/assets/hero/star.png"
+                                    alt=""
+                                    aria-hidden
+                                    className="h-20 w-20 object-contain opacity-90"
+                                />
+                            </div>
+                            <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
                                 Tentang Kami
                             </h1>
+                        </div>
+
+                        {/* Right: description */}
+                        <div className="flex flex-1 items-center xl:basis-2/3">
+                            <p className="relative z-10 ml-auto w-full text-right font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 xl:max-w-md xl:pr-16">
+                                Welcome to the UB Sport where people work on{" "}
+                                <span className="font-medium text-white">
+                                    strength body
+                                </span>
+                                <span className="font-medium text-white">
+                                    {" "}
+                                    where people on strengthening body
+                                </span>
+                                .
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -37,7 +37,7 @@ export default function AboutSectionContact({
                     theme="light"
                 />
 
-                <div className="grid grid-cols-1 gap-12 xl:grid-cols-12 xl:items-center">
+                <div className="mt-10 grid grid-cols-1 gap-12 xl:grid-cols-12 xl:items-center">
                     <div className="xl:col-span-5 flex flex-col">
                         <div className="mb-6 flex items-center gap-2">
                             <div className="h-[17px] w-[17px] flex-shrink-0 rounded bg-[#FF0000]" />
