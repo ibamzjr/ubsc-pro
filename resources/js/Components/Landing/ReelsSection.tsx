@@ -6,11 +6,42 @@ import ReelCard from "@/Components/Landing/ReelCard";
 import type { ReelItem } from "@/Components/Landing/ReelCard";
 
 const DUMMY_REELS: ReelItem[] = [
-    { id: 1, date: "31/12 2025", title: "SPORT CENTER UB.", isActive: true, thumbnail: "/assets/reels/thumbnail 1.png", videoUrl: "/assets/reels/reels ubsc 1.mp4" },
-    { id: 2, date: "16/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 2.png", videoUrl: "/assets/reels/reels ubsc 2.mp4" },
-    { id: 3, date: "10/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 3.png", videoUrl: "/assets/reels/reels ubsc 3.mp4" },
-    { id: 4, date: "05/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 4.png", videoUrl: "/assets/reels/reels ubsc 4.mp4" },
-    { id: 5, date: "01/12 2025", title: "SPORT CENTER UB.", thumbnail: "/assets/reels/thumbnail 5.png", videoUrl: "/assets/reels/reels ubsc 5.mp4" },
+    {
+        id: 1,
+        date: "31/12 2025",
+        title: "SPORT CENTER UB.",
+        isActive: true,
+        thumbnail: "/assets/reels/thumbnail 1.png",
+        videoUrl: "/assets/reels/reels ubsc 1.mp4",
+    },
+    {
+        id: 2,
+        date: "16/12 2025",
+        title: "SPORT CENTER UB.",
+        thumbnail: "/assets/reels/thumbnail 2.png",
+        videoUrl: "/assets/reels/reels ubsc 2.mp4",
+    },
+    {
+        id: 3,
+        date: "10/12 2025",
+        title: "SPORT CENTER UB.",
+        thumbnail: "/assets/reels/thumbnail 3.png",
+        videoUrl: "/assets/reels/reels ubsc 3.mp4",
+    },
+    {
+        id: 4,
+        date: "05/12 2025",
+        title: "SPORT CENTER UB.",
+        thumbnail: "/assets/reels/thumbnail 4.png",
+        videoUrl: "/assets/reels/reels ubsc 4.mp4",
+    },
+    {
+        id: 5,
+        date: "01/12 2025",
+        title: "SPORT CENTER UB.",
+        thumbnail: "/assets/reels/thumbnail 5.png",
+        videoUrl: "/assets/reels/reels ubsc 5.mp4",
+    },
 ];
 
 const SlideArrow: React.FC<{ size?: number; color?: string }> = ({
@@ -74,16 +105,19 @@ export default function ReelsSection({
                     <span className="rounded-full bg-white px-5 py-2 text-sm font-bold text-black">
                         Sport center
                     </span>
-                    <span className="text-sm text-gray-400">
-                        1/5 <strong className="text-white">Detail</strong>
+                    <span className="text-sm text-white font-regular">
+                        1/5{" "}
+                        <strong className="text-white font-semibold">
+                            Detail
+                        </strong>
                     </span>
                 </div>
 
                 <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-                    <h3 className="text-[clamp(1.5rem,2.7vw,52px)] font-bold text-white leading-[1.1]">
+                    <h3 className="text-[clamp(1.5rem,2.7vw,52px)] font-semibold text-white leading-[1.1]">
                         Reels UB Sport Center
                     </h3>
-                    <p className="text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-gray-400 md:ml-auto md:max-w-md md:text-left">
+                    <p className="text-[clamp(0.85rem,0.94vw,18px)] leading-relaxed text-white md:ml-auto md:max-w-md md:text-left">
                         Intip keseruan latihan, tips kebugaran, dan atmosfer
                         energi positif langsung melalui media sosial kami.
                     </p>

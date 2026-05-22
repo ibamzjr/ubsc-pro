@@ -1,7 +1,7 @@
 const ArrowIcon: React.FC = () => (
     <svg
-        width="21"
-        height="21"
+        width="15"
+        height="15"
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -35,50 +35,51 @@ export default function ReservasiButton({
                     background-color: #E8E8E8;
                     border: none;
                     border-radius: 9999px;
-                    padding: 6px 32px 6px 6px;
+                    padding: 5px 24px 5px 5px;
                     cursor: pointer;
                     overflow: hidden;
-                    height: 64px;
-                    width: fit-content;
+                    height: 46px;
+                    width: 100%;
+                    max-width: 192px;
                     outline: none;
                     -webkit-tap-highlight-color: transparent;
                 }
                 .reservasi-btn-fill {
                     position: absolute;
-                    left: 6px;
-                    top: 6px;
-                    bottom: 6px;
-                    width: 52px;
+                    left: 5px;
+                    top: 5px;
+                    bottom: 5px;
+                    width: 36px;
                     border-radius: 9999px;
-                    background-color: #E8190A;
+                    background-color: #FF0000;
                     z-index: 0;
                     transition: width 0.5s cubic-bezier(0.76, 0, 0.24, 1);
                     pointer-events: none;
                 }
                 .reservasi-btn:hover .reservasi-btn-fill {
-                    width: calc(100% - 12px);
+                    width: calc(100% - 10px);
                 }
                 .reservasi-icon-wrap {
                     position: relative;
                     z-index: 1;
-                    width: 52px;
-                    height: 52px;
+                    width: 36px;
+                    height: 36px;
                     overflow: hidden;
                     flex-shrink: 0;
                     border-radius: 9999px;
                 }
                 .reservasi-arrow-track {
                     display: flex;
-                    width: 104px;
+                    width: 72px;
                     height: 100%;
-                    transform: translateX(-52px);
+                    transform: translateX(-36px);
                     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
                 }
                 .reservasi-btn:hover .reservasi-arrow-track {
                     transform: translateX(0px);
                 }
                 .reservasi-arrow-slot {
-                    width: 52px;
+                    width: 36px;
                     height: 100%;
                     display: flex;
                     align-items: center;
@@ -89,8 +90,8 @@ export default function ReservasiButton({
                     position: relative;
                     z-index: 1;
                     overflow: hidden;
-                    height: 52px;
-                    padding-left: 16px;
+                    height: 36px;
+                    padding-left: 12px;
                     padding-right: 4px;
                 }
                 .reservasi-text-track {
@@ -100,18 +101,43 @@ export default function ReservasiButton({
                     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
                 }
                 .reservasi-btn:hover .reservasi-text-track {
-                    transform: translateY(-52px);
+                    transform: translateY(-36px);
                 }
                 .reservasi-text-slot {
-                    height: 52px;
+                    height: 36px;
                     display: flex;
                     align-items: center;
-                    font-size: clamp(0.875rem, 0.94vw, 18px);
+                    font-size: 13px;
                     font-weight: 600;
                     letter-spacing: -0.3px;
                     white-space: nowrap;
                     line-height: 1;
                     font-family: inherit;
+                }
+                @media (min-width: 1280px) {
+                    .reservasi-btn {
+                        height: 64px;
+                        width: fit-content;
+                        max-width: none;
+                        padding: 6px 32px 6px 6px;
+                    }
+                    .reservasi-btn-fill {
+                        left: 6px; top: 6px; bottom: 6px; width: 52px;
+                    }
+                    .reservasi-btn:hover .reservasi-btn-fill {
+                        width: calc(100% - 12px);
+                    }
+                    .reservasi-icon-wrap { width: 52px; height: 52px; }
+                    .reservasi-arrow-track { width: 104px; transform: translateX(-52px); }
+                    .reservasi-btn:hover .reservasi-arrow-track { transform: translateX(0px); }
+                    .reservasi-arrow-slot { width: 52px; }
+                    .reservasi-text-wrap { height: 52px; padding-left: 16px; }
+                    .reservasi-btn:hover .reservasi-text-track { transform: translateY(-52px); }
+                    .reservasi-text-slot {
+                        height: 52px;
+                        font-size: clamp(0.875rem, 0.94vw, 18px);
+                    }
+                    .reservasi-btn svg { width: 21px; height: 21px; }
                 }
                 .reservasi-text-1 { color: #111111; }
                 .reservasi-text-2 { color: #FFFFFF; }

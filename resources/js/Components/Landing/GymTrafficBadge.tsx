@@ -145,7 +145,7 @@ export default function GymTrafficBadge({
     return (
         <motion.div
             whileHover={{ scale: 1.05, rotateX: 3 }}
-            className={`${stretch ? "flex" : "inline-flex"} items-stretch overflow-hidden rounded-lg border-4 border-black mt-16 xl:mt-0 perspective-[1000px]`}
+            className={`${stretch ? "flex" : "inline-flex"} items-stretch overflow-hidden rounded-lg border-4 border-black mt-8 md:mt-16 xl:mt-0 perspective-[1000px]`}
         >
             {GymTrafficLabel}
 

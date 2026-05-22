@@ -86,7 +86,7 @@ export default function ProfileModal({ onClose }: Props) {
         .slice(0, 2)
         .toUpperCase();
 
-    const displayAvatar = avatarPreview ?? (user.avatar ? "/storage/" + user.avatar : null);
+    const displayAvatar = avatarPreview ?? user.avatar ?? null;
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">

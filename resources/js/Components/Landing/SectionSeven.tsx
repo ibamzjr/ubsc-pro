@@ -92,7 +92,7 @@ export default function SectionSeven({
                 />
             </div>
 
-            <div className="mb-8 flex items-center gap-2">
+            <div className="mt-10 mb-8 flex items-center gap-2">
                 <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
                 <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
                     Ulasan Pengguna
@@ -110,19 +110,19 @@ export default function SectionSeven({
                             loading="lazy"
                         />
                     </div>
-                    <div className="flex flex-row gap-8">
+                    <div className="flex flex-row gap-5">
                         {FIXED_STATS.map((stat) => (
                             <div
                                 key={stat.label}
-                                className="flex flex-col items-center"
+                                className="flex flex-col items-start"
                             >
-                                <span className="font-bdo text-2xl md:text-3xl font-regular tracking-tight text-gray-900">
+                                <span className="font-bdo text-2xl md:text-3xl text-left font-regular tracking-tight text-gray-900">
                                     {stat.value}
                                 </span>
-                                <span className="mt-1 font-bdo text-xs font-semibold text-gray-800">
+                                <span className="mt-1 font-bdo text-xs text-left  font-semibold text-gray-800">
                                     {stat.label}
                                 </span>
-                                <span className="font-bdo text-[10px] font-regular text-gray-500">
+                                <span className="font-bdo text-[10px] text-left  font-regular text-gray-500">
                                     {stat.sublabel}
                                 </span>
                             </div>
@@ -149,7 +149,7 @@ export default function SectionSeven({
                     </button>
                 </div>
                 <blockquote className="mb-8">
-                    <p className="font-bdo text-3xl md:text-4xl font-semibold leading-[1.2] tracking-tight text-gray-900">
+                    <p className="indent-[2rem] sm:indent-[4rem] lg:indent-[8rem] xl:indent-[8rem] font-bdo text-3xl md:text-4xl font-semibold leading-[1.2] tracking-tight text-gray-900">
                         &ldquo;{activeItem.quote}&rdquo;
                     </p>
                 </blockquote>
@@ -200,7 +200,7 @@ export default function SectionSeven({
                                     </div>
                                     <div className="relative flex flex-col lg:col-span-8">
                                         <blockquote className="absolute top-0 left-0 w-full mb-4 z-10">
-                                            <p className="font-bdo text-[clamp(1.5rem,3.1vw,48px)] font-semibold leading-[1.15] tracking-[-0.021em] text-gray-900">
+                                            <p className="indent-[2rem] sm:indent-[4rem] lg:indent-[8rem] xl:indent-[8rem] font-bdo text-[clamp(1.5rem,3.1vw,48px)] font-semibold leading-[1.15] tracking-[-0.021em] text-gray-900">
                                                 &ldquo;{item.quote}&rdquo;
                                             </p>
                                         </blockquote>

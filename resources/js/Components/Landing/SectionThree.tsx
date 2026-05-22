@@ -99,7 +99,7 @@ function LocationCard({ location }: { location: Location }) {
 
 export default function SectionThree() {
     return (
-        <section id="locations" className="w-full bg-[#F5F7F9] py-20 lg:py-16">
+        <section id="locations" className="w-full bg-[#F5F7F9] py-12 lg:py-16">
             <div className="mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
                 <SectionDivider
                     number="02"
@@ -114,7 +114,7 @@ export default function SectionThree() {
                 <div className="xl:w-64 xl:flex-shrink-0 xl:self-stretch">
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 flex-shrink-0 bg-[#FF0000]" />
-                        <span className="font-bdo text-[15px] font-medium tracking-wide text-gray-900">
+                        <span className="font-bdo text-base md:text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-black">
                             Eksplorasi Cabang Kami
                         </span>
                     </div>
@@ -125,10 +125,14 @@ export default function SectionThree() {
                     <div className="hidden xl:block xl:sticky xl:top-[50vh] xl:-translate-y-1/2 xl:mt-[12rem]">
                         <div className="inline-flex w-fit items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white p-1 pr-5 shadow-sm">
                             <div className="flex h-12 w-14 items-center justify-center rounded-lg bg-gradient-to-tr from-[#002244] to-[#15678D]">
-                                <img src={gym} alt="Gym Icon" className="h-5 w-5" />
+                                <img
+                                    src={gym}
+                                    alt="Gym Icon"
+                                    className="h-3 w-3"
+                                />
                             </div>
-                            <span className="font-bdo font-semibold text-[15px] text-black">
-                                Cabang Kami
+                            <span className="font-bdo font-medium text-[15px] text-black/70">
+                                <span className="font-light">01/03</span> Cabang
                             </span>
                         </div>
                     </div>
@@ -153,10 +157,10 @@ export default function SectionThree() {
                 <div className=" xl:hidden">
                     <div className="inline-flex w-fit items-center gap-4 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 pr-5 shadow-sm">
                         <div className="flex h-11 w-14 items-center justify-center rounded-lg bg-gradient-to-tr from-[#002244] to-[#15678D]">
-                            <img src={gym} alt="Gym Icon" className="h-5 w-5" />
+                            <img src={gym} alt="Gym Icon" className="h-3 w-3" />
                         </div>
-                        <span className="font-bdo font-semibold text-[14px] text-black">
-                            Cabang Kami
+                        <span className="font-bdo font-semibold text-[14px] text-black/70">
+                            <span className="font-light">01/03</span> Cabang
                         </span>
                     </div>
                 </div>

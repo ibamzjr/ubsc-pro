@@ -22,25 +22,27 @@ interface SectionFourProps {
 
 export default function SectionFour({ facilities = [] }: SectionFourProps) {
     const arenaFacilities: FacilityItem[] = facilities
-        .filter((f) => f.category === 'Lapangan & Arena')
+        .filter((f) => f.category === "Lapangan & Arena")
         .map((f, idx) => ({
-            id: String(idx + 1).padStart(2, '0'),
+            id: String(idx + 1).padStart(2, "0"),
             title: `/${f.name}.`,
-            code: f.class_code || `/Tertutup ${String(idx + 1).padStart(3, '0')}/`,
-            image: f.image || '/assets/images/comingsoon.avif',
-            badgeLocation: f.location || 'Veteran',
-            badgeType: f.venue_type || 'Indoor Facility',
+            code:
+                f.class_code ||
+                `/Tertutup ${String(idx + 1).padStart(3, "0")}/`,
+            image: f.image || "/assets/images/comingsoon.avif",
+            badgeLocation: f.location || "Veteran",
+            badgeType: f.venue_type || "Indoor Facility",
         }));
 
     const classFacilities: ClassItem[] = facilities
-        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .filter((f) => f.category === "Kelas & Kebugaran")
         .map((f, idx) => ({
-            id: String(idx + 1).padStart(2, '0'),
+            id: String(idx + 1).padStart(2, "0"),
             name: f.name,
-            code: String(idx + 1).padStart(3, '0'),
-            image: f.image || '/assets/images/comingsoon.avif',
-            badgeLocation: f.location || 'Veteran',
-            badgeCategory: f.venue_type || 'Kebugaran',
+            code: String(idx + 1).padStart(3, "0"),
+            image: f.image || "/assets/images/comingsoon.avif",
+            badgeLocation: f.location || "Veteran",
+            badgeCategory: f.venue_type || "Kebugaran",
         }));
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
@@ -53,9 +55,9 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
 
                 <div className="mb-10 xl:mb-16 grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
                     <div className="xl:col-span-3">
-                        <div className="flex items-center gap-2">
+                        <div className="mt-12 flex items-center gap-2">
                             <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
-                            <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
+                            <span className="font-bdo text-base md:text-[clamp(1.25rem,1.15rem,1.5rem)] font-regular tracking-wide text-black">
                                 Fasilitas Kami
                             </span>
                         </div>
@@ -65,7 +67,7 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
                     </div>
 
                     <div className="xl:col-span-6">
-                        <h2 className="max-w-lg text-[clamp(1.5rem,2.7vw,52px)] font-medium leading-[1.1] tracking-[-0.021em] text-gray-900 xl:text-center xl:max-w-none">
+                        <h2 className="max-w-lg text-[clamp(1.5rem,2.7vw,52px)] font-semibold leading-[1.1] tracking-[-0.021em] text-gray xl:text-center xl:max-w-none">
                             Dukungan Penuh Untuk
                             <br />
                             Setiap Cabang Olahraga
@@ -97,13 +99,17 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
                 sectionNumber="03"
                 sectionTitle="Fasilitas Outdoor"
                 sectionSubtitle="01 homepage"
-                facilities={arenaFacilities.length > 0 ? arenaFacilities : undefined}
+                facilities={
+                    arenaFacilities.length > 0 ? arenaFacilities : undefined
+                }
             />
             <FacilityClassSection
                 sectionNumber="04"
                 sectionTitle="Kelas Indoor"
                 sectionSubtitle="01 homepage"
-                classes={classFacilities.length > 0 ? classFacilities : undefined}
+                classes={
+                    classFacilities.length > 0 ? classFacilities : undefined
+                }
             />
         </section>
     );

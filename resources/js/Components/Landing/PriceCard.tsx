@@ -35,53 +35,59 @@ export default function PriceCard({ item }: PriceCardProps) {
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-[clamp(0.875rem,1.04vw,20px)] font-bold text-gray-900">
-                    {item.title}
-                </span>
+                {/* Top row: title + stars */}
+                <div className="flex items-start justify-between gap-2 w-full">
+                    <span className="truncate text-[clamp(0.875rem,1.04vw,20px)] font-medium text-gray-900">
+                        {item.title}
+                    </span>
+                    <div className="flex items-center gap-0.5 flex-shrink-0 pt-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => {
+                            const filled = i < fullStars;
+                            const half = !filled && i === fullStars && hasHalf;
+                            return (
+                                <Star
+                                    key={i}
+                                    size={13}
+                                    strokeWidth={1.5}
+                                    className={
+                                        filled || half
+                                            ? "text-orange-400"
+                                            : "text-gray-300"
+                                    }
+                                    fill={filled ? "currentColor" : "none"}
+                                    style={
+                                        half
+                                            ? {
+                                                  fill: "url(#half-fill)",
+                                                  color: "#fb923c",
+                                              }
+                                            : undefined
+                                    }
+                                />
+                            );
+                        })}
+                        <svg width="0" height="0" className="absolute">
+                            <defs>
+                                <linearGradient
+                                    id="half-fill"
+                                    x1="0"
+                                    x2="1"
+                                    y1="0"
+                                    y2="0"
+                                >
+                                    <stop offset="50%" stopColor="#fb923c" />
+                                    <stop
+                                        offset="50%"
+                                        stopColor="transparent"
+                                    />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
                 <span className="mt-1 truncate text-[clamp(0.625rem,0.73vw,14px)] text-gray-600">
                     {item.price}
                 </span>
-                <div className="mt-2 flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => {
-                        const filled = i < fullStars;
-                        const half = !filled && i === fullStars && hasHalf;
-                        return (
-                            <Star
-                                key={i}
-                                size={13}
-                                strokeWidth={1.5}
-                                className={
-                                    filled || half
-                                        ? "text-orange-400"
-                                        : "text-gray-300"
-                                }
-                                fill={filled ? "currentColor" : "none"}
-                                style={
-                                    half
-                                        ? {
-                                              fill: "url(#half-fill)",
-                                              color: "#fb923c",
-                                          }
-                                        : undefined
-                                }
-                            />
-                        );
-                    })}
-                    <svg width="0" height="0" className="absolute">
-                        <defs>
-                            <linearGradient
-                                id="half-fill"
-                                x1="0"
-                                x2="1"
-                                y1="0"
-                                y2="0"
-                            >
-                                <stop offset="50%" stopColor="#fb923c" />
-                                <stop offset="50%" stopColor="transparent" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
             </div>
         </div>
     );

@@ -44,6 +44,10 @@ export default function HeroBottomBar({
                 <div className={`absolute inset-0 ${showVideo ? "bg-[#0B1E3B]/70" : "bg-[#0B0F18]"}`} />
             )}
 
+            {variant === "transparent" && (
+                <div className="absolute inset-0 bg-black/30 backdrop-blur-md lg:hidden" />
+            )}
+
             <div className="absolute left-0 right-0 top-0 border-t border-white/10" />
 
             <div className="relative z-10 w-full px-6 py-8 lg:px-16 lg:py-10">

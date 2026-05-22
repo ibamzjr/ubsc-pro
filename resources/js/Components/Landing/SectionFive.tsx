@@ -86,15 +86,20 @@ function useCountUp(target: number, duration: number = 2.3) {
     return value;
 }
 
-export default function SectionFive({ news, reels }: { news?: NewsItem[]; reels?: ReelItem[] }) {
+export default function SectionFive({
+    news,
+    reels,
+}: {
+    news?: NewsItem[];
+    reels?: ReelItem[];
+}) {
     const [hovered, setHovered] = useState(false);
     return (
         <section
             id="impact"
-            className="w-full py-16 text-white"
+            className="w-full py-10 md:py-16 text-white"
             style={{
-                background:
-                    "#252525",
+                background: "#252525",
             }}
         >
             <div className="mx-auto max-w px-6 sm:px-10 xl:px-20">
@@ -105,20 +110,20 @@ export default function SectionFive({ news, reels }: { news?: NewsItem[]; reels?
                     theme="dark"
                 />
 
-                <div className="xl:mt-4 grid grid-cols-1 gap-12 xl:grid-cols-12">
+                <div className="xl:mt-4 grid grid-cols-1 gap-12 xl:grid-cols-12 mt-10">
                     <div className="col-span-1 xl:col-span-8">
-                        <h2 className="text-[clamp(1.875rem,3.75vw,72px)] font-clash font-medium leading-[1.1] tracking-tight">
+                        <h2 className="text-[clamp(1.78rem,3.75vw,72px)] font-clash font-medium leading-[1.1] tracking-tight">
                             Standar baru berolahraga
                             <br />
                             hanya di{" "}
-                            <span className="text-red-600">
+                            <span className="text-[#FF0000]">
                                 UB Sport Center.
                             </span>
                         </h2>
                     </div>
 
                     <div className="col-span-1 flex flex-col justify-end xl:col-span-4">
-                        <p className="mb-8 text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-gray-300">
+                        <p className="max-w-72 md:max-w-full mb-8 text-[clamp(0.875rem,0.94vw,18px)] leading-relaxed text-gray-300">
                             Komitmen kami adalah menghadirkan{" "}
                             <strong className="text-white font-semibold">
                                 ekosistem olahraga yang inklusif.
@@ -171,7 +176,7 @@ export default function SectionFive({ news, reels }: { news?: NewsItem[]; reels?
                     </div>
                 </div>
 
-                <div className="mt-16 md:mt-24 xl:mt-32 grid grid-cols-2 gap-8 md:grid-cols-4 xl:gap-8">
+                <div className="mt-24 md:mt-24 xl:mt-32 grid grid-cols-2 gap-8 md:grid-cols-4 xl:gap-8">
                     {STATS.map((stat, i) => {
                         const animated = useCountUp(stat.value, 1.2);
                         let displayValue;
@@ -195,15 +200,14 @@ export default function SectionFive({ news, reels }: { news?: NewsItem[]; reels?
                                 >
                                     {displayValue}
                                 </motion.span>
-                                <p className="max-w-[250px] font-light text-[clamp(0.75rem,0.73vw,14px)] leading-relaxed text-gray-400">
+                                <p className="max-w-[250px] font-light text-[clamp(0.69rem,0.73vw,14px)] leading-relaxed text-white">
                                     {stat.description}
                                 </p>
                             </div>
                         );
                     })}
                 </div>
-
-                <div className="mt-24 border-t border-white/10" />
+                <div className="mt-10 md:mt-24 border-t border-white/10" />
             </div>
 
             <ReelsSection reels={reels} />

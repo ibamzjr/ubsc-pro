@@ -17,12 +17,12 @@ export default function SectionDivider({
 
     return (
         <div
-            className={`mb-16 border-t pt-4 ${
+            className={`md:mb-16 border-t pt-4 ${
                 isDark ? "border-white/20" : "border-black"
             }`}
         >
             <div
-                className={`flex items-center justify-between text-[clamp(0.875rem,0.813rem+0.208vw,1rem)] ${
+                className={`flex items-center justify-between text-[9.6px] md:text-[clamp(0.875rem,0.813rem+0.208vw,1rem)] ${
                     isDark ? "text-white" : "text-black"
                 }`}
             >
