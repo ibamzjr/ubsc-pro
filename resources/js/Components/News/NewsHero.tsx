@@ -88,6 +88,7 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
 
     return (
         <section className="relative w-full bg-black overflow-x-clip" id="home">
+            {/* Static TopBg behind all slides */}
             <div className="pointer-events-none absolute inset-0 z-0">
                 <img
                     src={TopBg}
@@ -98,12 +99,15 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/80" />
             </div>
 
-            {/* Embla carousel — slides sit above the static bg */}
+            {/* Embla carousel */}
             <div className="relative z-10 overflow-hidden" ref={emblaRef}>
                 <div className="flex">
                     {activeSlides.map((slide, idx) => (
-                        <div key={slide.id} className="flex-[0_0_100%] min-w-0">
-                            {/* Top text area: transparent so static TopBg shows through */}
+                        <div
+                            key={slide.id}
+                            className="flex-[0_0_100%] min-w-0 w-full h-screen min-h-[650px] flex flex-col justify-between"
+                        >
+                            {/* Top text area — natural height, transparent so TopBg shows through */}
                             <div className="relative">
                                 <div className="h-28 xl:h-36" />
 
@@ -120,7 +124,7 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
                                                 {slide.badge}
                                             </span>
                                         </div>
-                                        <h1 className="font-bdo font-medium text-[clamp(1.125rem,1.46vw,28px)] text-white leading-snug max-w-[656px]">
+                                        <h1 className="font-bdo font-medium text-xl md:text-2xl xl:text-[clamp(1.125rem,1.46vw,28px)] text-white leading-snug max-w-[656px]">
                                             {slide.title}
                                         </h1>
                                         <p className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-white/70 max-w-[643px]">
@@ -128,7 +132,8 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
                                         </p>
                                     </div>
 
-                                    <div className="xl:col-span-4 flex flex-row xl:flex-col items-start xl:items-end justify-between xl:h-full gap-4">
+                                    {/* Date + link — stacked on mobile, end-aligned on desktop */}
+                                    <div className="xl:col-span-4 flex flex-col xl:items-end justify-end gap-3 w-full xl:w-auto">
                                         <span className="font-bdo font-normal text-[clamp(1rem,1.04vw,20px)] text-white/80">
                                             {slide.date}
                                         </span>
@@ -137,11 +142,8 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
                                 </div>
                             </div>
 
-                            {/* Bottom per-slide image */}
-                            <div
-                                className="relative w-full bg-neutral-900"
-                                style={{ height: "68vh" }}
-                            >
+                            {/* Per-slide image — flex-1 fills all remaining screen height */}
+                            <div className="relative w-full flex-1 bg-neutral-900 overflow-hidden">
                                 <img
                                     src={slide.image}
                                     alt={slide.title}
@@ -173,7 +175,8 @@ export default function NewsHero({ slides }: { slides?: NewsSlide[] }) {
                 </div>
             </div>
 
-            <div className="absolute bottom-0 left-0 w-full z-20">
+            {/* HeroBottomBar sits below the viewport fold — visible on scroll */}
+            <div className="relative w-full z-20">
                 <HeroBottomBar
                     sectionNumber="03/"
                     sectionLabel="newspage"

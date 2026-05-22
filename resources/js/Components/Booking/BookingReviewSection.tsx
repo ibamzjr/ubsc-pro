@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, MessageSquareQuote, Star } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { CheckCircle, ChevronLeft, ChevronRight, MessageSquareQuote, Star } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import BookingReviewCard, { type Review } from "./BookingReviewCard";
@@ -223,6 +225,19 @@ export default function BookingReviewSection() {
     } = usePage<BookingPageInertiaProps>().props;
     const user = auth.user;
 
+    const [emblaRef, emblaApi] = useEmblaCarousel(
+        { loop: true, align: "start", containScroll: "trimSnaps" },
+        [Autoplay({ delay: 7000, stopOnInteraction: true })],
+    );
+    const scrollPrev = useCallback(
+        () => emblaApi && emblaApi.scrollPrev(),
+        [emblaApi],
+    );
+    const scrollNext = useCallback(
+        () => emblaApi && emblaApi.scrollNext(),
+        [emblaApi],
+    );
+
     // Use real approved reviews; fall back to dummy data until reviews accumulate
     const reviews =
         approved_reviews.length > 0 ? approved_reviews : DUMMY_REVIEWS;
@@ -231,7 +246,7 @@ export default function BookingReviewSection() {
     return (
         <section className="w-full bg-[#F9F9F9] py-24 overflow-hidden">
             {/* Section divider */}
-            <div className="mx-auto max-w-8xl px-6 sm:px-10 lg:px-16 xl:px-24">
+            <div className="mx-auto max-w-8xl px-6 sm   :px-10 lg:px-16 xl:px-24">
                 <SectionDivider
                     number="03"
                     title="Ulasan"
@@ -257,7 +272,7 @@ export default function BookingReviewSection() {
                     {/* CENTER: main heading */}
                     <div className="flex-1 min-w-0">
                         <h2
-                            className="font-bdo font-medium leading-tight text-center text-black"
+                            className="font-bdo font-medium leading-tight text-left md:text-center  text-black"
                             style={{ fontSize: "clamp(1.5rem, 3.5vw, 2.5rem)" }}
                         >
                             Dukungan Penuh Untuk <br />
@@ -276,10 +291,44 @@ export default function BookingReviewSection() {
                 </div>
             </div>
 
-            {/* ── Scrolling marquee ─────────────────────────────────────────── */}
-            <div className="flex w-full relative mt-16">
+            {/* ── Mobile: Embla swipe carousel ──────────────────────────────── */}
+            <div className="xl:hidden mt-16 w-full">
+                {/* Embla viewport */}
+                <div className="overflow-hidden" ref={emblaRef}>
+                    <div className="flex gap-4 pl-6">
+                        {reviews.map((review, i) => (
+                            <div
+                                key={`${review.id}-${i}`}
+                                className="flex-shrink-0 w-[85vw] sm:w-[45vw]"
+                            >
+                                <BookingReviewCard review={review} />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                {/* Nav buttons — bottom right */}
+                <div className="flex justify-end gap-2 px-6 mt-4">
+                    <button
+                        onClick={scrollPrev}
+                        aria-label="Previous review"
+                        className="flex size-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+                    >
+                        <ChevronLeft size={18} />
+                    </button>
+                    <button
+                        onClick={scrollNext}
+                        aria-label="Next review"
+                        className="flex size-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 transition-colors hover:bg-gray-50"
+                    >
+                        <ChevronRight size={18} />
+                    </button>
+                </div>
+            </div>
+
+            {/* ── Desktop: infinite marquee animation ───────────────────────── */}
+            <div className="hidden xl:flex w-full relative mt-16">
                 <motion.div
-                    className="flex gap-6 xl:gap-8 pl-6 xl:pl-24 pointer-events-none"
+                    className="flex gap-8 pl-24 pointer-events-none"
                     animate={{ x: ["-50%", "0%"] }}
                     transition={{
                         repeat: Infinity,
