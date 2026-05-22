@@ -29,12 +29,12 @@ export default function LogoMarquee({ sponsors }: { sponsors?: SponsorItem[] }) 
                 {duplicatedLogos.map((logo, i) => (
                     <div
                         key={i}
-                        className="bg-[#F7F7F7] flex items-center justify-center w-[144px] h-[96px] md:w-[220px] md:h-[160px] lg:w-[290px] lg:h-[218px] rounded-lg flex-shrink-0 pointer-events-none p-6 md:p-8 lg:p-10"
+                        className="bg-[#F7F7F7] flex items-center justify-center w-[144px] h-[64px] sm:w-[180px] sm:h-[72px] xl:w-[260px] xl:h-[170px] rounded-xl flex-shrink-0 flex-grow-0 pointer-events-none px-4 xl:px-8"
                     >
                         <img
                             src={logo.img}
                             alt={logo.name}
-                            className="max-w-[60%] max-h-[60%] object-contain"
+                            className="w-auto h-full max-w-[75%] max-h-[20%] object-contain"
                             draggable={false}
                         />
                     </div>

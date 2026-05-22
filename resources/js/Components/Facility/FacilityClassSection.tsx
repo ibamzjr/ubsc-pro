@@ -113,6 +113,7 @@ interface FacilityClassSectionProps {
     sectionTitle?: string;
     sectionSubtitle?: string;
     classes?: ClassItem[];
+    isLandingPage?: boolean;
 }
 
 export default function FacilityClassSection({
@@ -120,13 +121,17 @@ export default function FacilityClassSection({
     sectionTitle = "Kelas Indoor",
     sectionSubtitle = "04 facility page",
     classes,
+    isLandingPage = false,
 }: FacilityClassSectionProps = {}) {
     const activeClasses =
         classes && classes.length > 0 ? classes : DUMMY_CLASSES;
+    const renderedClasses = isLandingPage
+        ? activeClasses.slice(0, 4)
+        : activeClasses;
     const CLASS_ROWS = [
-        activeClasses.slice(0, 2),
-        activeClasses.slice(2, 4),
-        activeClasses.slice(4, 6),
+        renderedClasses.slice(0, 2),
+        renderedClasses.slice(2, 4),
+        renderedClasses.slice(4, 6),
     ];
     return (
         <section className="bg-white" id="facility-classes">
