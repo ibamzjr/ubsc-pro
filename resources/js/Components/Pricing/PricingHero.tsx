@@ -1,86 +1,108 @@
-import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import TopBg from "@/../assets/hero/Top.png";
 import RightBg from "@/../assets/images/bg-heropricing.avif";
+import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 
 export default function PricingHero() {
     return (
         <div className="relative overflow-hidden">
-            <div className="pointer-events-none absolute left-0 right-0 top-0 h-[45vh] overflow-hidden bg-black xl:h-[63vh]">
+            {/* === ABSOLUTE BACKGROUNDS === */}
+
+            {/* Top blue gradient: 75vh on mobile, 63vh on desktop */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-[75vh] overflow-hidden bg-black xl:h-[63vh]">
                 <img
                     src={TopBg}
                     alt=""
                     aria-hidden
                     className="absolute inset-0 h-full w-full object-cover object-top"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
-                <div className="absolute bottom-8 left-8 right-8 z-20 block lg:hidden">
-                    <p className="font-bdo font-light text-[clamp(1.125rem,1rem+2vw,1.75rem)] text-white">
-                        Pilih jadwal dan paket terbaik Anda, lalu{" "}
-                        <span className="font-medium text-white">
-                            mulai perjalanan menuju tubuh yang lebih kuat dan
-                            bugar.
-                        </span>
-                    </p>
-                </div>
             </div>
 
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-[45vh] xl:top-[63vh]">
+            {/* Bottom photo: from 75vh on mobile, from 63vh on desktop */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[75vh] xl:top-[63vh]">
                 <div className="absolute inset-0 bg-black" />
                 <img
                     src={RightBg}
                     alt=""
                     aria-hidden
-                    className="absolute inset-0 h-full w-full object-cover xl:hidden"
+                    className="absolute inset-0 h-full w-full object-cover object-center xl:hidden"
                 />
-                <div className="absolute inset-0 bg-black/45 xl:hidden" />
+                {/* Desktop: right 2/3 photo panel only */}
                 <div className="absolute inset-y-0 right-0 hidden w-2/3 xl:block">
                     <img
                         src={RightBg}
                         alt=""
                         aria-hidden
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover object-center"
                     />
-                    <div className="absolute inset-0 bg-black/35" />
                 </div>
             </div>
 
+            {/* === RELATIVE CONTENT === */}
             <section
-                className="relative flex min-h-screen flex-col"
+                className="relative flex h-screen flex-col"
                 id="pricing-hero"
             >
-                <div className="h-[45vh] flex-shrink-0 xl:h-[63vh]" />
-
-                <div className="relative flex flex-1 flex-col xl:flex-row">
-                    <div className="hidden lg:flex flex-col justify-center bg-black px-8 py-10 xl:basis-1/3 xl:bg-transparent xl:px-14 xl:py-0">
+                {/* ---- MOBILE LAYOUT: hidden on xl+ ---- */}
+                <div className="flex flex-1 flex-col xl:hidden">
+                    {/* Top 75% — blue block — star + heading anchored to bottom */}
+                    <div className="flex flex-[3] flex-col justify-end px-6 pb-8 max-w-72">
                         <img
                             src="/assets/hero/star.png"
                             alt=""
                             aria-hidden
-                            className="mb-6 h-12 w-12 xl:h-20 xl:w-20"
+                            className="mb-3 h-12 w-12 object-contain opacity-90"
                         />
-                        <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
+                        <h1 className="font-bdo font-medium text-[clamp(2.5rem,8vw,4rem)] leading-tight text-white ">
                             Jadwal &amp; Paket Harga
                         </h1>
                     </div>
 
-                    <div className="flex flex-1 items-center w-full lg:basis-2/3">
-                        <p className="relative z-10 ml-auto w-full px-8 py-10 text-right font-bdo font-light text-[clamp(1.125rem,1rem+2vw,1.75rem)]leading-relaxed text-white/80 hidden lg:block xl:max-w-md xl:py-0 xl:pr-16">
-                            Pilih jadwal dan paket terbaik Anda, lalu{" "}
+                    {/* Bottom 25% — photo block — description centered */}
+                    <div className="flex flex-[1] items-center px-6 max-w-72">
+                        <p className="font-bdo font-light text-sm leading-relaxed text-white/80">
+                            Welcome to the UB Sport where people work on{" "}
                             <span className="font-medium text-white">
-                                mulai perjalanan menuju tubuh yang lebih kuat
-                                dan bugar.
+                                strength body where people on{" "}
                             </span>
+                            <span className="font-medium text-white">
+                                strengthening body
+                            </span>
+                            .
                         </p>
-                        <div className="block lg:hidden px-8 py-10 w-full">
-                            <img
-                                src="/assets/hero/star.png"
-                                alt=""
-                                aria-hidden
-                                className="mb-4 h-12 w-12"
-                            />
-                            <h1 className="font-bdo font-medium text-[clamp(2rem,8vw,3rem)] text-white leading-tight">
+                    </div>
+                </div>
+
+                {/* ---- DESKTOP LAYOUT: hidden on mobile, shown on xl+ ---- */}
+                <div className="hidden xl:flex xl:flex-1 xl:flex-col">
+                    {/* Spacer fills the blue section */}
+                    <div className="h-[63vh] flex-shrink-0" />
+
+                    {/* Two-column content row in the black/photo section */}
+                    <div className="relative flex flex-1 flex-row">
+                        {/* Left 1/3: star + title */}
+                        <div className="flex flex-col justify-center px-14 xl:basis-1/3">
+                            <div className="pointer-events-none mb-6">
+                                <img
+                                    src="/assets/hero/star.png"
+                                    alt=""
+                                    aria-hidden
+                                    className="h-20 w-20 object-contain opacity-90"
+                                />
+                            </div>
+                            <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
                                 Jadwal &amp; Paket Harga
                             </h1>
+                        </div>
+
+                        {/* Right 2/3: description */}
+                        <div className="flex flex-1 items-center xl:basis-2/3">
+                            <p className="relative z-10 ml-auto w-full text-right font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 xl:max-w-md xl:pr-16">
+                                Pilih jadwal dan paket terbaik Anda, lalu{" "}
+                                <span className="font-medium text-white">
+                                    mulai perjalanan menuju tubuh yang lebih
+                                    kuat dan bugar.
+                                </span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -90,9 +112,9 @@ export default function PricingHero() {
 
             <HeroBottomBar
                 variant="transparent"
-                sectionNumber="05/"
-                sectionLabel="pricing page"
-                description="Pilih paket olahraga yang sesuai dengan kebutuhan dan anggaran Anda di UB Sport Center."
+                sectionNumber="01/"
+                sectionLabel="homepage"
+                description="UB Sport Center – Temukan fasilitas olahraga modern untuk berlatih, berprestasi, dan berkembang bersama."
                 targetId="pricing-info"
                 showVideo={false}
             />

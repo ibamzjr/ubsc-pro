@@ -7,6 +7,7 @@ interface ClassPriceItem {
 export interface ClassPricing {
     id: string;
     title: string;
+    classCode: string;
     description: string;
     image: string;
     badgeLocation: string;
@@ -21,19 +22,22 @@ interface Props {
 
 export default function PricingClassCard({ item }: Props) {
     return (
-        <div className="flex flex-col flex-shrink-0 w-[320px] xl:w-[580px] bg-black border border-white/10 overflow-hidden rounded-2xl">
-            <div className="relative h-[220px] xl:h-[250px]">
+        <div className="flex flex-col flex-shrink-0 w-[85vw] xl:w-[580px] bg-black border border-white/10 overflow-hidden rounded-2xl">
+            <div className="relative h-[134px] xl:h-[250px]">
                 <img
                     src={item.image}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="w-full h-[134px] xl:h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute inset-0 flex flex-col justify-between p-5 xl:p-6">
-                    <div>
-                        <p className="font-bdo font-medium text-[clamp(1.75rem,1.2rem+2.5vw,2.5rem)] text-white leading-snug">
+                <div className="absolute inset-0 flex flex-col justify-between p-3 xl:p-6">
+                    <div className="flex items-start justify-between gap-2">
+                        <p className="font-bdo font-medium text-[clamp(1.25rem,1.2rem+2.5vw,2.5rem)] text-white leading-snug">
                             {item.title}
                         </p>
+                        <span className="font-bdo font-normal text-[0.65rem] xl:text-xs text-white/40 flex-shrink-0 mt-1">
+                            {item.classCode}
+                        </span>
                     </div>
                     <div>
                         <FacilityBadge

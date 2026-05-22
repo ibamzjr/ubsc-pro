@@ -46,7 +46,6 @@ const ArrowRight = () => (
     </svg>
 );
 
-
 interface Props {
     facilities?: BackendFacility[];
 }
@@ -54,16 +53,22 @@ interface Props {
 export default function PricingClassSection({ facilities = [] }: Props) {
     // Map real facilities to ClassPricing format, filter to fitness classes only
     const classesData: ClassPricing[] = facilities
-        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .filter((f) => f.category === "Kelas & Kebugaran")
         .map((f, idx) => ({
-            id: String(idx + 1).padStart(2, '0'),
+            id: String(idx + 1).padStart(2, "0"),
             title: `/${f.name}.`,
+            classCode:
+                f.class_code || `/Class ${String(idx + 1).padStart(3, "0")}/`,
             description: `Ikuti kelas ${f.name} yang dipandu instruktur berpengalaman di UB Sport Center.`,
-            image: f.image || '/assets/images/comingsoon.avif',
-            badgeLocation: f.location ?? 'Veteran',
-            badgeType: f.venue_type ?? 'Indoor Facility',
+            image: f.image || "/assets/images/comingsoon.avif",
+            badgeLocation: f.location ?? "Veteran",
+            badgeType: f.venue_type ?? "Indoor Facility",
             daftarHarga: (f.display_metadata as any)?.daftarHarga || {
-                left: [{ label: "Reguler" }, { label: "Warga UB 25K" }, { label: "Umum 35K" }],
+                left: [
+                    { label: "Reguler" },
+                    { label: "Warga UB 25K" },
+                    { label: "Umum 35K" },
+                ],
                 right: [{ label: "Paket" }, { label: "Diskon Tersedia" }],
             },
             persewaan: (f.display_metadata as any)?.persewaan || {
@@ -82,19 +87,19 @@ export default function PricingClassSection({ facilities = [] }: Props) {
     return (
         <section className="bg-[#242424] overflow-x-clip" id="pricing-classes">
             <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
-            <SectionDivider
-                number="03"
-                title="Kelas"
-                subtitle="05 pricing page"
-                theme="dark"
-            />
+                <SectionDivider
+                    number="03"
+                    title="Kelas"
+                    subtitle="05 pricing page"
+                    theme="dark"
+                />
             </div>
-            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pb-24">
+            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pb-8 lg:pb-24 mt-10 xl:mt-0">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 mb-12 xl:mb-16">
                     <div className="xl:col-span-8 flex flex-col gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-white">
+                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
+                            <span className="font-bdo font-normal text-base xl:text-[clamp(1rem,1.25vw,24px)] text-white">
                                 Kelas Olahraga Terstruktur
                             </span>
                         </div>
@@ -104,9 +109,9 @@ export default function PricingClassSection({ facilities = [] }: Props) {
                         </h2>
                     </div>
 
-                    <div className="xl:col-span-4 flex xl:flex-col xl:items-end xl:justify-end gap-6">
+                    <div className="xl:col-span-4 flex flex-col xl:items-end xl:justify-end gap-4 xl:gap-6">
                         <AnimatedBookingLink
-                            label="More about me"
+                            label="Ikuti Keseruan Kami"
                             href="/coming-soon"
                         />
                         <div className="flex items-center gap-3">

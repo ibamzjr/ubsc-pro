@@ -1,13 +1,14 @@
+import { motion } from "framer-motion";
 import FacilityBadge from "@/Components/Landing/FacilityBadge";
 
 export interface ClassAccordionData {
     id: string;
     title: string;
+    image: string;
     badgeLocation: string;
     badgeType: string;
     classCode: string;
-    // TODO: Fetch this array from Backend API
-    pricingDetails: string[];
+    pricingDetails: { label: string }[];
 }
 
 interface Props {
@@ -57,37 +58,75 @@ export default function PricingAccordionItem({ item, isOpen, onToggle }: Props) 
 
             {/* ACCORDION BODY */}
             {isOpen && (
-                <div className="flex flex-col xl:flex-row items-start xl:items-center gap-8 xl:gap-0 py-10 border-b border-white/10 xl:pl-[120px]">
-                    {/* 1. Badge */}
-                    <div className="shrink-0 xl:w-[220px]">
+                <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                    {/* ── MOBILE BODY (xl:hidden) ─────────────────────── */}
+                    <div className="xl:hidden flex flex-col py-6 border-b border-white/10">
+                        {/* Top: Badge */}
                         <FacilityBadge
                             location={item.badgeLocation}
                             category={item.badgeType}
                             variant="red"
                         />
-                    </div>
-
-                    {/* 2. Pricing list */}
-                    <div className="flex-1">
-                        <ul className="list-disc list-inside flex flex-col gap-3">
-                            {item.pricingDetails.map((detail, i) => (
-                                <li
-                                    key={i}
-                                    className="font-bdo font-medium text-[clamp(1rem,1.1vw,20px)] text-white"
-                                >
-                                    {detail}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* 3. Class code */}
-                    <div className="shrink-0 xl:w-[140px] xl:text-right">
-                        <p className="font-bdo font-medium text-[clamp(0.875rem,0.9vw,16px)] text-white/70 tracking-widest uppercase">
+                        {/* Body row: image left + list right */}
+                        <div className="flex flex-row items-start gap-4 mt-4 w-full">
+                            <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-[153px] h-[101px] object-cover rounded-xl flex-shrink-0"
+                            />
+                            <div className="flex flex-col gap-2">
+                                {item.pricingDetails.map((detail, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        <div className="size-1.5 rounded-full bg-white/60 flex-shrink-0" />
+                                        <span className="font-bdo font-medium text-[clamp(0.875rem,1vw,18px)] text-white">
+                                            {detail.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* Footer: classCode */}
+                        <p className="font-bdo font-medium text-[0.65rem] text-white/50 tracking-widest uppercase mt-3">
                             {item.classCode}
                         </p>
                     </div>
-                </div>
+
+                    {/* ── DESKTOP BODY (hidden xl:block) ──────────────── */}
+                    <div className="hidden xl:block py-10 border-b border-white/10 pl-0">
+                        {/* Top: Badge */}
+                        <FacilityBadge
+                            location={item.badgeLocation}
+                            category={item.badgeType}
+                            variant="red"
+                        />
+                        {/* Bottom: image + list + classCode */}
+                        <div className="flex flex-row items-start gap-8 mt-4">
+                            <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-[240px] h-[140px] object-cover rounded-xl flex-shrink-0"
+                            />
+                            <div className="flex-grow flex flex-col gap-2">
+                                {item.pricingDetails.map((detail, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        <div className="size-1.5 rounded-full bg-white/60 flex-shrink-0" />
+                                        <span className="font-bdo font-medium text-[clamp(1rem,1.1vw,20px)] text-white">
+                                            {detail.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="font-bdo font-medium text-[clamp(0.875rem,0.9vw,16px)] text-white/70 tracking-widest uppercase text-right flex-shrink-0">
+                                {item.classCode}
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
             )}
         </div>
     );
