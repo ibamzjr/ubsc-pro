@@ -75,22 +75,32 @@ const DUMMY_ARTIKEL: DummyArtikelItem[] = [
 ];
 
 const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
-export default function ServicesSectionArtikel({ articles }: { articles?: DummyArtikelItem[] }) {
-    const [featured, rightTop, rightBottom, ...bottom4] = articles && articles.length > 0 ? articles : DUMMY_ARTIKEL;
+const COMPACT_CARD_CLASS = "w-full aspect-[208/267]";
+
+export default function ServicesSectionArtikel({
+    articles,
+}: {
+    articles?: DummyArtikelItem[];
+}) {
+    const activeArticles =
+        articles && articles.length > 0 ? articles : DUMMY_ARTIKEL;
+    const [featured, ...rest] = activeArticles;
 
     return (
         <section
             className="bg-[#F5F7F9] overflow-x-clip py-12"
             id="artikel-content"
         >
-            <div className="mx-auto max-w px-6 sm:px-10  lg:px-16 xl:px-24 ">
+            <div className="mx-auto max-w px-6 sm:px-10 xl:px-24">
                 <SectionDivider
                     number="02"
                     title="Artikel Kami"
                     subtitle="News page /02"
                     theme="light"
                 />
-                <div className="flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
+
+                {/* Header */}
+                <div className="mt-10 flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
                             <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-[#ff0000] flex-shrink-0" />
@@ -98,21 +108,60 @@ export default function ServicesSectionArtikel({ articles }: { articles?: DummyA
                                 Artikel Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="font-bdo font-semibold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black">
+                        <h2 className="mt-10 font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-black  ">
                             Artikel Terkini Kami
                         </h2>
                     </div>
+                    {/* Desktop-only nav link */}
                     <a
                         href="#"
-                        className="flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-[#ff0000] self-start xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="hidden xl:flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,24px)] text-[#ff0000] xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />
                     </a>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
-                    <div className="col-span-1 xl:col-span-2 order-last xl:order-none">
+                {/* === MOBILE LAYOUT (hidden on xl+) === */}
+                <div className="xl:hidden">
+                    {/* 1. Featured card — full width */}
+                    <NewsCard
+                        {...featured}
+                        description={undefined}
+                        index={0}
+                        layoutOverride="artikel"
+                        className={CARD_CLASS}
+                    />
+
+                    {/* 2. Lihat Selengkapnya — right-aligned, immediately after featured */}
+                    <div className="flex justify-end mt-3 mb-4">
+                        <a
+                            href="#"
+                            className="flex items-center gap-2 font-bdo font-normal text-sm text-[#ff0000] hover:gap-3 transition-all duration-300"
+                        >
+                            Lihat Selengkapnya
+                            <ArrowRight size={16} />
+                        </a>
+                    </div>
+
+                    {/* 3. 2-column grid — remaining cards with Figma proportions */}
+                    <div className="grid grid-cols-2 gap-3">
+                        {rest.map((item, idx) => (
+                            <NewsCard
+                                key={item.id}
+                                {...item}
+                                index={idx + 1}
+                                layoutOverride="artikel"
+                                className={COMPACT_CARD_CLASS}
+                                compact
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* === DESKTOP LAYOUT (hidden on mobile) === */}
+                <div className="hidden xl:grid xl:grid-cols-4 xl:gap-8 pb-12">
+                    <div className="xl:col-span-2">
                         <NewsCard
                             {...featured}
                             description={undefined}
@@ -121,32 +170,11 @@ export default function ServicesSectionArtikel({ articles }: { articles?: DummyA
                             className={CARD_CLASS}
                         />
                     </div>
-
-                    <div className="col-span-1">
-                        <NewsCard
-                            {...rightTop}
-                            index={1}
-                            layoutOverride="artikel"
-                            className={CARD_CLASS}
-                        />
-                    </div>
-
-                    <div className="col-span-1">
-                        <NewsCard
-                            {...rightBottom}
-                            index={2}
-                            layoutOverride="artikel"
-                            className={CARD_CLASS}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-8 mt-4 sm:mt-6 xl:mt-8">
-                    {bottom4.map((item, idx) => (
+                    {rest.map((item, idx) => (
                         <div key={item.id} className="col-span-1">
                             <NewsCard
                                 {...item}
-                                index={idx}
+                                index={idx + 1}
                                 layoutOverride="artikel"
                                 className={CARD_CLASS}
                             />

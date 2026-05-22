@@ -40,7 +40,7 @@ export default function Footer() {
 
     return (
         <footer
-            className="relative w-full overflow-hidden pt-28 text-white"
+            className="relative w-full overflow-hidden pt-16 lg:pt-28 text-white"
             style={{
                 background: "#252525",
             }}
