@@ -56,14 +56,17 @@ export default function FacilityMembership() {
                         </div>
                     </div>
                 </div>
-
                 <hr className="border-gray-200 w-full my-16" />
-
                 <LogoMarquee />
             </div>
             <div
-                className="relative bg-[#0B1E3B] py-52 mx-16 overflow-hidden xl:mb-12"
-                style={{ background: `url(${bg}) repeat` }}
+                className="relative mx-4 overflow-hidden py-36 xl:mx-16 xl:mb-12 xl:py-52 mb-10"
+                style={{
+                    backgroundImage: `url(${bg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                }}
             >
                 <CurvedLoop
                     marqueeText="UB   ✦   SPORT  ✦  CENTER   ✦   UBSC   ✦   "
@@ -71,14 +74,14 @@ export default function FacilityMembership() {
                     curveAmount={200}
                     direction="left"
                     interactive
-                    className="z-100 absolute -top-16 h-full"
+                    className="z-100 absolute -top-12 h-full xl:-top-16"
                 />
 
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <img
                         src={person}
                         alt="UB Sport Center athlete"
-                        className="h-64 xl:h-80 w-auto object-cover shadow-2xl"
+                        className="h-44 w-auto object-cover shadow-2xl md:h-64 xl:h-80"
                     />
                 </div>
             </div>

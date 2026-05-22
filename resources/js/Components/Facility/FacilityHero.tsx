@@ -84,8 +84,10 @@ export default function FacilityHero() {
                         {FACILITY_IMAGES.map((img, i) => (
                             <div
                                 key={i}
-                                className={`flex-shrink-0 overflow-hidden rounded-2xl h-[260px] ${
-                                    i % 2 === 0 ? "w-[640px]" : "w-[250px]"
+                                className={`flex-shrink-0 overflow-hidden rounded-2xl h-[200px] xl:h-[360px] ${
+                                    i % 2 === 0
+                                        ? "w-[80vw] xl:w-[640px]"
+                                        : "w-[32vw] xl:w-[250px]"
                                 }`}
                             >
                                 <img

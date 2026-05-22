@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Dumbbell } from "lucide-react";
+import gym from "../../../assets/hero/gym.svg";
 import SectionDivider from "@/Components/Landing/SectionDivider";
 import FacilityListItem from "./FacilityListItem";
 import type { FacilityItem } from "./FacilityListItem";
@@ -54,9 +54,9 @@ function FasilitasKamiBadge() {
     return (
         <div className="inline-flex w-fit items-center gap-4 overflow-hidden rounded-sm border border-gray-200 bg-white p-0.5 pr-5 shadow-sm">
             <div className="flex h-11 w-14 items-center justify-center rounded-sm bg-gradient-to-tr from-[#002244] to-[#15678D]">
-                <Dumbbell className="h-5 w-5 text-white" />
+                <img src={gym} className="h-3 w-3 text-white" />
             </div>
-            <span className="font-bdo font-medium text-[14px] text-black whitespace-nowrap">
+            <span className="font-bdo font-semibold text-[13px] text-black/70 whitespace-nowrap">
                 FASILITAS KAMI
             </span>
         </div>
@@ -76,7 +76,8 @@ export default function FacilityListSection({
     sectionSubtitle = "04 facility page",
     facilities,
 }: FacilityListSectionProps = {}) {
-    const activeList = facilities && facilities.length > 0 ? facilities : FACILITIES;
+    const activeList =
+        facilities && facilities.length > 0 ? facilities : FACILITIES;
     return (
         <section className="bg-[#242424] overflow-x-clip" id="facility-content">
             {/* --- MARQUEE STRIP --- */}
@@ -117,8 +118,8 @@ export default function FacilityListSection({
                     {/* SISI KIRI: Makan 3 Kolom Pertama (1, 2, 3) */}
                     <div className="xl:col-span-3 flex flex-col items-start justify-between gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="size-[17px] rounded-[5px] bg-[#FF0000] flex-shrink-0" />
-                            <span className="font-bdo font-normal text-[1.5rem] text-white">
+                            <div className="size-[15px] rounded-[5px] bg-[#FF0000] flex-shrink-0" />
+                            <span className="font-bdo text-base md:text-[clamp(1.25rem,1.15rem,1.5rem)] font-regular tracking-wide text-white">
                                 Layanan Unggulan
                             </span>
                         </div>
@@ -146,7 +147,8 @@ export default function FacilityListSection({
                                     className="w-full h-full object-cover grayscale object-top"
                                 />
                             </span>
-                            Mendukung Kebutuhan Aktivitas Olahraga Anda dengan Fasilitas Modern dan Terlengkap.
+                            Mendukung Kebutuhan Aktivitas Olahraga Anda dengan
+                            Fasilitas Modern dan Terlengkap.
                         </h2>
 
                         {/* Mobile Badge */}

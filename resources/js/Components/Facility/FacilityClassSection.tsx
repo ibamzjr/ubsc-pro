@@ -62,47 +62,34 @@ const DUMMY_CLASSES: ClassItem[] = [
     },
 ];
 
-
 // Tailwind z-index per row — later rows cover earlier rows on scroll (all screen sizes)
 const ROW_Z: string[] = ["z-10", "z-20", "z-30"];
 
-function BlueDots({ activeIndex }: { activeIndex: number }) {
+function BlueDots() {
     return (
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-            {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                    key={i}
-                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                        i === activeIndex ? "bg-blue-500" : "bg-gray-300"
-                    }`}
-                />
-            ))}
+        <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#DEDEDE]" />
+            <div className="h-1.5 w-1.5 rounded-full bg-[#15678D]" />
         </div>
     );
 }
 
-function FacilityClassCard({
-    data,
-    index,
-}: {
-    data: ClassItem;
-    index: number;
-}) {
+function FacilityClassCard({ data }: { data: ClassItem }) {
     return (
-        <div className="w-full bg-[#F5F4F3] rounded-xl border border-gray-100 p-5 xl:p-3 shadow-sm">
+        <div className="w-full bg-[#F5F4F3] rounded-xl border border-gray-100 p-2 shadow-sm">
             {/* Top bar: dots + class name + class ID */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <BlueDots activeIndex={index} />
-                    <h3 className="font-bdo font-semibold text-base xl:text-xl tracking-tight text-gray-900 truncate">
+            <div className="flex items-center justify-between px-2 py-2 mb-1">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <BlueDots />
+                    <h3 className="font-bdo font-medium text-base xl:text-xl tracking-tight text-gray-900 truncate">
                         /{data.name}.
                     </h3>
                 </div>
-                <span className="font-bdo text-[10px] xl:text-xs text-[#090909] opacity-60 tracking-widest whitespace-nowrap ml-3 flex-shrink-0">
+                <span className="font-bdo text-[10px] xl:text-xs text-[#090909] opacity-50 tracking-[0.12em] whitespace-nowrap ml-3 flex-shrink-0">
                     /Class {data.code}/
                 </span>
             </div>
-            <div className="relative aspect-video overflow-hidden rounded-2xl">
+            <div className="relative aspect-video overflow-hidden rounded-lg">
                 <img
                     src={data.image}
                     alt={data.name}
@@ -134,7 +121,8 @@ export default function FacilityClassSection({
     sectionSubtitle = "04 facility page",
     classes,
 }: FacilityClassSectionProps = {}) {
-    const activeClasses = classes && classes.length > 0 ? classes : DUMMY_CLASSES;
+    const activeClasses =
+        classes && classes.length > 0 ? classes : DUMMY_CLASSES;
     const CLASS_ROWS = [
         activeClasses.slice(0, 2),
         activeClasses.slice(2, 4),
@@ -151,19 +139,19 @@ export default function FacilityClassSection({
                 />
             </div>
 
-            <div className="mx-auto max-w px-6 pb-16 sm:px-10 xl:px-24">
+            <div className="mx-auto max-w px-6 pb-12 md:pb-16 sm:px-10 xl:px-24">
                 {/* 3-column header: label | heading | description */}
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8 items-start mt-12 mb-16">
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8 items-start mt-12 mb-12 xl:mb-16">
                     <div className="xl:col-span-3 flex items-center gap-3">
                         <span className="h-3 w-3 flex-shrink-0 bg-[#FF0000] rounded-sm" />
-                        <span className="font-bdo text-[clamp(1.25rem,1.15rem,1.5rem)] font-medium tracking-wide text-gray-900">
+                        <span className="font-bdo text-base md:text-[clamp(1.25rem,1.15rem,1.5rem)] font-regular tracking-wide text-black">
                             Gabung Member Sekarang
                         </span>
                     </div>
 
                     <div className="xl:col-span-6">
                         <h2
-                            className="font-bdo font-medium text-black leading-[1.1] xl:max-w-none"
+                            className="items-center font-bdo font-medium text-black leading-[1.1] xl:max-w-none"
                             style={{
                                 fontSize: "clamp(1.5rem, 2.7vw, 52px)",
                                 letterSpacing: "-0.021em",
@@ -190,7 +178,7 @@ export default function FacilityClassSection({
                             className="sticky top-[80px] bg-white pb-4"
                             style={{ zIndex: 10 + index * 10 }}
                         >
-                            <FacilityClassCard data={card} index={index} />
+                            <FacilityClassCard data={card} />
                         </div>
                     ))}
                 </div>
@@ -203,11 +191,10 @@ export default function FacilityClassSection({
                             className={`sticky top-[120px] bg-[white] ${ROW_Z[rowIndex] ?? ""}`}
                         >
                             <div className="grid grid-cols-2 gap-4 pb-4">
-                                {row.map((card, cardInRow) => (
+                                {row.map((card) => (
                                     <FacilityClassCard
                                         key={card.id}
                                         data={card}
-                                        index={rowIndex * 2 + cardInRow}
                                     />
                                 ))}
                             </div>
