@@ -12,107 +12,33 @@ import {
     arrayMove,
     rectSortingStrategy,
 } from "@dnd-kit/sortable";
-import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import {
+    Activity,
+    Archive,
+    ChevronLeft,
+    ChevronRight,
+    Eye,
+    EyeOff,
+    GripVertical,
+    ImageIcon,
+    Layers3,
+    Pencil,
+    Plus,
+    Save,
+    Sparkles,
+    Trash2,
+    UploadCloud,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import SortableCard from "@/Components/Admin/SortableCard";
 import { SingleDropzone } from "@/Components/Admin/ImageDropzone";
-import { ActiveBadge } from "@/Components/Admin/StatusBadge";
 import SlideOver from "@/Components/Admin/SlideOver";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
 import type { PageProps, PromoItem } from "@/types";
+import "./Index.css";
 
 type Props = PageProps<{ items: PromoItem[] }>;
-
-// ── Global Styles ─────────────────────────────────────────────────────────────
-
-const GLOBAL_STYLES = `
-    .font-clash { font-family: 'Clash Display', sans-serif; }
-    .font-bdo   { font-family: 'BDO Grotesk', sans-serif; }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translate3d(0, 28px, 0); }
-        to   { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to   { opacity: 1; transform: scale(1); }
-    }
-
-    .animate-fade-in-up { animation: fadeInUp 0.65s cubic-bezier(0.16,1,0.3,1) forwards; opacity:0; will-change:opacity,transform; }
-    .animate-scale-in   { animation: scaleIn  0.5s  cubic-bezier(0.16,1,0.3,1) forwards; opacity:0; }
-
-    .delay-100 { animation-delay: 100ms; }
-    .delay-200 { animation-delay: 200ms; }
-    .delay-300 { animation-delay: 300ms; }
-
-    @keyframes shimmerSweep {
-        0%   { transform: translateX(-100%); }
-        100% { transform: translateX(200%); }
-    }
-    .shimmer-once { position: relative; overflow: hidden; }
-    .shimmer-once::after {
-        content: '';
-        position: absolute; inset: 0;
-        background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
-        width: 60%;
-        animation: shimmerSweep 1.1s ease-out 0.5s forwards;
-        pointer-events: none;
-        border-radius: inherit;
-    }
-
-    @keyframes iconGlow {
-        0%, 100% { box-shadow: 0 2px 8px rgba(15,23,42,0.2); }
-        50%       { box-shadow: 0 2px 16px rgba(15,23,42,0.3), 0 0 24px rgba(99,102,241,0.12); }
-    }
-    .icon-glow { animation: iconGlow 3.5s ease-in-out infinite; }
-
-    @keyframes btnSheen {
-        0%   { left: -80%; }
-        100% { left: 120%; }
-    }
-    .btn-sheen { position: relative; overflow: hidden; }
-    .btn-sheen::before {
-        content: '';
-        position: absolute; top: 0; bottom: 0; width: 50%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        animation: btnSheen 3s ease-in-out 1s infinite;
-    }
-
-    .card-glint::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 20px; right: 20px; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
-        pointer-events: none;
-    }
-`;
-
-// ── Shiny Icon ────────────────────────────────────────────────────────────────
-
-function ShinyIcon({ children, className }: { children: React.ReactNode; className?: string }) {
-    return (
-        <div className={cn(
-            "icon-glow relative flex shrink-0 items-center justify-center rounded-xl",
-            "bg-gradient-to-br from-amber-500 to-amber-600",
-            "shadow-[0_2px_10px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.12)]",
-            className,
-        )}>
-            <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 to-transparent" />
-            <span className="pointer-events-none absolute top-[3px] left-[5px] right-[5px] h-[5px] rounded-full bg-white/20 blur-[1px]" />
-            {children}
-        </div>
-    );
-}
-
-// ── Form Styles ───────────────────────────────────────────────────────────────
-
-const inputBase =
-    "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm font-bdo text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-amber-300 focus:ring-4 focus:ring-amber-500/10 transition-all";
-const labelBase =
-    "font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 type FormData = {
     title: string;
@@ -122,7 +48,102 @@ type FormData = {
     _method?: string;
 };
 
-// ── Promo Form ────────────────────────────────────────────────────────────────
+const inputBase =
+    "h-11 w-full rounded-[16px] border border-[#F8B5A8]/60 bg-white/88 px-3.5 font-bdo text-sm text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,.82)] outline-none transition focus:border-[#E35336]/70 focus:bg-white focus:ring-4 focus:ring-[#E35336]/10 placeholder:text-slate-400";
+const labelBase =
+    "mb-1.5 block font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500";
+
+function ShinyIcon({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <div
+            className={cn(
+                "promo-icon-glow relative flex shrink-0 items-center justify-center rounded-[15px]",
+                "bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white",
+                "shadow-[0_18px_34px_-24px_rgba(227,83,54,.95),inset_0_1px_0_rgba(255,255,255,.2)]",
+                className,
+            )}
+        >
+            {children}
+            <span className="pointer-events-none absolute left-2 right-2 top-1 h-1 rounded-full bg-white/30 blur-[1px]" />
+        </div>
+    );
+}
+
+function StatCard({
+    icon,
+    label,
+    value,
+    note,
+    tone = "terracotta",
+}: {
+    icon: React.ReactNode;
+    label: string;
+    value: string | number;
+    note: string;
+    tone?: "terracotta" | "emerald" | "slate" | "sky";
+}) {
+    const tones = {
+        terracotta: {
+            card: "border-white/22 bg-white/14 text-white",
+            icon: "border-white/20 bg-white/16 text-white",
+            label: "text-white/64",
+            note: "text-white/58",
+            value: "text-white",
+        },
+        emerald: {
+            card: "border-emerald-200/50 bg-emerald-50/12 text-emerald-50",
+            icon: "border-emerald-100/30 bg-white/16 text-emerald-50",
+            label: "text-emerald-50/70",
+            note: "text-white/56",
+            value: "text-white",
+        },
+        slate: {
+            card: "border-white/18 bg-white/10 text-white",
+            icon: "border-white/20 bg-white/14 text-white",
+            label: "text-white/62",
+            note: "text-white/52",
+            value: "text-white",
+        },
+        sky: {
+            card: "border-sky-200/50 bg-sky-50/12 text-sky-50",
+            icon: "border-sky-100/30 bg-white/16 text-sky-50",
+            label: "text-sky-50/72",
+            note: "text-white/56",
+            value: "text-white",
+        },
+    };
+    const style = tones[tone];
+
+    return (
+        <div
+            className={cn(
+                "promo-card-glint relative min-h-[74px] overflow-hidden rounded-[18px] border p-3",
+                "shadow-[0_16px_34px_-30px_rgba(15,23,42,.32)] backdrop-blur transition hover:-translate-y-0.5",
+                style.card,
+            )}
+        >
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,.08)_0,rgba(255,255,255,.08)_1px,transparent_1px,transparent_12px)]" />
+            <div className="relative z-10 flex h-full items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] border shadow-sm", style.icon)}>
+                        {icon}
+                    </span>
+                    <div className="min-w-0">
+                        <p className={cn("truncate font-bdo text-[10px] font-bold uppercase tracking-wide", style.label)}>{label}</p>
+                        <p className={cn("mt-0.5 truncate font-bdo text-[10px] font-semibold", style.note)}>{note}</p>
+                    </div>
+                </div>
+                <p className={cn("shrink-0 font-clash text-xl font-bold leading-none", style.value)}>{value}</p>
+            </div>
+        </div>
+    );
+}
 
 function PromoForm({ item, onClose }: { item: PromoItem | null; onClose: () => void }) {
     const isEdit = item !== null;
@@ -134,100 +155,238 @@ function PromoForm({ item, onClose }: { item: PromoItem | null; onClose: () => v
         ...(isEdit ? { _method: "PUT" } : {}),
     });
 
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const submit = (event: React.FormEvent) => {
+        event.preventDefault();
         const url = isEdit
             ? route("admin.promo.update", item!.id)
             : route("admin.promo.store");
-        post(url, { forceFormData: true, onSuccess: onClose });
+        post(url, { forceFormData: true, preserveScroll: true, onSuccess: onClose });
     };
 
     return (
-        <form onSubmit={submit} className="flex flex-col gap-5">
-            <div>
-                <label className={labelBase}>Judul</label>
-                <input
-                    type="text"
-                    value={data.title}
-                    onChange={(e) => setData("title", e.target.value)}
-                    placeholder="Judul slide (opsional)…"
-                    className={`${inputBase} mt-1.5`}
-                />
-                {errors.title && <p className="mt-1 text-xs text-rose-500 font-bdo">{errors.title}</p>}
+        <form onSubmit={submit} className="flex flex-col gap-4">
+            <div className="overflow-hidden rounded-[20px] border border-[#F8B5A8]/65 bg-[linear-gradient(145deg,#FFFFFF_0%,#FFF7F5_100%)] p-3.5">
+                <div className="flex items-start gap-3">
+                    <ShinyIcon className="h-10 w-10">
+                        <UploadCloud size={17} />
+                    </ShinyIcon>
+                    <div className="min-w-0">
+                        <p className="font-clash text-base font-semibold text-slate-950">
+                            {isEdit ? "Perbarui slide promo" : "Slide promo baru"}
+                        </p>
+                        <p className="mt-1 font-bdo text-xs font-medium leading-5 text-slate-500">
+                            Gunakan visual yang jelas, terang, dan langsung memperlihatkan promo utama.
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div>
+                <label htmlFor="promo_title" className={labelBase}>Judul Slide</label>
+                <input
+                    id="promo_title"
+                    type="text"
+                    value={data.title}
+                    onChange={(event) => setData("title", event.target.value)}
+                    placeholder="Contoh: Diskon Membership 20%"
+                    className={inputBase}
+                />
+                {errors.title && <p className="mt-1.5 font-bdo text-xs text-rose-500">{errors.title}</p>}
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_136px]">
                 <div>
-                    <label className={labelBase}>Urutan</label>
+                    <label htmlFor="promo_sort_order" className={labelBase}>Urutan</label>
                     <input
+                        id="promo_sort_order"
                         type="number"
                         min={0}
                         value={data.sort_order}
-                        onChange={(e) => setData("sort_order", Number(e.target.value))}
-                        className={`${inputBase} mt-1.5`}
+                        onChange={(event) => setData("sort_order", Number(event.target.value))}
+                        className={cn(inputBase, "font-mono")}
                     />
                 </div>
-                <div className="flex flex-col justify-end pb-1">
-                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 transition-colors hover:bg-slate-50">
-                        <input
-                            type="checkbox"
-                            checked={data.is_active}
-                            onChange={(e) => setData("is_active", e.target.checked)}
-                            className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
-                        />
-                        <span className={labelBase} style={{ marginBottom: 0 }}>Aktif</span>
-                    </label>
-                </div>
+
+                <label className="flex h-11 items-center justify-between gap-3 self-end rounded-[16px] border border-[#F8B5A8]/60 bg-[#FFF7F5] px-3.5">
+                    <span>
+                        <span className="block font-clash text-sm font-semibold text-slate-900">Aktif</span>
+                        <span className="block font-bdo text-[11px] font-medium text-slate-400">
+                            {data.is_active ? "Tampil publik" : "Disembunyikan"}
+                        </span>
+                    </span>
+                    <input
+                        type="checkbox"
+                        checked={data.is_active}
+                        onChange={(event) => setData("is_active", event.target.checked)}
+                        className="h-5 w-5 rounded border-slate-300 text-[#E35336] focus:ring-[#E35336]"
+                        aria-label="Status aktif slide promo"
+                    />
+                </label>
             </div>
 
-            <div>
-                <label className={`${labelBase} mb-1.5 block`}>Gambar Slide</label>
+            <div className="rounded-[20px] border border-slate-200 bg-white p-2.5">
                 <SingleDropzone
-                    label=""
+                    label="Gambar Slide"
                     currentUrl={item?.slide_url ?? null}
-                    onFileSelect={(f) => setData("slide", f)}
+                    onFileSelect={(file) => setData("slide", file)}
                 />
-                {errors.slide && <p className="mt-1 text-xs text-rose-500 font-bdo">{errors.slide}</p>}
+                {errors.slide && <p className="mt-1.5 font-bdo text-xs text-rose-500">{errors.slide}</p>}
             </div>
 
-            <div className="flex flex-col-reverse sm:flex-row items-center gap-3 pt-2">
+            <div className="grid gap-2 rounded-[18px] border border-slate-200 bg-slate-50/75 p-2.5 sm:grid-cols-3">
+                {[
+                    { label: "Mode", value: isEdit ? "Edit" : "Baru" },
+                    { label: "Status", value: data.is_active ? "Aktif" : "Nonaktif" },
+                    { label: "Urutan", value: data.sort_order || "Auto" },
+                ].map((meta) => (
+                    <div key={meta.label} className="rounded-[15px] bg-white px-3 py-2 ring-1 ring-slate-200/70">
+                        <p className="font-bdo text-[9px] font-bold uppercase tracking-wider text-slate-400">{meta.label}</p>
+                        <p className="mt-1 truncate font-bdo text-[11px] font-bold text-slate-700">{meta.value}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="flex flex-col-reverse items-stretch gap-3 pt-1 sm:flex-row sm:items-center">
                 <button
                     type="button"
                     onClick={onClose}
-                    className="w-full sm:w-auto rounded-xl px-5 py-3 text-sm font-bdo font-medium text-slate-600 transition-colors hover:bg-slate-100 border border-slate-200"
+                    className="h-11 rounded-[16px] border border-slate-200 bg-white px-5 font-clash text-sm font-semibold text-slate-600 transition hover:border-[#F8B5A8] hover:bg-[#FFF7F5] hover:text-[#B93D2A]"
                 >
                     Batal
                 </button>
                 <button
                     type="submit"
                     disabled={processing}
-                    className="btn-sheen relative w-full sm:flex-1 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 py-3 text-sm font-clash font-semibold text-white transition-all shadow-[0_4px_14px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.1)] hover:shadow-[0_6px_20px_rgba(15,23,42,0.28)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
+                    className="promo-btn-sheen relative flex h-11 flex-1 items-center justify-center gap-2 rounded-[16px] bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] px-6 font-clash text-sm font-semibold text-white shadow-[0_18px_34px_-24px_rgba(227,83,54,.95),inset_0_1px_0_rgba(255,255,255,.2)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
-                    <span className="pointer-events-none absolute top-0 left-0 right-0 h-px rounded-t-xl bg-white/20" />
-                    {processing ? "Menyimpan…" : isEdit ? "Simpan Perubahan" : "Tambah Slide"}
+                    <Save size={14} />
+                    {processing ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Slide"}
                 </button>
             </div>
         </form>
     );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
+function SlideCard({
+    item,
+    index,
+    onEdit,
+    onDelete,
+    handle,
+}: {
+    item: PromoItem;
+    index: number;
+    onEdit: (item: PromoItem) => void;
+    onDelete: (item: PromoItem) => void;
+    handle: React.ReactNode;
+}) {
+    return (
+        <div className="promo-card-glint group relative grid h-full grid-cols-[118px_minmax(0,1fr)] overflow-hidden rounded-[20px] border border-[#FFE0D8] bg-white shadow-[0_16px_40px_-34px_rgba(127,36,25,.55)] transition duration-300 hover:border-[#F8B5A8] sm:flex sm:min-h-[292px] sm:flex-col sm:rounded-[22px] sm:hover:-translate-y-0.5 sm:hover:shadow-[0_28px_58px_-44px_rgba(127,36,25,.68)]">
+            <div className="relative m-2.5 min-h-[134px] overflow-hidden rounded-[18px] bg-[#FFF7F5] ring-1 ring-[#FFE0D8] sm:m-3 sm:aspect-[16/9] sm:min-h-0 sm:rounded-[20px]">
+                {item.slide_url ? (
+                    <img
+                        src={item.slide_url}
+                        alt={item.title || `Slide promo ${index + 1}`}
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#FFF1EE,#F8FAFC)] text-[#E35336]/35">
+                        <ImageIcon size={42} />
+                    </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/38 to-transparent" />
+                <div className="absolute left-2 top-2 flex items-center gap-1.5 sm:left-3 sm:top-3 sm:gap-2">
+                    <div className="rounded-[14px] border border-white/60 bg-white/85 p-1 shadow-sm backdrop-blur sm:p-1.5">
+                        {handle}
+                    </div>
+                    <span className="rounded-full border border-white/60 bg-white/85 px-2 py-0.5 font-bdo text-[9px] font-bold text-slate-700 shadow-sm backdrop-blur sm:px-2.5 sm:py-1 sm:text-[10px]">
+                        #{index + 1}
+                    </span>
+                </div>
+                <div className="absolute bottom-2 left-2 sm:bottom-auto sm:left-auto sm:right-3 sm:top-3">
+                    <span
+                        className={cn(
+                            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-bdo text-[9px] font-bold uppercase tracking-wide shadow-sm backdrop-blur sm:px-2.5 sm:py-1 sm:text-[10px]",
+                            item.is_active
+                                ? "border-emerald-200 bg-emerald-50/90 text-emerald-700"
+                                : "border-slate-200 bg-white/90 text-slate-500",
+                        )}
+                    >
+                        <span className={cn("h-1.5 w-1.5 rounded-full", item.is_active ? "bg-emerald-500" : "bg-slate-300")} />
+                        {item.is_active ? "Aktif" : "Nonaktif"}
+                    </span>
+                </div>
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col px-2.5 pb-2.5 pt-2.5 sm:px-3.5 sm:pb-3.5 sm:pt-0">
+                <div className="flex-1">
+                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-[#B93D2A]">
+                        Slide Promo
+                    </p>
+                    <h3 className="mt-1.5 line-clamp-2 font-clash text-sm font-semibold leading-tight text-slate-950 sm:text-lg">
+                        {item.title || "Tanpa judul"}
+                    </h3>
+                    <p className="mt-1.5 line-clamp-2 font-bdo text-xs font-medium leading-5 text-slate-500 sm:text-sm">
+                        {item.is_active
+                            ? "Slide ini sedang tampil pada carousel publik."
+                            : "Slide tersimpan, tetapi tidak tampil untuk pengunjung."}
+                    </p>
+                </div>
+
+                <div className="mt-3 grid grid-cols-[minmax(0,1fr)_36px_36px] items-center gap-2 border-t border-[#FFE0D8] pt-3 sm:grid-cols-[minmax(0,1fr)_38px_38px]">
+                    <div className="min-w-0">
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            Urutan database
+                        </p>
+                        <p className="font-clash text-sm font-semibold text-slate-800">#{item.sort_order || index + 1}</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => onEdit(item)}
+                        className="flex h-9 w-9 items-center justify-center rounded-[15px] border border-slate-200 bg-white text-slate-600 transition hover:border-[#F8B5A8] hover:bg-[#FFF7F5] hover:text-[#B93D2A] sm:h-[38px] sm:w-[38px]"
+                        aria-label={`Edit ${item.title || `slide ${index + 1}`}`}
+                    >
+                        <Pencil size={15} />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onDelete(item)}
+                        className="flex h-9 w-9 items-center justify-center rounded-[15px] border border-rose-200 bg-rose-50 text-rose-500 transition hover:bg-rose-100 sm:h-[38px] sm:w-[38px]"
+                        aria-label={`Hapus ${item.title || `slide ${index + 1}`}`}
+                    >
+                        <Trash2 size={15} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function PromoIndex() {
     const { items: initialItems } = usePage<Props>().props;
     const [items, setItems] = useState<PromoItem[]>(initialItems);
+    const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
     const [slideOver, setSlideOver] = useState<{ open: boolean; item: PromoItem | null }>({
         open: false,
         item: null,
     });
+
+    useEffect(() => {
+        setItems(initialItems);
+    }, [initialItems]);
+
+    useEffect(() => {
+        if (currentPromoIndex < items.length) return;
+        setCurrentPromoIndex(Math.max(0, items.length - 1));
+    }, [currentPromoIndex, items.length]);
 
     const openNew = () => setSlideOver({ open: true, item: null });
     const openEdit = (item: PromoItem) => setSlideOver({ open: true, item });
     const close = () => setSlideOver({ open: false, item: null });
 
     const handleDelete = (item: PromoItem) => {
-        if (!confirm("Hapus slide ini?")) return;
-        router.delete(route("admin.promo.destroy", item.id));
+        if (!confirm(`Hapus slide "${item.title || `#${item.id}`}"?`)) return;
+        router.delete(route("admin.promo.destroy", item.id), { preserveScroll: true });
     };
 
     const sensors = useSensors(
@@ -237,206 +396,310 @@ export default function PromoIndex() {
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
-        const oldIndex = items.findIndex((i) => i.id.toString() === active.id);
-        const newIndex = items.findIndex((i) => i.id.toString() === over.id);
+        const oldIndex = items.findIndex((item) => item.id.toString() === active.id);
+        const newIndex = items.findIndex((item) => item.id.toString() === over.id);
         const reordered = arrayMove(items, oldIndex, newIndex);
         setItems(reordered);
         router.post(
             route("admin.promo.reorder"),
-            { ids: reordered.map((i) => i.id) },
+            { ids: reordered.map((item) => item.id) },
             { preserveScroll: true },
         );
     };
 
-    const active = items.filter((i) => i.is_active).length;
+    const active = items.filter((item) => item.is_active).length;
     const inactive = items.length - active;
+    const hasImages = items.filter((item) => Boolean(item.slide_url)).length;
+    const activePercent = items.length > 0 ? Math.round((active / items.length) * 100) : 0;
+    const firstActive = useMemo(() => items.find((item) => item.is_active) ?? null, [items]);
+    const currentPromo = items[currentPromoIndex] ?? null;
+    const goToPreviousPromo = () => {
+        if (items.length <= 1) return;
+        setCurrentPromoIndex((index) => (index - 1 + items.length) % items.length);
+    };
+    const goToNextPromo = () => {
+        if (items.length <= 1) return;
+        setCurrentPromoIndex((index) => (index + 1) % items.length);
+    };
 
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
-                    <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
-                    <span className="font-bdo text-[11px] font-medium tracking-wide text-orange-500">
+                <div className="promo-enter flex flex-col gap-1 pt-3">
+                    <span className="font-bdo text-[11px] font-bold tracking-wide text-[#E35336]">
                         Manajemen Konten
                     </span>
-                    <h1 className="font-clash text-3xl font-bold uppercase tracking-tight xl:text-4xl text-slate-900">
-                        Carousel Promo
-                    </h1>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h1 className="promo-title-shine font-clash text-2xl font-bold uppercase tracking-tight xl:text-3xl">
+                                Carousel Promo
+                            </h1>
+                            <p className="mt-1 font-bdo text-sm font-medium text-slate-400">
+                                Atur visual promo utama, urutan tampil, dan status publik dalam satu ruang kerja.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={openNew}
+                            className="promo-btn-sheen inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#F8B5A8_0%,#E35336_52%,#B93D2A_100%)] px-5 font-clash text-sm font-semibold text-white shadow-[0_18px_34px_-24px_rgba(227,83,54,.95)] transition hover:-translate-y-0.5 sm:w-auto"
+                        >
+                            <Plus size={15} />
+                            Tambah Slide
+                        </button>
+                    </div>
                 </div>
             }
         >
             <Head title="Carousel Promo" />
 
-            <div className="flex flex-col gap-5 pt-6 pb-20 overflow-x-hidden">
+            <div className="flex flex-col gap-4 overflow-x-hidden pb-16 pt-4">
+                <section className="promo-enter promo-sheen relative overflow-hidden rounded-[26px] border border-[#F8B5A8]/70 bg-[linear-gradient(135deg,#E35336_0%,#B93D2A_58%,#7F2419_100%)] text-white shadow-[0_28px_68px_-54px_rgba(127,36,25,.72)]">
+                    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,.085)_0,rgba(255,255,255,.085)_1px,transparent_1px,transparent_22px)]" />
+                    <div className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full border border-white/28" />
+                    <div className="pointer-events-none absolute -left-24 -bottom-32 h-72 w-72 rounded-full bg-[#FFD5CD]/18 blur-3xl" />
 
-                {/* ── Info & Action Banner ── */}
-                <div className="relative card-glint shimmer-once animate-fade-in-up delay-100 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200/80 bg-white px-4 sm:px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)] overflow-hidden">
-                    <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200/70 to-transparent" />
+                    <div className="relative z-10 grid items-stretch gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(350px,420px)]">
+                        <div className="flex p-4 sm:p-5">
+                            <div className="flex min-h-[360px] w-full flex-col justify-between gap-5 sm:min-h-[420px] lg:min-h-0">
+                                <div className="max-w-3xl">
+                                    <span className="inline-flex items-center gap-2 rounded-2xl border border-white/22 bg-white/14 px-3 py-1.5 font-bdo text-[10px] font-bold text-white shadow-[0_16px_30px_-26px_rgba(15,23,42,.32)] backdrop-blur">
+                                        <Sparkles size={13} />
+                                        Promo control desk
+                                    </span>
+                                    <h2 className="mt-3 max-w-4xl font-clash text-[1.72rem] font-semibold leading-[1.03] text-white sm:text-[2.35rem] lg:text-[2.75rem]">
+                                        Susun carousel yang langsung menjual saat halaman dibuka.
+                                    </h2>
+                                    <p className="mt-2 max-w-2xl font-bdo text-xs font-medium leading-5 text-white/74 sm:text-sm sm:leading-6">
+                                        Slide aktif akan tampil di halaman publik. Seret kartu untuk mengatur prioritas, lalu edit detail tanpa meninggalkan halaman.
+                                    </p>
+                                </div>
 
-                    <div className="flex items-center gap-4 min-w-0">
-                        <ShinyIcon className="h-10 w-10 shrink-0">
-                            <ImageIcon size={16} className="text-amber-50" />
-                        </ShinyIcon>
-                        <div className="min-w-0">
-                            <p className="font-bdo text-sm font-bold tracking-tight text-slate-700">
-                                Manajemen Slide Promo
-                            </p>
-                            <p className="font-clash text-xs font-medium text-slate-400 leading-snug mt-0.5 max-w-sm">
-                                Seret kartu untuk mengatur urutan tampil carousel.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
-                        <div className="flex items-center gap-2 rounded-xl bg-sky-50 px-3.5 py-1.5 border border-sky-200 shadow-sm">
-                            <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
-                            <span className="font-bdo text-[11px] font-bold text-sky-600 uppercase tracking-wider">
-                                {items.length} Total
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3.5 py-1.5 border border-emerald-100 shadow-sm">
-                            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.7)] animate-pulse" />
-                            <span className="font-bdo text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
-                                {active} Aktif
-                            </span>
-                        </div>
-                        {inactive > 0 && (
-                            <div className="flex items-center gap-2 rounded-xl bg-rose-50 px-3.5 py-1.5 border border-rose-100 shadow-sm">
-                                <span className="h-2 w-2 rounded-full bg-rose-400" />
-                                <span className="font-bdo text-[11px] font-bold text-rose-600 uppercase tracking-wider">
-                                    {inactive} Nonaktif
-                                </span>
+                                <div className="mt-auto grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                                    <StatCard icon={<Layers3 size={17} />} label="Total Slide" value={items.length} note="Semua konten carousel" />
+                                    <StatCard icon={<Eye size={17} />} label="Aktif" value={active} note={`${activePercent}% tampil publik`} tone="emerald" />
+                                    <StatCard icon={<EyeOff size={17} />} label="Nonaktif" value={inactive} note="Disimpan sebagai draft" tone="slate" />
+                                    <StatCard icon={<ImageIcon size={17} />} label="Bergambar" value={hasImages} note="Slide punya visual" tone="sky" />
+                                </div>
                             </div>
-                        )}
-                        <button
-                            type="button"
-                            onClick={openNew}
-                            className="btn-sheen relative flex w-full xs:w-auto sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 px-5 py-2.5 text-sm font-clash font-semibold text-white transition-all shadow-[0_4px_14px_rgba(15,23,42,0.25),inset_0_1px_0_rgba(255,255,255,0.1)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 active:scale-95"
-                        >
-                            <span className="pointer-events-none absolute top-0 left-0 right-0 h-px rounded-t-xl bg-white/20" />
-                            <Plus size={15} className="text-white shrink-0" />
-                            <span>Tambah Slide</span>
-                        </button>
-                    </div>
-                </div>
+                        </div>
 
-                {/* ── Draggable Card Grid ── */}
-                {items.length === 0 ? (
-                    <div className="animate-fade-in-up delay-200 flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center">
-                        <ImageIcon size={32} className="text-slate-300" />
-                        <p className="font-bdo text-sm text-slate-400">Belum ada slide. Tambahkan yang pertama!</p>
-                    </div>
-                ) : (
-                    <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                    >
-                        <SortableContext
-                            items={items.map((i) => i.id.toString())}
-                            strategy={rectSortingStrategy}
-                        >
-                            <div className="animate-fade-in-up delay-200 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                {items.map((item, idx) => (
-                                    <SortableCard
-                                        key={item.id}
-                                        id={item.id.toString()}
+                        <div className="border-t border-white/16 bg-white/10 p-3.5 backdrop-blur sm:p-4 lg:border-l lg:border-t-0">
+                            <div className="promo-card-glint flex h-full min-h-[286px] flex-col overflow-hidden rounded-[22px] border border-white/70 bg-white p-3.5 text-slate-950 shadow-[0_26px_58px_-42px_rgba(15,23,42,.45)] sm:min-h-[318px] lg:min-h-0">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-[#B93D2A]">
+                                            Live Slide Command
+                                        </p>
+                                        <h3 className="mt-1 line-clamp-2 font-clash text-lg font-semibold leading-tight text-slate-950">
+                                            {currentPromo?.title || firstActive?.title || "Tambahkan slide promo"}
+                                        </h3>
+                                    </div>
+                                    <span
+                                        className={cn(
+                                            "shrink-0 rounded-full border px-3 py-1.5 font-bdo text-[10px] font-bold uppercase",
+                                            currentPromo?.is_active
+                                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                                : "border-slate-200 bg-slate-50 text-slate-500",
+                                        )}
                                     >
-                                        {(handle) => (
-                                            <div className={cn(
-                                                "group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)]",
-                                                "transition-shadow hover:shadow-md",
-                                            )}>
-                                                {/* Image */}
-                                                <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-                                                    {item.slide_url ? (
-                                                        <img
-                                                            src={item.slide_url}
-                                                            alt={item.title ?? "Slide"}
-                                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                        />
-                                                    ) : (
-                                                        <div className="flex h-full w-full items-center justify-center text-slate-300">
-                                                            <ImageIcon size={28} />
-                                                        </div>
-                                                    )}
+                                        {currentPromo?.is_active ? "Live" : "Draft"}
+                                    </span>
+                                </div>
 
-                                                    {/* Drag handle — top-left */}
-                                                    <div className="absolute top-2 left-2">
-                                                        {handle}
-                                                    </div>
-
-                                                    {/* Order badge — top-right */}
-                                                    <div className="absolute top-2 right-2">
-                                                        <span className="rounded-full bg-black/40 px-2 py-0.5 font-bdo text-[10px] font-bold text-white/80 backdrop-blur-sm">
-                                                            #{idx + 1}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Card body */}
-                                                <div className="flex flex-1 flex-col gap-2 p-3">
-                                                    <div className="flex items-start justify-between gap-2 min-w-0">
-                                                        <p className="font-clash text-sm font-semibold text-slate-800 truncate">
-                                                            {item.title || <span className="italic text-slate-400 font-normal">Tanpa Judul</span>}
-                                                        </p>
-                                                        <ActiveBadge active={item.is_active} />
-                                                    </div>
-
-                                                    <div className="flex items-center gap-1.5 mt-auto pt-1">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => openEdit(item)}
-                                                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-1.5 text-xs font-bdo text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
-                                                        >
-                                                            <Pencil size={11} /> Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDelete(item)}
-                                                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-400 transition-all hover:bg-rose-100 hover:text-rose-600"
-                                                        >
-                                                            <Trash2 size={12} />
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                <div className="relative mt-3 flex-1 overflow-hidden rounded-[20px] bg-[#FFF7F4] ring-1 ring-[#FFE0D8] sm:rounded-[22px]">
+                                    <button
+                                        type="button"
+                                        onClick={() => (currentPromo ? openEdit(currentPromo) : openNew())}
+                                        className="group h-full min-h-[184px] w-full text-left sm:min-h-[214px] lg:min-h-0"
+                                    >
+                                        {currentPromo?.slide_url ? (
+                                            <img
+                                                src={currentPromo.slide_url}
+                                                alt={currentPromo.title || `Promo ${currentPromoIndex + 1}`}
+                                                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full min-h-[184px] flex-col items-center justify-center gap-3 px-6 text-center sm:min-h-[214px] lg:min-h-0">
+                                                <span className="flex h-12 w-12 items-center justify-center rounded-[18px] border border-[#FFD5CD] bg-white text-[#E35336] shadow-sm">
+                                                    <ImageIcon size={24} />
+                                                </span>
+                                                <span className="font-clash text-base font-semibold text-slate-950">
+                                                    Belum ada visual promo
+                                                </span>
+                                                <span className="max-w-xs font-bdo text-sm font-medium leading-5 text-slate-500">
+                                                    Tambahkan gambar agar carousel siap ditampilkan.
+                                                </span>
                                             </div>
                                         )}
-                                    </SortableCard>
-                                ))}
-                            </div>
-                        </SortableContext>
-                    </DndContext>
-                )}
+                                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/70 via-slate-950/24 to-transparent p-3 pt-14 sm:p-4 sm:pt-16">
+                                            <div className="flex items-end justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-white/75">
+                                                        Slide {items.length > 0 ? currentPromoIndex + 1 : 0} dari {items.length}
+                                                    </p>
+                                                    <p className="mt-1 line-clamp-1 font-clash text-base font-semibold text-white sm:text-lg">
+                                                        {currentPromo?.title || "Belum ada slide"}
+                                                    </p>
+                                                </div>
+                                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/40 bg-white/20 text-white backdrop-blur">
+                                                    <Pencil size={15} />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </button>
 
-                {/* ── Legend ── */}
-                <div className="animate-fade-in-up delay-300 flex flex-wrap items-center gap-5 px-2">
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                        </span>
-                        <span className="font-bdo text-[11px] text-slate-500 font-medium">Aktif — Slide ditampilkan</span>
+                                    <button
+                                        type="button"
+                                        onClick={goToPreviousPromo}
+                                        disabled={items.length <= 1}
+                                        className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/60 bg-white/90 text-[#B93D2A] shadow-sm backdrop-blur transition hover:bg-[#FFF1EE] disabled:cursor-not-allowed disabled:opacity-35 sm:left-3 sm:h-10 sm:w-10"
+                                        aria-label="Promo sebelumnya"
+                                    >
+                                        <ChevronLeft size={17} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={goToNextPromo}
+                                        disabled={items.length <= 1}
+                                        className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/60 bg-white/90 text-[#B93D2A] shadow-sm backdrop-blur transition hover:bg-[#FFF1EE] disabled:cursor-not-allowed disabled:opacity-35 sm:right-3 sm:h-10 sm:w-10"
+                                        aria-label="Promo berikutnya"
+                                    >
+                                        <ChevronRight size={17} />
+                                    </button>
+                                </div>
+
+                                <div className="promo-list-scroll mt-2 flex gap-2 overflow-x-auto pb-1">
+                                    {items.length > 0 ? items.slice(0, 10).map((item, index) => (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => setCurrentPromoIndex(index)}
+                                            className={cn(
+                                                "relative flex aspect-[16/9] h-11 min-w-[78px] items-center justify-center overflow-hidden rounded-[14px] border bg-slate-100 transition sm:h-12 sm:min-w-[86px]",
+                                                currentPromo?.id === item.id
+                                                    ? "border-[#E35336] shadow-[0_0_0_2px_rgba(227,83,54,.14)]"
+                                                    : "border-slate-200 hover:border-[#F8B5A8]",
+                                            )}
+                                            aria-label={`Pilih slide promo ${index + 1}`}
+                                        >
+                                            {item.slide_url ? (
+                                                <img src={item.slide_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                                            ) : (
+                                                <span className="relative z-10 px-2 text-center font-bdo text-[10px] font-bold leading-tight text-slate-400">
+                                                    {item.title || `Slide ${index + 1}`}
+                                                </span>
+                                            )}
+                                            {currentPromo?.id === item.id && (
+                                                <span className="pointer-events-none absolute inset-0 rounded-[13px] ring-2 ring-inset ring-[#E35336]" />
+                                            )}
+                                        </button>
+                                    )) : (
+                                        <span className="flex h-10 w-full items-center justify-center rounded-[15px] border border-dashed border-[#F8B5A8] bg-[#FFF7F5] px-3 font-bdo text-xs font-semibold text-[#B93D2A]">
+                                            Belum ada slide untuk dipreview.
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                                    <div className="flex min-w-0 items-center justify-center rounded-2xl border border-[#FFD5CD] bg-[#FFF1EE] px-3 py-2 font-bdo text-[11px] font-bold text-[#B93D2A]">
+                                        {items.length > 0 ? `Slide ${currentPromoIndex + 1} dari ${items.length}` : "Belum ada slide"}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => (currentPromo ? openEdit(currentPromo) : openNew())}
+                                        className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-[#E35336] px-4 font-clash text-xs font-semibold text-white transition hover:bg-[#B93D2A]"
+                                    >
+                                        <Pencil size={13} />
+                                        Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-50 ring-1 ring-rose-200">
-                            <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                        </span>
-                        <span className="font-bdo text-[11px] text-slate-500 font-medium">Nonaktif — Slide disembunyikan</span>
+                </section>
+
+                <section className="promo-enter delay-100 promo-card-glint relative overflow-hidden rounded-[22px] border border-[#FFE0D8] bg-white p-3.5 shadow-[0_22px_52px_-44px_rgba(127,36,25,.5)] sm:p-4">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#FFF7F5] to-transparent" />
+                    <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex items-center gap-3">
+                            <ShinyIcon className="h-10 w-10">
+                                <Activity size={18} />
+                            </ShinyIcon>
+                            <div>
+                                <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Workflow</p>
+                                <h2 className="font-clash text-base font-semibold text-slate-950">Daftar Slide Promo</h2>
+                            </div>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-3">
+                            {[
+                                { icon: <GripVertical size={14} />, label: "Seret kartu", note: "Atur prioritas" },
+                                { icon: <Pencil size={14} />, label: "Edit cepat", note: "Slide-over" },
+                                { icon: <Archive size={14} />, label: "Nonaktifkan", note: "Simpan draft" },
+                            ].map((item) => (
+                                <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50/75 px-3 py-2">
+                                    <div className="flex items-center gap-2 font-bdo text-[11px] font-bold text-slate-700">
+                                        {item.icon}
+                                        {item.label}
+                                    </div>
+                                    <p className="mt-0.5 font-bdo text-[10px] font-medium text-slate-400">{item.note}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <ImageIcon size={11} className="text-slate-400" />
-                        <span className="font-bdo text-[11px] text-slate-500 font-medium">Seret kartu untuk mengubah urutan</span>
+
+                    <div className="relative z-10 mt-4">
+                        {items.length === 0 ? (
+                            <div className="flex min-h-[260px] flex-col items-center justify-center gap-4 rounded-[22px] border border-dashed border-[#F8B5A8] bg-[#FFF7F5]/65 p-8 text-center">
+                                <ShinyIcon className="h-14 w-14">
+                                    <ImageIcon size={22} />
+                                </ShinyIcon>
+                                <div>
+                                    <p className="font-clash text-lg font-semibold text-slate-950">Belum ada slide promo</p>
+                                    <p className="mt-1 max-w-sm font-bdo text-sm font-medium leading-6 text-slate-500">
+                                        Tambahkan slide pertama untuk mulai mengisi carousel promo publik.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={openNew}
+                                    className="promo-btn-sheen inline-flex items-center gap-2 rounded-2xl bg-[#E35336] px-5 py-3 font-clash text-sm font-semibold text-white shadow-[0_18px_34px_-24px_rgba(227,83,54,.95)]"
+                                >
+                                    <Plus size={15} />
+                                    Tambah Slide
+                                </button>
+                            </div>
+                        ) : (
+                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                <SortableContext items={items.map((item) => item.id.toString())} strategy={rectSortingStrategy}>
+                                    <div className="promo-list-scroll promo-touch-scroll grid max-h-[58vh] grid-cols-1 gap-3 overflow-y-auto pr-1 sm:max-h-[620px] md:grid-cols-2 xl:max-h-[calc(100vh-348px)] 2xl:grid-cols-3">
+                                        {items.map((item, index) => (
+                                            <SortableCard key={item.id} id={item.id.toString()}>
+                                                {(handle) => (
+                                                    <SlideCard
+                                                        item={item}
+                                                        index={index}
+                                                        onEdit={openEdit}
+                                                        onDelete={handleDelete}
+                                                        handle={handle}
+                                                    />
+                                                )}
+                                            </SortableCard>
+                                        ))}
+                                    </div>
+                                </SortableContext>
+                            </DndContext>
+                        )}
                     </div>
-                </div>
+                </section>
             </div>
 
             <SlideOver
                 isOpen={slideOver.open}
                 onClose={close}
-                title={<span className="font-clash text-xl">{slideOver.item ? "Edit Slide" : "Slide Baru"}</span>}
+                title={<span className="font-clash text-xl">{slideOver.item ? "Edit Slide Promo" : "Slide Promo Baru"}</span>}
                 description={
                     <span className="font-bdo text-sm text-slate-500">
-                        {slideOver.item ? "Perbarui detail dan gambar slide." : "Tambahkan slide carousel baru."}
+                        {slideOver.item ? "Perbarui judul, status, urutan, dan gambar slide." : "Tambahkan visual promo baru untuk carousel publik."}
                     </span>
                 }
             >

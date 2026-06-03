@@ -1,11 +1,19 @@
 import { Head, router, usePage } from "@inertiajs/react";
-import { CalendarCheck2, ChevronDown, Lock, Save } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+    AlertTriangle,
+    CalendarDays,
+    CheckCircle2,
+    LockKeyhole,
+    RotateCcw,
+    Save,
+    ShieldCheck,
+    UnlockKeyhole,
+    X,
+} from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
 import type { PageProps } from "@/types";
-
-// ── Types ──────────────────────────────────────────────────────────────────────
 
 interface ScheduleRow {
     month: number;
@@ -16,235 +24,454 @@ interface ScheduleRow {
 }
 
 type Props = PageProps<{ schedules: ScheduleRow[] }>;
-
-// ── Global styles ──────────────────────────────────────────────────────────────
-
-const GLOBAL_STYLES = `
-    .font-clash { font-family: 'Clash Display', sans-serif; }
-    .font-bdo   { font-family: 'BDO Grotesk', sans-serif; }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translate3d(0, 28px, 0); }
-        to   { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to   { opacity: 1; transform: scale(1); }
-    }
-
-    .animate-fade-in-up { animation: fadeInUp 0.65s cubic-bezier(0.16,1,0.3,1) forwards; opacity:0; will-change:opacity,transform; }
-    .animate-scale-in   { animation: scaleIn  0.5s  cubic-bezier(0.16,1,0.3,1) forwards; opacity:0; }
-
-    .delay-100 { animation-delay: 100ms; }
-    .delay-200 { animation-delay: 200ms; }
-
-    @keyframes shimmerSweep {
-        0%   { transform: translateX(-100%); }
-        100% { transform: translateX(200%); }
-    }
-    .shimmer-once { position: relative; overflow: hidden; }
-    .shimmer-once::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
-        width: 60%;
-        animation: shimmerSweep 1.1s ease-out 0.5s forwards;
-        pointer-events: none;
-        border-radius: inherit;
-    }
-
-    @keyframes iconGlow {
-        0%, 100% { box-shadow: 0 2px 8px rgba(15,23,42,0.2); }
-        50%       { box-shadow: 0 2px 16px rgba(15,23,42,0.3), 0 0 24px rgba(251,191,36,0.12); }
-    }
-    .icon-glow { animation: iconGlow 3.5s ease-in-out infinite; }
-
-    @keyframes thumbGlowEmerald {
-        0%, 100% { box-shadow: 0 1px 4px rgba(0,0,0,0.2), 0 0 0 0 rgba(16,185,129,0); }
-        50%       { box-shadow: 0 1px 8px rgba(0,0,0,0.25), 0 0 10px 2px rgba(16,185,129,0.35); }
-    }
-    .thumb-glow-emerald { animation: thumbGlowEmerald 2.5s ease-in-out infinite; }
-
-    .card-glint::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 20px; right: 20px; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
-        pointer-events: none;
-    }
-
-    @keyframes calendarExpand {
-        from { opacity: 0; transform: translateY(-6px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .calendar-expand { animation: calendarExpand 0.25s ease-out forwards; }
-`;
-
-// ── Calendar helpers ───────────────────────────────────────────────────────────
+type SaveCallbacks = { onFinish: () => void; onError: () => void };
 
 const DAY_LABELS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+
+const SCHEDULE_STYLES = `
+    .font-clash { font-family: 'Clash Display', sans-serif; }
+    .font-bdo { font-family: 'BDO Grotesk', sans-serif; }
+
+    @keyframes scheduleRise {
+        from { opacity: 0; transform: translate3d(0, 22px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    @keyframes scheduleShine {
+        0% { background-position: -190% center; }
+        100% { background-position: 210% center; }
+    }
+    @keyframes scheduleSweep {
+        0% { transform: translateX(-110%); }
+        100% { transform: translateX(190%); }
+    }
+    @keyframes scheduleGlow {
+        0%, 100% { opacity: .72; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.16); }
+    }
+    .schedule-enter { animation: scheduleRise .58s cubic-bezier(.16,1,.3,1) both; will-change: opacity, transform; }
+    .schedule-title-shine {
+        background: linear-gradient(115deg, #0f172a 34%, #cbd5e1 49%, #0f172a 64%);
+        background-size: 220% auto;
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        animation: scheduleShine 5s linear infinite;
+    }
+    .schedule-card-glint { position: relative; }
+    .schedule-card-glint::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 22px;
+        right: 22px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.96), transparent);
+        pointer-events: none;
+        z-index: 2;
+    }
+    .schedule-sheen { position: relative; overflow: hidden; }
+    .schedule-sheen::after {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        width: 50%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+        animation: scheduleSweep 1s ease-out .32s forwards;
+        pointer-events: none;
+    }
+    .schedule-live-dot {
+        display: inline-block;
+        border-radius: 999px;
+        animation: scheduleGlow 2.4s ease-in-out infinite;
+        box-shadow: 0 0 0 1px rgba(255,255,255,.72), 0 0 14px currentColor;
+    }
+    .schedule-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(227,83,54,.34) transparent;
+    }
+    .schedule-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .schedule-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .schedule-scrollbar::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: rgba(227,83,54,.32);
+        border: 1px solid rgba(255,255,255,.85);
+    }
+    .schedule-touch-scroll {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x;
+        scroll-snap-type: x proximity;
+    }
+    .schedule-snap-item {
+        scroll-snap-align: start;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .schedule-enter, .schedule-title-shine, .schedule-sheen::after, .schedule-live-dot {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+    }
+`;
+
+function padTwo(value: number): string {
+    return String(value).padStart(2, "0");
+}
+
+function rowKey(row: ScheduleRow): string {
+    return `${row.year}-${padTwo(row.month)}`;
+}
 
 function buildCalendarWeeks(month: number, year: number): (string | null)[][] {
     const firstDow = new Date(year, month - 1, 1).getDay();
     const startOffset = (firstDow + 6) % 7;
     const daysInMonth = new Date(year, month, 0).getDate();
-    const pad = (n: number) => String(n).padStart(2, "0");
-
     const cells: (string | null)[] = Array(startOffset).fill(null);
-    for (let d = 1; d <= daysInMonth; d++) {
-        cells.push(`${year}-${pad(month)}-${pad(d)}`);
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+        cells.push(`${year}-${padTwo(month)}-${padTwo(day)}`);
     }
+
     while (cells.length % 7 !== 0) cells.push(null);
 
     const weeks: (string | null)[][] = [];
-    for (let i = 0; i < cells.length; i += 7) {
-        weeks.push(cells.slice(i, i + 7));
+    for (let index = 0; index < cells.length; index += 7) {
+        weeks.push(cells.slice(index, index + 7));
     }
+
     return weeks;
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+function dayNumber(dateStr: string): number {
+    return Number(dateStr.split("-")[2] ?? 0);
+}
 
-function ShinyIcon({ children, className }: { children: React.ReactNode; className?: string }) {
+function formatDateShort(dateStr: string): string {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, (month ?? 1) - 1, day).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+    });
+}
+
+function getDaysInMonth(row: ScheduleRow): number {
+    return new Date(row.year, row.month, 0).getDate();
+}
+
+function ShinyIcon({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn(
-            "relative flex shrink-0 items-center justify-center rounded-xl",
-            "bg-gradient-to-br from-slate-600 to-slate-900",
-            "shadow-[0_2px_10px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.12)]",
-            "icon-glow",
-            className,
-        )}>
+        <div
+            className={cn(
+                "relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl",
+                "bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white",
+                "shadow-[0_18px_34px_-24px_rgba(227,83,54,.98),inset_0_1px_0_rgba(255,255,255,.22)]",
+                className,
+            )}
+        >
             {children}
-            <span className="pointer-events-none absolute top-[3px] left-[5px] right-[5px] h-[5px] rounded-full bg-white/20 blur-[1px]" />
+            <span className="pointer-events-none absolute left-2 right-2 top-1 h-1 rounded-full bg-white/35 blur-[1px]" />
         </div>
     );
 }
 
-function ToggleSwitch({
-    checked,
-    onChange,
-    disabled,
+function StatusPill({ isOpen }: { isOpen: boolean }) {
+    return (
+        <span
+            className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-bdo text-[10px] font-bold uppercase tracking-wide",
+                isOpen
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-slate-100 text-slate-500",
+            )}
+        >
+            <span className={cn("h-1.5 w-1.5 rounded-full", isOpen ? "bg-emerald-500" : "bg-slate-400")} />
+            {isOpen ? "Reservasi dibuka" : "Bulan terkunci"}
+        </span>
+    );
+}
+
+function HeroMetric({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
+    return (
+        <div className="rounded-[18px] border border-white/28 bg-white/12 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur">
+            <div className="flex items-center justify-between gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-[14px] bg-white/18 text-white ring-1 ring-white/20">
+                    {icon}
+                </span>
+                <span className="font-clash text-xl font-semibold leading-none text-white">{value}</span>
+            </div>
+            <p className="mt-2 font-bdo text-[10px] font-bold uppercase tracking-wide text-white/62">{label}</p>
+        </div>
+    );
+}
+
+function HeroStep({ index, text }: { index: string; text: string }) {
+    return (
+        <div className="flex items-center gap-2.5 rounded-[16px] border border-white/18 bg-white/10 px-3 py-2 backdrop-blur">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white font-clash text-[11px] font-semibold text-[#B93D2A]">
+                {index}
+            </span>
+            <p className="font-bdo text-[11px] font-bold leading-4 text-white/86">{text}</p>
+        </div>
+    );
+}
+
+function ElegantMetricCard({
+    icon,
+    label,
+    value,
+    helper,
+    tone,
 }: {
-    checked: boolean;
-    onChange: () => void;
+    icon: ReactNode;
+    label: string;
+    value: string | number;
+    helper: string;
+    tone: "emerald" | "terracotta";
+}) {
+    const isEmerald = tone === "emerald";
+
+    return (
+        <div
+            className={cn(
+                "relative overflow-hidden rounded-[20px] border bg-white p-3 shadow-[0_16px_34px_-30px_rgba(15,23,42,.42)]",
+                isEmerald
+                    ? "border-emerald-200"
+                    : "border-[#FFD5CD]",
+            )}
+        >
+            <div className={cn("pointer-events-none absolute inset-0", isEmerald ? "bg-emerald-50/70" : "bg-[#FFF1EE]/78")} />
+            <div className={cn("pointer-events-none absolute inset-x-0 bottom-0 h-1", isEmerald ? "bg-emerald-300/70" : "bg-[#F08C78]/70")} />
+            <div className={cn("pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full blur-2xl", isEmerald ? "bg-emerald-200/45" : "bg-[#F08C78]/22")} />
+            <div className="relative z-10 flex items-start justify-between gap-3">
+                <span className={cn("flex h-9 w-9 items-center justify-center rounded-[15px]", isEmerald ? "bg-emerald-100 text-emerald-700" : "bg-[#FFF1EE] text-[#B93D2A]")}>
+                    {icon}
+                </span>
+                <span className="font-clash text-2xl font-semibold leading-none text-slate-950">{value}</span>
+            </div>
+            <p className="relative z-10 mt-3 font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+            <p className="relative z-10 mt-1 font-bdo text-[11px] font-semibold leading-4 text-slate-500">{helper}</p>
+        </div>
+    );
+}
+
+function MonthActionButton({
+    isOpen,
+    onClick,
+    disabled,
+    compact = false,
+}: {
+    isOpen: boolean;
+    onClick: () => void;
     disabled?: boolean;
+    compact?: boolean;
 }) {
     return (
         <button
             type="button"
-            role="switch"
-            aria-checked={checked}
+            onClick={onClick}
             disabled={disabled}
-            onClick={onChange}
             className={cn(
-                "relative inline-flex h-[26px] w-12 shrink-0 rounded-full p-[3px] transition-all duration-300",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/50 focus-visible:ring-offset-2",
-                disabled ? "cursor-not-allowed opacity-50 grayscale" : "cursor-pointer",
-                checked
-                    ? "bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-[0_2px_8px_rgba(52,211,153,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]"
-                    : "bg-slate-200 shadow-[inset_0_1px_3px_rgba(0,0,0,0.12)]",
+                "inline-flex w-full items-center justify-center gap-2 rounded-2xl border font-clash font-semibold transition focus:outline-none focus-visible:ring-4 focus-visible:ring-[#E35336]/15 disabled:cursor-not-allowed disabled:opacity-55",
+                compact ? "h-9 px-3 text-[11px]" : "h-11 px-4 text-xs",
+                isOpen
+                    ? "border-[#FFD5CD] bg-white text-[#B93D2A] shadow-[0_12px_24px_-22px_rgba(185,61,42,.65)] hover:border-[#F8B5A8] hover:bg-[#FFF1EE]"
+                    : "border-transparent bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white shadow-[0_16px_30px_-22px_rgba(227,83,54,.95)] hover:-translate-y-0.5",
             )}
         >
-            <span className={cn(
-                "relative inline-block h-5 w-5 rounded-full bg-white transition-all duration-300",
-                checked
-                    ? "translate-x-[22px] shadow-[0_1px_4px_rgba(0,0,0,0.2)] thumb-glow-emerald"
-                    : "translate-x-0 shadow-[0_1px_3px_rgba(0,0,0,0.15)]",
-            )}>
-                <span className="pointer-events-none absolute top-[3px] left-[3px] right-[3px] h-[5px] rounded-full bg-white/70 blur-[0.5px]" />
-            </span>
+            {isOpen ? <LockKeyhole size={14} /> : <UnlockKeyhole size={14} />}
+            {isOpen ? "Tutup bulan" : "Buka bulan"}
         </button>
     );
 }
 
-// ── Calendar Grid ─────────────────────────────────────────────────────────────
+function ScheduleHero({
+    schedules,
+}: {
+    schedules: ScheduleRow[];
+}) {
+    const openCount = schedules.filter((row) => row.is_open).length;
+    const lockedCount = schedules.length - openCount;
+    const closedDays = schedules.reduce((sum, row) => sum + row.closed_dates.length, 0);
+
+    return (
+        <section
+            className="schedule-enter schedule-card-glint relative overflow-hidden rounded-[26px] border border-[#F8B5A8]/60 p-4 text-white shadow-[0_22px_44px_-34px_rgba(227,83,54,.95)] sm:p-5"
+            style={{
+                background:
+                    "radial-gradient(circle at 92% 4%, rgba(255,255,255,.32), transparent 30%), radial-gradient(circle at 10% 95%, rgba(248,181,168,.28), transparent 34%), linear-gradient(135deg, #E35336 0%, #B93D2A 54%, #7F2419 100%)",
+            }}
+        >
+            <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-white/18" />
+            <div className="pointer-events-none absolute right-10 top-16 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-24 left-8 h-56 w-56 rounded-full bg-[#F8B5A8]/20 blur-3xl" />
+
+            <div className="relative z-10 grid min-h-[270px] gap-5 xl:grid-cols-[minmax(0,1fr)_350px] xl:items-stretch">
+                <div className="flex min-w-0 flex-col justify-between gap-5">
+                    <div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 font-bdo text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur">
+                            <span className="schedule-live-dot h-1.5 w-1.5 bg-white text-white" />
+                            Schedule command room
+                        </div>
+                        <h2 className="mt-4 max-w-5xl font-clash text-[1.85rem] font-semibold leading-[0.98] tracking-tight sm:text-[2.7rem] xl:text-[3.35rem]">
+                            Buka dan tutup jadwal reservasi dengan alur yang aman.
+                        </h2>
+                        <p className="mt-3 max-w-2xl font-bdo text-[13px] font-medium leading-relaxed text-white/78 sm:text-sm">
+                            Admin bisa memilih bulan, mengubah status buka atau tutup, menandai tanggal libur, dan menyimpan perubahan tanpa berpindah halaman.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-3">
+                        <HeroMetric icon={<UnlockKeyhole size={15} />} label="Bulan terbuka" value={openCount} />
+                        <HeroMetric icon={<LockKeyhole size={15} />} label="Bulan terkunci" value={lockedCount} />
+                        <HeroMetric icon={<CalendarDays size={15} />} label="Tanggal tutup" value={closedDays} />
+                    </div>
+                </div>
+
+                <div className="rounded-[22px] border border-white/24 bg-white/12 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur">
+                    <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.18em] text-white/58">Cara pakai paling cepat</p>
+                    <div className="mt-3 grid gap-2">
+                        <HeroStep index="1" text="Pilih bulan dari kartu." />
+                        <HeroStep index="2" text="Tekan tombol buka atau tutup bulan." />
+                        <HeroStep index="3" text="Klik tanggal untuk tutup atau buka hari." />
+                        <HeroStep index="4" text="Simpan hanya jika jadwal sudah benar." />
+                    </div>
+                    <div className="mt-3 rounded-[18px] border border-white/18 bg-white/10 p-3">
+                        <p className="font-bdo text-[11px] font-semibold leading-5 text-white/78">
+                            Perubahan tanggal tidak permanen sebelum tombol simpan ditekan, jadi operator bisa cek ulang dengan tenang.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function MonthTabs({
+    schedules,
+    selectedKey,
+    onSelect,
+    onToggle,
+    togglingKey,
+}: {
+    schedules: ScheduleRow[];
+    selectedKey: string;
+    onSelect: (key: string) => void;
+    onToggle: (row: ScheduleRow) => void;
+    togglingKey: string | null;
+}) {
+    return (
+        <section className="schedule-enter schedule-card-glint overflow-hidden rounded-[24px] border border-[#FFE0D8] bg-[linear-gradient(135deg,#FFFFFF_0%,#FFF8F5_100%)] p-2.5 shadow-[0_16px_36px_-34px_rgba(185,61,42,.48)]">
+            <div className="mb-2.5 flex flex-col gap-1 px-1 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-[#B93D2A]/70">Pilih bulan dan status</p>
+                    <h2 className="font-clash text-lg font-semibold text-slate-950">Kontrol cepat bulan reservasi</h2>
+                </div>
+                <p className="font-bdo text-xs font-semibold text-slate-400">Tombol aksi di setiap kartu bisa langsung dibalik.</p>
+            </div>
+            <div className="schedule-scrollbar schedule-touch-scroll flex gap-2 overflow-x-auto pb-2">
+                {schedules.map((row, index) => {
+                    const key = rowKey(row);
+                    const active = key === selectedKey;
+                    return (
+                        <article
+                            key={key}
+                            className={cn(
+                                "schedule-snap-item grid min-w-[74vw] gap-2.5 rounded-[20px] border p-2.5 text-left transition sm:min-w-[218px] md:min-w-[218px]",
+                                active
+                                    ? "border-[#E35336] bg-white shadow-[0_18px_38px_-28px_rgba(227,83,54,.72)]"
+                                    : "border-[#FFE0D8] bg-white/78 hover:border-[#F8B5A8] hover:bg-white",
+                            )}
+                        >
+                            <button type="button" onClick={() => onSelect(key)} className="block w-full text-left">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="truncate font-clash text-base font-semibold text-slate-950">{row.label}</p>
+                                        <p className="mt-0.5 font-bdo text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                                            {index === 0 ? "Bulan ini" : `${padTwo(row.month)} / ${row.year}`}
+                                        </p>
+                                    </div>
+                                    <span className={cn("h-2.5 w-2.5 rounded-full", row.is_open ? "bg-emerald-500" : "bg-slate-300")} />
+                                </div>
+                                <div className="mt-2.5 flex items-center justify-between gap-2">
+                                    <span className={cn("rounded-full px-2.5 py-1 font-bdo text-[10px] font-bold uppercase", row.is_open ? "bg-emerald-50 text-emerald-700" : "bg-white text-slate-500")}>
+                                        {row.is_open ? "Open" : "Lock"}
+                                    </span>
+                                    <span className="font-bdo text-[11px] font-bold text-[#B93D2A]">{row.closed_dates.length} tanggal tutup</span>
+                                </div>
+                            </button>
+                            <MonthActionButton
+                                isOpen={row.is_open}
+                                compact
+                                disabled={togglingKey === key}
+                                onClick={() => {
+                                    onSelect(key);
+                                    onToggle(row);
+                                }}
+                            />
+                        </article>
+                    );
+                })}
+            </div>
+        </section>
+    );
+}
 
 function CalendarGrid({
-    month,
-    year,
-    monthClosed,
-    closedDates,
+    row,
+    localClosedDates,
     onToggleLocal,
     disabled,
 }: {
-    month: number;
-    year: number;
-    monthClosed: boolean;
-    closedDates: string[];
+    row: ScheduleRow;
+    localClosedDates: string[];
     onToggleLocal: (date: string) => void;
     disabled: boolean;
 }) {
-    const weeks = buildCalendarWeeks(month, year);
-    const closedSet = new Set(closedDates);
+    const weeks = buildCalendarWeeks(row.month, row.year);
+    const closedSet = new Set(localClosedDates);
 
     return (
-        <div>
-            {/* Legend */}
-            <div className="mb-3 flex items-center justify-between">
-                <p className="font-clash text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Klik hari untuk buka / tutup
-                </p>
-                <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-sm bg-emerald-400" />
-                        <span className="font-bdo text-[10px] text-slate-500">Buka</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-sm bg-rose-400" />
-                        <span className="font-bdo text-[10px] text-slate-500">Tutup</span>
-                    </span>
-                    {monthClosed && (
-                        <span className="flex items-center gap-1.5">
-                            <span className="h-2.5 w-2.5 rounded-sm bg-slate-300" />
-                            <span className="font-bdo text-[10px] text-slate-500">Bulan tutup</span>
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            {/* Day headers */}
-            <div className="grid grid-cols-7 mb-1">
-                {DAY_LABELS.map((d) => (
-                    <div key={d} className="text-center font-clash text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-1">
-                        {d}
+        <div className="rounded-[24px] border border-[#FFE0D8] bg-[linear-gradient(180deg,#FFFFFF_0%,#FFF8F5_125%)] p-2.5 shadow-inner sm:p-3">
+            <div className="mb-2 grid grid-cols-7 gap-1">
+                {DAY_LABELS.map((label) => (
+                    <div key={label} className="flex h-8 items-center justify-center rounded-[14px] bg-white font-bdo text-[9px] font-bold uppercase tracking-wide text-slate-400 ring-1 ring-[#FFE0D8]">
+                        {label}
                     </div>
                 ))}
             </div>
 
-            {/* Day cells */}
-            <div className="flex flex-col gap-1">
-                {weeks.map((week, wi) => (
-                    <div key={wi} className="grid grid-cols-7 gap-1">
-                        {week.map((dateStr, di) => {
-                            if (!dateStr) return <div key={di} />;
-                            const day = parseInt(dateStr.split("-")[2]);
-                            const isClosed = closedSet.has(dateStr);
+            <div className="grid gap-1">
+                {weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                        {week.map((dateStr, dayIndex) => {
+                            if (!dateStr) {
+                                return <div key={`${weekIndex}-${dayIndex}`} className="aspect-square rounded-[18px]" />;
+                            }
+
+                            const closed = closedSet.has(dateStr);
+                            const locked = !row.is_open;
 
                             return (
                                 <button
                                     key={dateStr}
                                     type="button"
-                                    disabled={disabled || monthClosed}
+                                    disabled={disabled || locked}
                                     onClick={() => onToggleLocal(dateStr)}
-                                    title={
-                                        monthClosed
-                                            ? "Buka bulan dulu untuk mengatur hari"
-                                            : isClosed
-                                            ? "Klik untuk buka hari ini"
-                                            : "Klik untuk tutup hari ini"
-                                    }
                                     className={cn(
-                                        "flex h-9 w-full items-center justify-center rounded-xl font-bdo text-xs font-medium transition-all duration-150",
-                                        monthClosed
-                                            ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                            : isClosed
-                                            ? "bg-rose-100 text-rose-600 ring-1 ring-rose-200 hover:bg-rose-200"
-                                            : "bg-white text-slate-700 shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:bg-emerald-50 hover:text-emerald-700 hover:ring-1 hover:ring-emerald-200",
+                                        "group relative flex aspect-square min-h-[38px] flex-col items-center justify-center overflow-hidden rounded-[15px] border font-clash text-[13px] font-semibold transition sm:min-h-[50px] xl:min-h-[58px]",
+                                        locked
+                                            ? "cursor-not-allowed border-slate-200 bg-slate-200 text-slate-400"
+                                            : closed
+                                                ? "border-[#F8B5A8] bg-[linear-gradient(135deg,#FFF1EE,#FFE0D8)] text-[#B93D2A] shadow-[inset_0_1px_0_rgba(255,255,255,.8)] hover:bg-rose-100"
+                                                : "border-emerald-100 bg-white text-slate-900 shadow-sm hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700",
                                         disabled && "opacity-60",
                                     )}
+                                    title={locked ? "Buka bulan terlebih dahulu" : closed ? "Klik untuk membuka tanggal ini" : "Klik untuk menutup tanggal ini"}
                                 >
-                                    {day}
+                                    <span>{dayNumber(dateStr)}</span>
+                                    <span className={cn("mt-0.5 hidden font-bdo text-[9px] font-bold uppercase sm:block", closed ? "text-[#B93D2A]/70" : "text-slate-300 group-hover:text-emerald-600")}>
+                                        {locked ? "Lock" : closed ? "Tutup" : "Buka"}
+                                    </span>
                                 </button>
                             );
                         })}
@@ -255,206 +482,312 @@ function CalendarGrid({
     );
 }
 
-// ── Schedule Card ─────────────────────────────────────────────────────────────
-
-type SaveCallbacks = { onFinish: () => void; onError: () => void };
-
-function ScheduleCard({
+function ActionDock({
     row,
-    isFirst,
+    localClosedDates,
+    hasChanges,
+    saving,
+    toggling,
+    onToggleMonth,
+    onReset,
+    onOpenAll,
+    onSave,
+}: {
+    row: ScheduleRow;
+    localClosedDates: string[];
+    hasChanges: boolean;
+    saving: boolean;
+    toggling: boolean;
+    onToggleMonth: () => void;
+    onReset: () => void;
+    onOpenAll: () => void;
+    onSave: () => void;
+}) {
+    const openDays = Math.max(0, getDaysInMonth(row) - localClosedDates.length);
+
+    return (
+        <aside className="schedule-card-glint h-fit overflow-hidden rounded-[26px] border border-[#FFE0D8] bg-white shadow-[0_20px_42px_-38px_rgba(185,61,42,.58)]">
+            <div className="relative overflow-hidden bg-[linear-gradient(135deg,#FFF1EE_0%,#FFFFFF_52%,#FFE0D8_130%)] p-3.5 text-slate-950">
+                <div className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-[#F08C78]/18 blur-2xl" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-1.5 bg-[linear-gradient(180deg,#F08C78,#E35336,#B93D2A)]" />
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.18em] text-[#B93D2A]/70">Status bulan</p>
+                        <h3 className="mt-1 font-clash text-xl font-semibold">{row.label}</h3>
+                    </div>
+                    <StatusPill isOpen={row.is_open} />
+                </div>
+                <p className="mt-2 font-bdo text-xs font-semibold leading-5 text-slate-500">
+                    {row.is_open ? "Booking publik aktif untuk bulan ini." : "Bulan ini masih dikunci dari reservasi publik."}
+                </p>
+            </div>
+
+            <div className="space-y-2.5 p-3">
+                <MonthActionButton isOpen={row.is_open} onClick={onToggleMonth} disabled={toggling} />
+
+                <div className="grid grid-cols-2 gap-2">
+                    <ElegantMetricCard
+                        icon={<CheckCircle2 size={16} />}
+                        label="Tanggal buka"
+                        value={openDays}
+                        helper="Masih bisa dipilih publik"
+                        tone="emerald"
+                    />
+                    <ElegantMetricCard
+                        icon={<X size={16} />}
+                        label="Tanggal tutup"
+                        value={localClosedDates.length}
+                        helper="Libur atau maintenance"
+                        tone="terracotta"
+                    />
+                </div>
+
+                {!row.is_open && (
+                    <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-3">
+                        <div className="flex items-start gap-3">
+                            <LockKeyhole size={18} className="mt-0.5 shrink-0 text-slate-400" />
+                            <p className="font-bdo text-xs font-semibold leading-5 text-slate-500">
+                                Aktifkan bulan ini dulu. Setelah aktif, klik tanggal untuk menandai hari tutup.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="rounded-[24px] border border-[#FFE0D8] bg-[#FFF8F5] p-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Tanggal ditutup</p>
+                        {hasChanges && (
+                            <span className="rounded-full bg-amber-100 px-2.5 py-1 font-bdo text-[9px] font-bold uppercase text-amber-700">
+                                Belum simpan
+                            </span>
+                        )}
+                    </div>
+                    <div className="schedule-scrollbar mt-3 max-h-[168px] overflow-y-auto pr-1">
+                        {localClosedDates.length === 0 ? (
+                            <div className="rounded-[18px] border border-dashed border-[#FFD5CD] bg-white p-4 text-center">
+                                <p className="font-clash text-sm font-semibold text-slate-900">Belum ada tanggal tutup</p>
+                                <p className="mt-1 font-bdo text-xs font-semibold text-slate-400">Klik tanggal di kalender untuk menutup hari.</p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-2">
+                                {localClosedDates.map((date) => (
+                                    <div key={date} className="flex items-center justify-between gap-3 rounded-[18px] border border-[#FFD5CD] bg-white px-3 py-2">
+                                        <span className="font-bdo text-xs font-bold text-slate-700">{formatDateShort(date)}</span>
+                                        <span className="rounded-full bg-[#FFF1EE] px-2 py-0.5 font-bdo text-[9px] font-bold uppercase text-[#B93D2A]">Tutup</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+                    <button
+                        type="button"
+                        onClick={onOpenAll}
+                        disabled={!row.is_open || localClosedDates.length === 0 || saving}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 font-clash text-xs font-semibold text-slate-600 transition hover:border-[#F8B5A8] hover:text-[#B93D2A] disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                        <ShieldCheck size={14} />
+                        Buka semua tanggal
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onReset}
+                        disabled={!hasChanges || saving}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 font-clash text-xs font-semibold text-slate-600 transition hover:border-[#F8B5A8] hover:text-[#B93D2A] disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                        <RotateCcw size={14} />
+                        Batalkan edit
+                    </button>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={onSave}
+                    disabled={!hasChanges || saving || !row.is_open}
+                    className={cn(
+                        "inline-flex h-11 w-full items-center justify-center gap-2 rounded-[18px] px-5 font-clash text-xs font-semibold transition",
+                        hasChanges && row.is_open
+                            ? "bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white shadow-[0_18px_34px_-24px_rgba(227,83,54,.95)] hover:-translate-y-0.5"
+                            : "cursor-not-allowed bg-slate-100 text-slate-400",
+                    )}
+                >
+                    <Save size={15} />
+                    {saving ? "Menyimpan..." : "Simpan perubahan"}
+                </button>
+            </div>
+        </aside>
+    );
+}
+
+function ScheduleStudio({
+    row,
     onToggle,
     onSaveDates,
     toggling,
-    index,
 }: {
     row: ScheduleRow;
-    isFirst: boolean;
-    onToggle: () => void;
-    onSaveDates: (newClosed: string[], cbs: SaveCallbacks) => void;
+    onToggle: (row: ScheduleRow) => void;
+    onSaveDates: (row: ScheduleRow, newClosed: string[], cbs: SaveCallbacks) => void;
     toggling: boolean;
-    index: number;
 }) {
-    const [expanded, setExpanded] = useState(false);
     const [localClosedDates, setLocalClosedDates] = useState<string[]>(row.closed_dates);
     const [saving, setSaving] = useState(false);
 
-    // Sync local draft when the committed state changes from outside (e.g. successful save)
     useEffect(() => {
         setLocalClosedDates(row.closed_dates);
-    }, [row.closed_dates]);
+    }, [row.month, row.year, row.closed_dates]);
 
-    const hasChanges =
-        JSON.stringify([...localClosedDates].sort()) !==
-        JSON.stringify([...row.closed_dates].sort());
+    const hasChanges = useMemo(() => {
+        return JSON.stringify([...localClosedDates].sort()) !== JSON.stringify([...row.closed_dates].sort());
+    }, [localClosedDates, row.closed_dates]);
 
-    const handleToggleLocal = (date: string) => {
-        setLocalClosedDates((prev) =>
-            prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date].sort()
+    const toggleLocalDate = (date: string) => {
+        if (!row.is_open) return;
+        setLocalClosedDates((current) =>
+            current.includes(date)
+                ? current.filter((item) => item !== date)
+                : [...current, date].sort(),
         );
     };
 
-    const handleSave = () => {
+    const save = () => {
         setSaving(true);
-        onSaveDates(localClosedDates, {
+        onSaveDates(row, localClosedDates, {
             onFinish: () => setSaving(false),
             onError: () => {
                 setSaving(false);
-                setLocalClosedDates(row.closed_dates); // revert draft on error
+                setLocalClosedDates(row.closed_dates);
             },
         });
     };
 
     return (
-        <div
-            className={cn(
-                "animate-scale-in relative overflow-hidden rounded-2xl border bg-white shadow-[0_1px_4px_rgba(0,0,0,0.05)] card-glint transition-all duration-300 hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)]",
-                row.is_open ? "border-emerald-200/50" : "border-slate-200/80"
-            )}
-            style={{ animationDelay: `${index * 55 + 180}ms` }}
-        >
-            <div className="shimmer-once pointer-events-none absolute inset-0 z-10 rounded-2xl" />
-
-            {/* ── Card header row ── */}
-            <div className="flex items-center justify-between px-5 py-4">
-                <div className="flex items-center gap-4 min-w-0">
-                    <div className={cn(
-                        "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all duration-300",
-                        row.is_open
-                            ? "bg-gradient-to-br from-emerald-400 to-emerald-500 shadow-[0_2px_10px_rgba(52,211,153,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]"
-                            : "bg-gradient-to-br from-slate-100 to-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] border border-slate-200"
-                    )}>
-                        {row.is_open
-                            ? <CalendarCheck2 size={20} className="text-white drop-shadow-md" />
-                            : <Lock size={18} className="text-slate-400" />}
-                        {row.is_open && (
-                            <span className="pointer-events-none absolute top-[2px] left-[4px] right-[4px] h-[5px] rounded-full bg-white/30 blur-[1px]" />
-                        )}
-                    </div>
-
-                    <div className="truncate">
-                        <p className="font-clash text-base font-semibold text-slate-800 leading-tight flex items-center gap-2">
-                            {row.label}
-                            {isFirst && (
-                                <span className="rounded-lg bg-amber-50 ring-1 ring-amber-200/70 px-2 py-0.5 font-bdo text-[10px] font-bold text-amber-600 uppercase tracking-wider">
-                                    Bulan Ini
-                                </span>
-                            )}
-                        </p>
-                        <div className="mt-1 flex items-center gap-1.5">
-                            <span className={cn(
-                                "h-1.5 w-1.5 shrink-0 rounded-full shadow-sm",
-                                row.is_open ? "bg-emerald-400 animate-pulse shadow-[0_0_5px_rgba(52,211,153,0.7)]" : "bg-slate-300"
-                            )} />
-                            <p className={cn(
-                                "font-bdo text-[11px] font-medium truncate",
-                                row.is_open ? "text-emerald-600" : "text-slate-500"
-                            )}>
-                                {row.is_open
-                                    ? row.closed_dates.length > 0
-                                        ? `Terbuka · ${row.closed_dates.length} hari ditutup`
-                                        : "Terbuka untuk reservasi"
-                                    : "Terkunci · Reservasi ditutup"}
-                            </p>
+        <section className="schedule-enter grid gap-3 xl:grid-cols-[minmax(0,1fr)_310px]">
+            <div className="schedule-card-glint overflow-hidden rounded-[26px] border border-[#FFE0D8] bg-white shadow-[0_20px_42px_-38px_rgba(185,61,42,.58)]">
+                <div className="border-b border-[#FFE0D8] bg-[radial-gradient(circle_at_95%_10%,rgba(240,140,120,.18),transparent_28%),linear-gradient(135deg,#FFFFFF_0%,#FFF1EE_100%)] p-3.5 sm:p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex min-w-0 items-center gap-3">
+                            <ShinyIcon className="h-10 w-10">
+                                <CalendarDays size={17} />
+                            </ShinyIcon>
+                            <div className="min-w-0">
+                                <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Kalender kontrol</p>
+                                <h2 className="truncate font-clash text-xl font-semibold text-slate-950 sm:text-2xl">{row.label}</h2>
+                            </div>
                         </div>
+                        <StatusPill isOpen={row.is_open} />
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 pl-4">
-                    <button
-                        type="button"
-                        onClick={() => setExpanded((v) => !v)}
-                        title={expanded ? "Tutup kalender" : "Atur hari"}
-                        className={cn(
-                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition-all duration-200",
-                            expanded
-                                ? "border-slate-300 bg-slate-100 text-slate-700"
-                                : "border-slate-200 bg-white text-slate-400 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-600"
-                        )}
-                    >
-                        <ChevronDown
-                            size={15}
-                            className={cn("transition-transform duration-200", expanded && "rotate-180")}
-                        />
-                    </button>
+                <div className="bg-[linear-gradient(180deg,#FFFFFF_0%,#FFFBFA_100%)] p-3 sm:p-4">
+                    <CalendarGrid row={row} localClosedDates={localClosedDates} onToggleLocal={toggleLocalDate} disabled={saving} />
 
-                    <ToggleSwitch
-                        checked={row.is_open}
-                        onChange={onToggle}
-                        disabled={toggling}
-                    />
+                    <div className="mt-3 grid gap-3 rounded-[20px] border border-[#FFE0D8] bg-[#FFF8F5] p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                            <span className="inline-flex items-center gap-1.5 font-bdo text-[11px] font-bold text-slate-500">
+                                <span className="h-2.5 w-2.5 rounded-full bg-white ring-1 ring-emerald-200" />
+                                Bisa dibooking
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 font-bdo text-[11px] font-bold text-slate-500">
+                                <span className="h-2.5 w-2.5 rounded-full bg-[#FFE0D8] ring-1 ring-[#F8B5A8]" />
+                                Ditutup
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 font-bdo text-[11px] font-bold text-slate-500">
+                                <span className="h-2.5 w-2.5 rounded-full bg-slate-200 ring-1 ring-slate-300" />
+                                Bulan terkunci
+                            </span>
+                        </div>
+                        <p className="font-bdo text-xs font-semibold text-slate-400">
+                            {row.is_open ? "Klik tanggal untuk mengubah status." : "Buka bulan dulu untuk mengedit tanggal."}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            {/* ── Expandable calendar ── */}
-            {expanded && (
-                <div className="calendar-expand border-t border-slate-100 px-5 pb-5 pt-4">
-                    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                        <CalendarGrid
-                            month={row.month}
-                            year={row.year}
-                            monthClosed={!row.is_open}
-                            closedDates={localClosedDates}
-                            onToggleLocal={handleToggleLocal}
-                            disabled={saving}
-                        />
-
-                        {localClosedDates.length > 0 && (
-                            <p className="mt-3 font-bdo text-[11px] text-slate-400 text-center">
-                                {localClosedDates.length} hari ditutup
-                                {hasChanges && " · belum disimpan"}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Batch save footer */}
-                    <div className="mt-3 flex items-center justify-end gap-2">
-                        {hasChanges && (
-                            <button
-                                type="button"
-                                onClick={() => setLocalClosedDates(row.closed_dates)}
-                                className="rounded-xl px-4 py-2 font-clash text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100"
-                            >
-                                Batalkan
-                            </button>
-                        )}
-                        <button
-                            type="button"
-                            disabled={!hasChanges || saving || !row.is_open}
-                            onClick={handleSave}
-                            className={cn(
-                                "flex items-center gap-2 rounded-xl px-5 py-2 font-clash text-xs font-semibold transition-all duration-200",
-                                hasChanges && row.is_open
-                                    ? "bg-slate-900 text-white hover:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
-                                    : "bg-slate-100 text-slate-400 cursor-not-allowed",
-                                saving && "opacity-70 cursor-wait",
-                            )}
-                        >
-                            <Save size={13} />
-                            {saving ? "Menyimpan…" : "Simpan Perubahan"}
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+            <ActionDock
+                row={row}
+                localClosedDates={localClosedDates}
+                hasChanges={hasChanges}
+                saving={saving}
+                toggling={toggling}
+                onToggleMonth={() => onToggle(row)}
+                onReset={() => setLocalClosedDates(row.closed_dates)}
+                onOpenAll={() => setLocalClosedDates([])}
+                onSave={save}
+            />
+        </section>
     );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+function Guardrails({ schedules }: { schedules: ScheduleRow[] }) {
+    const manyClosed = schedules.filter((row) => row.is_open && row.closed_dates.length > 8).length;
+    const locked = schedules.filter((row) => !row.is_open).length;
+
+    return (
+        <section className="schedule-enter grid gap-2.5 lg:grid-cols-3">
+            {[
+                {
+                    icon: <ShieldCheck size={16} />,
+                    label: "Alur paling aman",
+                    text: "Pilih bulan, buka status, klik tanggal, lalu simpan. Tidak ada perubahan permanen sebelum disimpan.",
+                    tone: "border-emerald-200 bg-emerald-50 text-emerald-700",
+                },
+                {
+                    icon: <AlertTriangle size={16} />,
+                    label: "Tanggal tutup padat",
+                    text: manyClosed > 0 ? `${manyClosed} bulan punya lebih dari 8 tanggal tutup.` : "Tidak ada bulan aktif dengan tanggal tutup berlebihan.",
+                    tone: "border-amber-200 bg-amber-50 text-amber-700",
+                },
+                {
+                    icon: <LockKeyhole size={16} />,
+                    label: "Bulan terkunci",
+                    text: locked > 0 ? `${locked} bulan masih tidak menerima reservasi publik.` : "Semua bulan pada rentang ini sudah menerima reservasi.",
+                    tone: "border-slate-200 bg-slate-50 text-slate-600",
+                },
+            ].map((item) => (
+                <article key={item.label} className="schedule-card-glint rounded-[22px] border border-[#FFE0D8] bg-white p-3.5 shadow-[0_16px_36px_-34px_rgba(185,61,42,.48)]">
+                    <div className="flex items-center gap-2.5">
+                        <span className={cn("flex h-9 w-9 items-center justify-center rounded-[15px] border", item.tone)}>
+                            {item.icon}
+                        </span>
+                        <h3 className="font-clash text-base font-semibold text-slate-950">{item.label}</h3>
+                    </div>
+                    <p className="mt-2.5 font-bdo text-xs font-semibold leading-5 text-slate-500">{item.text}</p>
+                </article>
+            ))}
+        </section>
+    );
+}
 
 export default function SchedulesIndex() {
     const { schedules: serverSchedules } = usePage<Props>().props;
-
     const [schedules, setSchedules] = useState<ScheduleRow[]>(serverSchedules);
+    const [selectedKey, setSelectedKey] = useState(() => (serverSchedules[0] ? rowKey(serverSchedules[0]) : ""));
     const [togglingKey, setTogglingKey] = useState<string | null>(null);
 
-    const rowKey = (r: ScheduleRow) => `${r.year}-${r.month}`;
+    useEffect(() => {
+        setSchedules(serverSchedules);
+    }, [serverSchedules]);
+
+    useEffect(() => {
+        if (serverSchedules.length > 0 && !serverSchedules.some((row) => rowKey(row) === selectedKey)) {
+            setSelectedKey(rowKey(serverSchedules[0]));
+        }
+    }, [serverSchedules, selectedKey]);
+
+    const selectedRow = useMemo(() => {
+        return schedules.find((row) => rowKey(row) === selectedKey) ?? schedules[0] ?? null;
+    }, [schedules, selectedKey]);
 
     const handleToggle = (row: ScheduleRow) => {
         const key = rowKey(row);
-        setSchedules((prev) =>
-            prev.map((r) => (rowKey(r) === key ? { ...r, is_open: !r.is_open } : r))
+        setSchedules((current) =>
+            current.map((item) => (rowKey(item) === key ? { ...item, is_open: !item.is_open } : item)),
         );
         setTogglingKey(key);
+
         router.post(
             route("admin.settings.schedules.toggle"),
             { month: row.month, year: row.year },
@@ -462,31 +795,32 @@ export default function SchedulesIndex() {
                 preserveScroll: true,
                 onFinish: () => setTogglingKey(null),
                 onError: () => {
-                    setSchedules((prev) =>
-                        prev.map((r) => (rowKey(r) === key ? { ...r, is_open: row.is_open } : r))
+                    setSchedules((current) =>
+                        current.map((item) => (rowKey(item) === key ? { ...item, is_open: row.is_open } : item)),
                     );
                 },
             },
         );
     };
 
-    const handleSaveDates = (row: ScheduleRow, newClosed: string[], cbs: SaveCallbacks) => {
+    const handleSaveDates = (row: ScheduleRow, newClosedDates: string[], callbacks: SaveCallbacks) => {
         const key = rowKey(row);
-        const prev = row.closed_dates;
-        setSchedules((s) =>
-            s.map((r) => (rowKey(r) === key ? { ...r, closed_dates: newClosed } : r))
+        const previousDates = row.closed_dates;
+        setSchedules((current) =>
+            current.map((item) => (rowKey(item) === key ? { ...item, closed_dates: newClosedDates } : item)),
         );
+
         router.post(
             route("admin.settings.schedules.update-dates"),
-            { month: row.month, year: row.year, closed_dates: newClosed },
+            { month: row.month, year: row.year, closed_dates: newClosedDates },
             {
                 preserveScroll: true,
-                onFinish: cbs.onFinish,
+                onFinish: callbacks.onFinish,
                 onError: () => {
-                    setSchedules((s) =>
-                        s.map((r) => (rowKey(r) === key ? { ...r, closed_dates: prev } : r))
+                    setSchedules((current) =>
+                        current.map((item) => (rowKey(item) === key ? { ...item, closed_dates: previousDates } : item)),
                     );
-                    cbs.onError();
+                    callbacks.onError();
                 },
             },
         );
@@ -495,73 +829,43 @@ export default function SchedulesIndex() {
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
-                    <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
-                    <span className="font-bdo text-[11px] font-medium tracking-wide text-orange-400">
+                <div className="flex flex-col gap-1 pt-3 schedule-enter">
+                    <style dangerouslySetInnerHTML={{ __html: SCHEDULE_STYLES }} />
+                    <span className="font-bdo text-[11px] font-medium tracking-wide text-[#E35336]">
                         Pengaturan Sistem
                     </span>
-                    <h1 className="font-clash text-3xl font-bold tracking-tight xl:text-4xl text-slate-900 uppercase">
-                        Kontrol Jadwal
+                    <h1 className="font-clash text-2xl font-bold uppercase tracking-tight xl:text-3xl">
+                        <span className="schedule-title-shine">Kontrol Jadwal</span>
                     </h1>
                 </div>
             }
         >
             <Head title="Schedule Control" />
 
-            <div className="pt-6 pb-20">
+            <div className="flex flex-col gap-4 overflow-x-hidden pb-16 pt-4">
+                <ScheduleHero
+                    schedules={schedules}
+                />
 
-                {/* ── Top Info Card ── */}
-                <div className="relative card-glint overflow-hidden mb-6 flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-[0_1px_4px_rgba(0,0,0,0.06)] shimmer-once animate-fade-in-up delay-100">
-                    <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-200/70 to-transparent" />
-                    <ShinyIcon className="h-10 w-10">
-                        <CalendarCheck2 size={18} className="text-amber-300" />
-                    </ShinyIcon>
-                    <div>
-                        <p className="font-bdo text-sm font-bold tracking-tight text-slate-700">
-                            Manajemen Jadwal
-                        </p>
-                        <p className="font-clash text-xs font-medium text-slate-400 leading-snug max-w-lg">
-                            Aktifkan bulan untuk menerima reservasi, lalu klik ↓ pada bulan untuk menutup hari tertentu (libur / pemeliharaan).
-                        </p>
-                    </div>
-                </div>
+                <MonthTabs
+                    schedules={schedules}
+                    selectedKey={selectedRow ? rowKey(selectedRow) : selectedKey}
+                    onSelect={setSelectedKey}
+                    onToggle={handleToggle}
+                    togglingKey={togglingKey}
+                />
 
-                {/* ── Schedule card list ── */}
-                <div className="flex flex-col gap-3 animate-fade-in-up delay-200">
-                    {schedules.map((row, i) => (
-                        <ScheduleCard
-                            key={rowKey(row)}
-                            row={row}
-                            isFirst={i === 0}
-                            onToggle={() => handleToggle(row)}
-                            onSaveDates={(newClosed, cbs) => handleSaveDates(row, newClosed, cbs)}
-                            toggling={togglingKey === rowKey(row)}
-                            index={i}
-                        />
-                    ))}
+                {selectedRow && (
+                    <ScheduleStudio
+                        key={rowKey(selectedRow)}
+                        row={selectedRow}
+                        onToggle={handleToggle}
+                        onSaveDates={handleSaveDates}
+                        toggling={togglingKey === rowKey(selectedRow)}
+                    />
+                )}
 
-                    {/* Legend Footer */}
-                    <div className="mt-4 flex flex-wrap items-center gap-5 px-2">
-                        <div className="flex items-center gap-2">
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                            </span>
-                            <span className="font-bdo text-[11px] text-slate-500 font-medium">Terbuka — Booking diterima</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-50 ring-1 ring-slate-200">
-                                <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                            </span>
-                            <span className="font-bdo text-[11px] text-slate-500 font-medium">Terkunci — Booking ditolak otomatis</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-50 ring-1 ring-rose-200">
-                                <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                            </span>
-                            <span className="font-bdo text-[11px] text-slate-500 font-medium">Hari ditutup — Booking ditolak</span>
-                        </div>
-                    </div>
-                </div>
+                <Guardrails schedules={schedules} />
             </div>
         </AdminLayout>
     );

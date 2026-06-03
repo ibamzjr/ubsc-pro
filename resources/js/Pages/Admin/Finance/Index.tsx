@@ -1,227 +1,339 @@
-// ── ALL IMPORTS AT TOP (fixes UserCheck bug that was duplicated at bottom) ──
 import { Head, router, usePage } from "@inertiajs/react";
 import {
     ArrowDownRight,
     ArrowUpRight,
     BarChart3,
     CalendarDays,
-    ChevronDown,
     ChevronLeft,
     ChevronRight,
     CreditCard,
     Download,
     FileText,
+    Filter,
+    Landmark,
+    LayoutGrid,
     PieChart,
+    Printer,
+    ReceiptText,
+    Search,
     TrendingUp,
     Wallet,
-    Coins,
-    Ticket,
-    Star,
-    LayoutGrid,
-    Activity,
-    UserCheck,
     X,
-    CheckCircle2,
-    Zap,
 } from "lucide-react";
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { cn } from "@/lib/utils";
-import type { PageProps, RecentTransaction } from "@/types";
+import type { PageProps, PaymentStatus } from "@/types";
 
-// ── Fallback visual components (identical to Dashboard) ───────────────────────
-
-const SplitText = ({ text, className, delay = 50 }: { text: string; className?: string; delay?: number }) => (
-    <span className={className} style={{ animation: `fadeInUp 0.5s ease forwards ${delay}ms`, opacity: 0 }}>{text}</span>
-);
-
-const ShinyTextBlack = ({ text, speed = 3, className = "" }: { text: string; speed?: number; className?: string }) => (
-    <span className={`animate-shiny-black ${className}`} style={{ animationDuration: `${speed}s` }}>{text}</span>
-);
-
-const ShinyText = ({ text, speed = 3, className = "" }: { text: string; speed?: number; className?: string }) => (
-    <span className={`animate-shiny-text ${className}`} style={{ animationDuration: `${speed}s` }}>{text}</span>
-);
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-interface FacilityRevenue {
-    name: string;
-    revenue: number;
-    share: number;
-    color: string;
+interface FinanceStats {
+    totalRevenue: number;
+    bookingRevenue: number;
+    membershipRevenue: number;
+    paidTransactions: number;
+    pendingFailedAmount: number;
+    averagePaidTransaction: number;
+    totalBookings?: number;
+    activeMemberships?: number;
 }
 
-interface FacilityBooking {
+interface BreakdownRow {
     name: string;
+    revenue: number;
     count: number;
     share: number;
     color: string;
 }
 
-interface FinanceStats {
-    totalRevenue: number;
-    totalBookings: number;
-    activeMemberships: number;
+interface TypeBreakdown {
+    name: string;
+    type: "booking" | "membership" | "other";
+    revenue: number;
+    share: number;
+    color: string;
+}
+
+interface LedgerRow {
+    id: number;
+    receipt_number: string;
+    invoice_id: string | null;
+    checkout_url: string | null;
+    customer_name: string;
+    type: "booking" | "membership" | "other";
+    subject: string;
+    amount: number;
+    payment_status: PaymentStatus;
+    paid_at: string | null;
+    created_at: string | null;
 }
 
 type FinanceProps = PageProps<{
-    facilityRevenue: FacilityRevenue[];
-    facilityBookings: FacilityBooking[];
-    dailyRevenue: number[];
-    monthlyRevenue?: number[];
     stats: FinanceStats;
-    period: { month: number; year: number };
     revenueTrend: number;
-    recentTransactions: RecentTransaction[];
+    dailyRevenue: number[];
+    monthlyRevenue: number[];
+    facilityRevenue: BreakdownRow[];
+    membershipPlanRevenue: BreakdownRow[];
+    typeBreakdown: TypeBreakdown[];
+    ledger: LedgerRow[];
+    period: { month: number; year: number };
 }>;
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatRevenue(amount: number): string {
-    if (amount >= 1_000_000) return `${(amount / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })}JT`;
-    if (amount >= 1_000)     return `${(amount / 1_000).toLocaleString("id-ID",     { maximumFractionDigits: 0 })}rb`;
-    return amount.toLocaleString("id-ID");
-}
-
-function formatRupiahFull(amount: number): string {
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(amount);
-}
+type LedgerTypeFilter = "all" | LedgerRow["type"];
+type LedgerStatusFilter = "all" | PaymentStatus;
 
 const MONTH_NAMES = [
-    "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+    "",
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
 ];
 
 const MONTH_SHORT = ["", "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
 
-// ── Global Styles (full Dashboard parity) ────────────────────────────────────
-
 const FINANCE_STYLES = `
     .font-clash { font-family: 'Clash Display', sans-serif; }
-    .font-bdo   { font-family: 'BDO Grotesk', sans-serif;   }
+    .font-bdo { font-family: 'BDO Grotesk', sans-serif; }
 
-    @keyframes shinyBlackText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes shinyBlackText {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
     .animate-shiny-black {
         background: linear-gradient(120deg, #0f172a 35%, #cbd5e1 50%, #0f172a 65%);
-        background-size: 200% auto; color: transparent;
-        -webkit-background-clip: text; background-clip: text;
+        background-size: 200% auto;
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
         animation: shinyBlackText linear infinite;
     }
-    @keyframes shinyText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes shinyText {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
     .animate-shiny-text {
-        background: linear-gradient(120deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.4) 100%);
-        background-size: 200% auto; color: transparent;
-        -webkit-background-clip: text; background-clip: text;
+        background: linear-gradient(120deg, rgba(255,255,255,.42), #fff 50%, rgba(255,255,255,.42));
+        background-size: 200% auto;
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
         animation: shinyText linear infinite;
     }
-    @keyframes shinyOrangeText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-    .animate-shiny-orange {
-        background: linear-gradient(120deg, #ea580c 25%, #fed7aa 50%, #ea580c 75%);
-        background-size: 200% auto; color: transparent;
-        -webkit-background-clip: text; background-clip: text;
-        animation: shinyOrangeText 3s linear infinite;
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translate3d(0, 24px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-
-    @keyframes caustics {
-        0%   { background-position: 0%   50%; opacity: 0.15; }
-        50%  { background-position: 100% 50%; opacity: 0.35; }
-        100% { background-position: 0%   50%; opacity: 0.15; }
+    @keyframes float {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(0, -6px, 0); }
     }
-    .water-caustics-effect {
-        background: radial-gradient(circle at top left, rgba(255,255,255,0.3) 0%, transparent 40%),
-                    radial-gradient(circle at bottom right, rgba(255,255,255,0.2) 0%, transparent 50%);
-        background-size: 150% 150%;
-        animation: caustics 8s ease-in-out infinite;
-        mix-blend-mode: overlay;
+    @keyframes progressFill { from { width: 0%; } }
+    @keyframes barGrow {
+        from { transform: scaleY(0); transform-origin: bottom; }
+        to { transform: scaleY(1); transform-origin: bottom; }
     }
-
-    @keyframes fadeInUp    { from { opacity: 0; transform: translate3d(0, 28px, 0); } to { opacity: 1; transform: translate3d(0,0,0); } }
-    @keyframes scaleIn     { from { opacity: 0; transform: scale(0.96); }            to { opacity: 1; transform: scale(1); }           }
-    @keyframes float       { 0%,100% { transform: translate3d(0,0,0); }  50% { transform: translate3d(0,-6px,0); }                    }
-    @keyframes pulseGlow   { 0%,100% { opacity: 0.4; transform: scale(1);   } 50% { opacity: 1; transform: scale(1.1); }              }
-    @keyframes barGrow     { from { transform: scaleY(0); transform-origin: bottom; } to { transform: scaleY(1); transform-origin: bottom; } }
-    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96) translateY(-8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-    .animate-fade-in-up  { animation: fadeInUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; will-change: opacity,transform; }
-    .animate-scale-in    { animation: scaleIn  0.5s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
-    .animate-float       { animation: float    3.5s ease-in-out infinite; will-change: transform; }
-    .animate-pulse-glow  { animation: pulseGlow 2.5s ease-in-out infinite; }
-    .bar-grow            { animation: barGrow   0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
-    .modal-enter         { animation: modalFadeIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
-
-    .delay-50  { animation-delay: 50ms;  }
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(.94); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes shimmerSweep {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(200%); }
+    }
+    @keyframes btnSheen {
+        0% { left: -80%; }
+        100% { left: 120%; }
+    }
+    @keyframes dotBreath {
+        0%, 100% { opacity: .86; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.16); }
+    }
+    @keyframes dotHalo {
+        0%, 100% { opacity: .16; transform: scale(.82); }
+        50% { opacity: .42; transform: scale(1.48); }
+    }
+    .animate-fade-in-up { animation: fadeInUp .62s cubic-bezier(.16,1,.3,1) forwards; opacity: 0; will-change: opacity, transform; }
+    .animate-scale-in { animation: scaleIn .5s cubic-bezier(.16,1,.3,1) forwards; opacity: 0; }
+    .animate-float { animation: float 3.5s ease-in-out infinite; will-change: transform; }
+    .progress-fill { animation: progressFill .75s cubic-bezier(.16,1,.3,1) forwards; }
+    .bar-grow { animation: barGrow .55s cubic-bezier(.16,1,.3,1) forwards; }
     .delay-100 { animation-delay: 100ms; }
     .delay-150 { animation-delay: 150ms; }
     .delay-200 { animation-delay: 200ms; }
+    .delay-250 { animation-delay: 250ms; }
     .delay-300 { animation-delay: 300ms; }
     .delay-400 { animation-delay: 400ms; }
-    .delay-500 { animation-delay: 500ms; }
-
-    @keyframes shimmerSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
-    .shimmer-once { position: relative; overflow: hidden; }
-    .shimmer-once::after {
-        content: ''; position: absolute; inset: 0;
-        background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.42) 50%, transparent 100%);
-        width: 60%; animation: shimmerSweep 1.1s ease-out 0.45s forwards;
-        pointer-events: none; border-radius: inherit;
-    }
-
-    @keyframes btnSheen { 0% { left: -80%; } 100% { left: 120%; } }
-    .btn-sheen { position: relative; overflow: hidden; }
-    .btn-sheen::before {
-        content: ''; position: absolute; top: 0; bottom: 0; width: 50%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-        animation: btnSheen 3s ease-in-out 1s infinite;
-    }
-
-    @keyframes iconGlow {
-        0%,100% { box-shadow: 0 2px 8px rgba(15,23,42,0.20); }
-        50%     { box-shadow: 0 2px 16px rgba(15,23,42,0.30), 0 0 24px rgba(249,115,22,0.18); }
-    }
-    .icon-glow { animation: iconGlow 3.5s ease-in-out infinite; }
-
-    @keyframes cardBreath {
-        0%,100% { box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 0 0 1px rgba(226,232,240,0.8); }
-        50%     { box-shadow: 0 4px 16px rgba(0,0,0,0.07), 0 0 0 1px rgba(249,115,22,0.2); }
-    }
-    .card-breath { animation: cardBreath 5s ease-in-out infinite; }
     .card-glint { position: relative; }
     .card-glint::before {
-        content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20px;
+        right: 20px;
+        height: 1px;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
-        pointer-events: none; z-index: 2;
+        pointer-events: none;
+        z-index: 2;
     }
+    .shimmer-once { position: relative; overflow: hidden; }
+    .shimmer-once::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 60%;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,.42) 50%, transparent 100%);
+        animation: shimmerSweep 1.1s ease-out .45s forwards;
+    }
+    .btn-sheen { position: relative; overflow: hidden; }
+    .btn-sheen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+        animation: btnSheen 3s ease-in-out 1s infinite;
+    }
+    .finance-live-dot {
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+        border-radius: 999px;
+        background: var(--dot-color, #E35336);
+        box-shadow: 0 0 0 1px rgba(255,255,255,.72), 0 0 9px var(--dot-halo, rgba(227,83,54,.28));
+        animation: dotBreath 2.8s ease-in-out infinite;
+        isolation: isolate;
+    }
+    .finance-live-dot::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        z-index: -1;
+        border-radius: inherit;
+        background: var(--dot-halo, rgba(227,83,54,.22));
+        animation: dotHalo 2.8s ease-in-out infinite;
+    }
+    .finance-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(227,83,54,.32) transparent;
+    }
+    .finance-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .finance-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .finance-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(227,83,54,.32);
+        border: 1px solid rgba(255,255,255,.72);
+        border-radius: 999px;
+    }
+    .rev-bar {
+        transition: filter .15s ease, transform .15s ease;
+        transform-origin: bottom;
+    }
+    .rev-bar:hover { filter: brightness(1.12); }
+    .chart-nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        border: 1px solid;
+        flex-shrink: 0;
+        transition: all .2s ease;
+    }
+    .chart-nav-btn:active { transform: scale(.88); }
+    .chart-nav-btn.enabled {
+        border-color: #FFD5CD;
+        color: #B93D2A;
+        background: #fff;
+    }
+    .chart-nav-btn.enabled:hover {
+        background: #FFF1EE;
+        border-color: #EA684F;
+        box-shadow: 0 2px 8px rgba(227,83,54,.15);
+    }
+    .chart-nav-btn.disabled {
+        border-color: #f1f5f9;
+        color: #cbd5e1;
+        cursor: not-allowed;
+        background: #f8fafc;
+    }
+    .scrubber-track {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 99px;
+        overflow: visible;
+        cursor: pointer;
+        position: relative;
+    }
+    .scrubber-thumb {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #EA684F, #B93D2A);
+        position: absolute;
+        top: 0;
+        transition: left .25s cubic-bezier(.16,1,.3,1), width .25s;
+        box-shadow: 0 1px 4px rgba(227,83,54,.3);
+    }
+    .jump-input {
+        width: 46px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        text-align: center;
+        font-size: 10px;
+        color: #334155;
+        outline: none;
+        transition: border-color .15s, box-shadow .15s;
+        -moz-appearance: textfield;
+    }
+    .jump-input::-webkit-outer-spin-button,
+    .jump-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .jump-input:focus {
+        border-color: #E35336;
+        box-shadow: 0 0 0 3px rgba(227,83,54,.12);
+    }
+    .jump-go-btn {
+        height: 32px;
+        padding: 0 10px;
+        border-radius: 10px;
+        border: 1px solid #FFD5CD;
+        background: #FFF1EE;
+        color: #B93D2A;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .15s;
+    }
+    .jump-go-btn:hover { background: #FFD5CD; border-color: #EA684F; }
+    .jump-go-btn:active { transform: scale(.93); }
 
-    .occ-bar-inner { transition: width 0.9s cubic-bezier(0.16,1,0.3,1), filter 0.3s; }
-    .bar-col:hover { filter: brightness(1.15); transform: scaleY(1.04); transform-origin: bottom; }
-    .bar-col { transition: filter 0.15s, transform 0.15s; cursor: pointer; }
-
-    .custom-scrollbar::-webkit-scrollbar       { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #fed7aa; border-radius: 4px; }
-
-    /* ── Print Template ── */
     .print-finance-template { display: none; }
-    .prt-a4-page {
-        width: 210mm; height: auto; max-height: 297mm; overflow: hidden;
-        margin: 0 auto; background: #fff; padding: 14mm 16mm; box-sizing: border-box;
-        font-family: 'Courier New', Courier, monospace; font-size: 9pt; color: #111;
-    }
+    .prt-a4-page { width: 210mm; height: auto; max-height: 297mm; overflow: hidden; margin: 0 auto; background: #fff; padding: 14mm 16mm; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; font-size: 9pt; color: #111; }
     .prt-header { display: flex; align-items: flex-start; gap: 0; margin-bottom: 0; }
     .prt-header-left { width: 72pt; flex-shrink: 0; display: flex; align-items: flex-start; justify-content: flex-start; }
     .prt-logo-img { width: 68pt; height: 68pt; object-fit: contain; display: block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .prt-header-right { flex: 1; padding-left: 10pt; }
     .prt-company-name-main { font-family: 'Courier New', Courier, monospace; font-size: 13pt; font-weight: bold; letter-spacing: 0.14em; line-height: 1.15; margin: 0; }
-    .prt-company-name-sub  { font-family: 'Courier New', Courier, monospace; font-size: 10pt; font-weight: bold; letter-spacing: 0.10em; margin: 1pt 0 3pt 0; }
-    .prt-company-address   { font-size: 8pt; line-height: 1.45; margin-bottom: 4pt; font-family: 'Courier New', Courier, monospace; }
-    .prt-header-divider    { border: none; border-top: 1.5pt solid #111; margin: 3pt 0 4pt 0; }
-    .prt-doc-title         { font-family: 'Courier New', Courier, monospace; font-size: 15pt; font-weight: bold; letter-spacing: 0.04em; text-align: center; margin: 0; }
-    .prt-meta-outer        { display: flex; gap: 0; margin-top: 6pt; margin-bottom: 8pt; border: 0.75pt solid #444; }
-    .prt-meta-left         { flex: 1; padding: 5pt 8pt 8pt 8pt; font-size: 8.5pt; border-right: 0.75pt solid #444; font-family: 'Courier New', Courier, monospace; }
-    .prt-payment-note      { margin-top: 22pt; font-size: 8pt; font-weight: bold; line-height: 1.75; font-family: 'Courier New', Courier, monospace; white-space: nowrap; }
-    .prt-meta-right        { width: 230pt; flex-shrink: 0; }
-    .prt-meta-right table  { width: 100%; border-collapse: collapse; font-size: 8.5pt; font-family: 'Courier New', Courier, monospace; }
+    .prt-company-name-sub { font-family: 'Courier New', Courier, monospace; font-size: 10pt; font-weight: bold; letter-spacing: 0.10em; margin: 1pt 0 3pt 0; }
+    .prt-company-address { font-size: 8pt; line-height: 1.45; margin-bottom: 4pt; font-family: 'Courier New', Courier, monospace; }
+    .prt-header-divider { border: none; border-top: 1.5pt solid #111; margin: 3pt 0 4pt 0; }
+    .prt-doc-title { font-family: 'Courier New', Courier, monospace; font-size: 15pt; font-weight: bold; letter-spacing: 0.04em; text-align: center; margin: 0; }
+    .prt-meta-outer { display: flex; gap: 0; margin-top: 6pt; margin-bottom: 8pt; border: 0.75pt solid #444; }
+    .prt-meta-left { flex: 1; padding: 5pt 8pt 8pt 8pt; font-size: 8.5pt; border-right: 0.75pt solid #444; font-family: 'Courier New', Courier, monospace; }
+    .prt-payment-note { margin-top: 22pt; font-size: 8pt; font-weight: bold; line-height: 1.75; font-family: 'Courier New', Courier, monospace; white-space: nowrap; }
+    .prt-meta-right { width: 230pt; flex-shrink: 0; }
+    .prt-meta-right table { width: 100%; border-collapse: collapse; font-size: 8.5pt; font-family: 'Courier New', Courier, monospace; }
     .prt-meta-right table td { border-bottom: 0.75pt dashed #888; border-left: 0.75pt dashed #888; padding: 3.5pt 6pt; vertical-align: middle; }
     .prt-meta-right table td.meta-label-col { width: 45%; font-size: 8pt; color: #555; font-weight: normal; white-space: nowrap; }
     .prt-meta-right table td.meta-value-col { width: 55%; font-size: 8.5pt; font-weight: normal; }
@@ -231,8 +343,8 @@ const FINANCE_STYLES = `
     .prt-report-table th { border: 0.75pt solid #111; padding: 4pt 6pt; text-align: center; font-weight: bold; background: #fff; font-family: 'Courier New', Courier, monospace; }
     .prt-report-table td { border: 0.75pt solid #444; padding: 4.5pt 6pt; vertical-align: middle; font-family: 'Courier New', Courier, monospace; }
     .prt-report-table td.rt-center { text-align: center; }
-    .prt-report-table td.rt-right  { text-align: right; }
-    .prt-report-table td.rt-bold   { font-weight: bold; }
+    .prt-report-table td.rt-right { text-align: right; }
+    .prt-report-table td.rt-bold { font-weight: bold; }
     .prt-report-table tr.rt-filler td { color: #ddd; border-color: #eee; }
     .prt-bottom-row { display: flex; gap: 0; margin-bottom: 0; }
     .prt-keterangan { flex: 1; border: 0.75pt solid #444; padding: 5pt 7pt; font-size: 8.5pt; min-height: 64pt; font-family: 'Courier New', Courier, monospace; }
@@ -244,16 +356,13 @@ const FINANCE_STYLES = `
     .prt-summary table tr.sum-total td { font-weight: bold; }
     .prt-page-footer { margin-top: 10pt; font-family: 'Courier New', Courier, monospace; font-size: 8pt; color: #555; display: flex; justify-content: space-between; align-items: center; border-top: 0.5pt solid #ccc; padding-top: 5pt; }
 
-    /* ── Responsive KPI: 3rd item spans 2 cols when grid is 2-col on mobile ── */
-    @media (max-width: 639px) {
-        .kpi-third { grid-column: span 2; }
+    @media (prefers-reduced-motion: reduce) {
+        .animate-fade-in-up, .animate-float, .bar-grow, .finance-live-dot, .finance-live-dot::after {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
     }
-
-    /* ── Safe area: prevent content from touching screen edges on mobile ── */
-    @media (max-width: 639px) {
-        .finance-page-wrap { padding-left: 0; padding-right: 0; }
-    }
-
     @media print {
         @page { size: A4 portrait; margin: 0; }
         body * { visibility: hidden !important; }
@@ -264,468 +373,1061 @@ const FINANCE_STYLES = `
     }
 `;
 
+const PAYMENT_LABEL: Record<PaymentStatus, string> = {
+    UNPAID: "Belum bayar",
+    PAID: "Lunas",
+    EXPIRED: "Expired",
+    FAILED: "Gagal",
+};
 
-// ── ShinyIcon (identical to Dashboard) ───────────────────────────────────────
+const PAYMENT_STYLE: Record<PaymentStatus, string> = {
+    UNPAID: "border-[#F8B5A8] bg-[#FFF1EE] text-[#B93D2A]",
+    PAID: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    EXPIRED: "border-slate-200 bg-slate-50 text-slate-500",
+    FAILED: "border-rose-200 bg-rose-50 text-rose-600",
+};
 
-function ShinyIcon({ children, className }: { children: React.ReactNode; className?: string }) {
+function ShinyTextBlack({ text, speed = 4, className = "" }: { text: string; speed?: number; className?: string }) {
+    return <span className={cn("animate-shiny-black", className)} style={{ animationDuration: `${speed}s` }}>{text}</span>;
+}
+
+function ShinyText({ text, speed = 3, className = "" }: { text: string; speed?: number; className?: string }) {
+    return <span className={cn("animate-shiny-text", className)} style={{ animationDuration: `${speed}s` }}>{text}</span>;
+}
+
+function LiveDot({ size = "sm", color = "#E35336", halo = "rgba(227,83,54,.28)" }: { size?: "xs" | "sm"; color?: string; halo?: string }) {
+    const sizeClass = size === "xs" ? "h-1.5 w-1.5" : "h-2 w-2";
+    return <span className={cn("finance-live-dot", sizeClass)} style={{ "--dot-color": color, "--dot-halo": halo } as CSSProperties} />;
+}
+
+function ShinyIcon({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn(
-            "relative flex shrink-0 items-center justify-center rounded-xl",
-            "bg-gradient-to-br from-slate-600 to-slate-900",
-            "shadow-[0_2px_10px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.12)]",
-            "icon-glow",
-            className,
-        )}>
+        <div className={cn("relative flex shrink-0 items-center justify-center overflow-hidden rounded-[15px] bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white shadow-[0_12px_24px_-20px_rgba(227,83,54,.9)]", className)}>
+            <span className="pointer-events-none absolute left-2 right-2 top-1.5 h-1 rounded-full bg-white/35 blur-[1px]" />
             {children}
-            <span className="pointer-events-none absolute top-[3px] left-[5px] right-[5px] h-[5px] rounded-full bg-white/20 blur-[1px]" />
         </div>
     );
 }
 
-// ── Smooth bezier path (same as Dashboard) ────────────────────────────────────
+function formatRupiah(amount: number): string {
+    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(amount);
+}
 
-function smoothBezierPath(pts: { x: number; y: number }[]): string {
-    if (pts.length < 2) return "";
-    const d: string[] = [`M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`];
-    for (let i = 1; i < pts.length; i++) {
-        const p0 = pts[Math.max(0, i - 2)];
-        const p1 = pts[i - 1];
-        const p2 = pts[i];
-        const p3 = pts[Math.min(pts.length - 1, i + 1)];
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
-        d.push(`C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`);
+function formatCompact(amount: number): string {
+    if (amount >= 1_000_000_000) {
+        return `Rp ${(amount / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })}M`;
     }
-    return d.join(" ");
+    if (amount >= 1_000_000) {
+        return `Rp ${(amount / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })}JT`;
+    }
+    if (amount >= 1_000) {
+        return `Rp ${(amount / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })}rb`;
+    }
+    return formatRupiah(amount);
 }
 
-// ── Interactive Daily Revenue Chart (enhanced, same approach as Dashboard) ───
+function formatChartRevenue(amount: number): string {
+    if (amount >= 1_000_000) {
+        return `${(amount / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })}JT`;
+    }
+    if (amount >= 1_000) {
+        return `${(amount / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })}rb`;
+    }
+    return amount.toLocaleString("id-ID");
+}
 
-function InteractiveRevenueChart({ data, monthLabel }: { data: number[]; monthLabel: string }) {
-    const [activePoint, setActivePoint] = useState<number | null>(null);
-    const [isLoaded, setIsLoaded]       = useState(false);
-    useEffect(() => { const t = setTimeout(() => setIsLoaded(true), 150); return () => clearTimeout(t); }, []);
+function formatNumber(value: number): string {
+    return value.toLocaleString("id-ID");
+}
 
-    const chartData = data && data.length > 0 ? data : Array(30).fill(0);
-    const maxVal    = Math.max(...chartData, 1000);
-    const avgVal    = chartData.reduce((a, b) => a + b, 0) / chartData.length;
-    const points    = chartData.map((val, i) => ({ x: (i / (chartData.length - 1)) * 100, y: 100 - (val / maxVal) * 100, val, day: i + 1 }));
-    const smoothLine = smoothBezierPath(points);
-    const smoothArea = `${smoothLine} L 100 100 L 0 100 Z`;
-    const avgY       = 100 - (avgVal / maxVal) * 100;
-    const peakIdx    = chartData.indexOf(Math.max(...chartData));
+function getElapsedMonthRevenue(data: number[], currentDayInMonth?: number): number[] {
+    if (!data.length) return [];
+    const today = Number.isFinite(currentDayInMonth) && currentDayInMonth ? currentDayInMonth : new Date().getDate();
+    const elapsedDays = Math.min(data.length, Math.max(1, today));
+    return data.slice(0, elapsedDays);
+}
+
+function shiftPeriod(month: number, year: number, delta: number): { month: number; year: number } {
+    const next = new Date(year, month - 1 + delta, 1);
+    return { month: next.getMonth() + 1, year: next.getFullYear() };
+}
+
+function maxValue(values: number[]): number {
+    return Math.max(1, ...values);
+}
+
+function PaymentBadge({ status }: { status: PaymentStatus }) {
+    return (
+        <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-bdo text-[11px] font-bold", PAYMENT_STYLE[status])}>
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+            {PAYMENT_LABEL[status]}
+        </span>
+    );
+}
+
+function PeriodPicker({ period }: { period: { month: number; year: number } }) {
+    const goTo = (month: number, year: number) => {
+        router.get(route("admin.finance.index"), { month, year }, { preserveScroll: true, preserveState: false });
+    };
+    const prev = shiftPeriod(period.month, period.year, -1);
+    const next = shiftPeriod(period.month, period.year, 1);
 
     return (
-        <div className="relative w-full h-[200px] mt-4 font-bdo select-none">
-            <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] font-medium text-slate-400 pointer-events-none">
-                <span>{formatRevenue(maxVal)}</span>
-                <span>{formatRevenue(maxVal / 2)}</span>
-                <span>0</span>
+        <div className="grid grid-cols-[38px_1fr_38px] gap-1.5 rounded-[18px] border border-slate-200 bg-slate-50 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,.82)]">
+            <button type="button" onClick={() => goTo(prev.month, prev.year)} className="flex h-9 items-center justify-center rounded-[13px] bg-white text-[#B93D2A] ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:ring-[#F8B5A8]" aria-label="Bulan sebelumnya">
+                <ChevronLeft size={16} />
+            </button>
+            <div className="flex min-w-[150px] items-center justify-center gap-2 rounded-[13px] bg-white px-3 text-slate-800 ring-1 ring-slate-100">
+                <CalendarDays size={15} className="text-[#E35336]" />
+                <span className="font-bdo text-xs font-bold sm:text-sm">{MONTH_NAMES[period.month]} {period.year}</span>
             </div>
-            <div className="absolute left-8 right-0 top-2 bottom-6">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
-                    <defs>
-                        <linearGradient id="fcChartGlow" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#f97316" stopOpacity="0.35" />
-                            <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
-                        </linearGradient>
-                        <filter id="fcLineGlow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="1.2" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
-                    </defs>
-                    <line x1="0" y1="0"   x2="100" y2="0"   stroke="#f1f5f9" strokeWidth="0.5" strokeDasharray="2" />
-                    <line x1="0" y1="50"  x2="100" y2="50"  stroke="#f1f5f9" strokeWidth="0.5" strokeDasharray="2" />
-                    <line x1="0" y1="100" x2="100" y2="100" stroke="#e2e8f0" strokeWidth="1" />
-                    {/* Avg line */}
-                    <line x1="0" y1={avgY} x2="100" y2={avgY} stroke="#f9731640" strokeWidth="0.6" strokeDasharray="1.5 1.5" />
-                    <path d={smoothArea} fill="url(#fcChartGlow)" className={`transition-opacity duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`} />
-                    <path d={smoothLine} fill="none" stroke="#f97316" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#fcLineGlow)" style={{ strokeDasharray: 600, strokeDashoffset: isLoaded ? 0 : 600, transition: "stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)" }} />
-                    {/* Peak star */}
-                    {isLoaded && (
-                        <circle cx={points[peakIdx]?.x} cy={points[peakIdx]?.y} r="2.5" fill="#f97316" stroke="#fff" strokeWidth="1" className="animate-pulse-glow" />
-                    )}
-                    {points.map((p, i) => (
-                        <g key={i} onClick={() => setActivePoint(activePoint === i ? null : i)} className="cursor-crosshair">
-                            <line x1={p.x} y1="100" x2={p.x} y2={p.y} stroke="#fed7aa" strokeWidth="0.5" strokeDasharray="1 1" className={`transition-opacity ${activePoint === i ? "opacity-100" : "opacity-0 group-hover:opacity-40"}`} />
-                            <circle cx={p.x} cy={p.y} r={activePoint === i ? 2.2 : 1.5} fill={activePoint === i ? "#ffffff" : "#f97316"} stroke="#ea580c" strokeWidth="0.5" className={`transition-all ${activePoint === i ? "opacity-100" : "opacity-0 group-hover:opacity-80"}`} />
-                            <circle cx={p.x} cy={p.y} r="4" fill="transparent" />
-                        </g>
-                    ))}
-                </svg>
-                {activePoint !== null && (
-                    <div className="absolute z-20 bg-[#12131c] border border-orange-500/30 text-white p-3 rounded-xl shadow-[0_10px_25px_rgba(249,115,22,0.3)] pointer-events-none animate-scale-in" style={{ left: `${points[activePoint].x}%`, top: `${points[activePoint].y}%`, transform: `translate(${points[activePoint].x > 50 ? "-110%" : "10%"}, -110%)` }}>
-                        <p className="font-bdo text-[10px] text-orange-300 uppercase tracking-widest mb-1">{points[activePoint].day} {monthLabel}</p>
-                        <p className="font-clash text-base font-bold">{formatRupiahFull(points[activePoint].val)}</p>
+            <button type="button" onClick={() => goTo(next.month, next.year)} className="flex h-9 items-center justify-center rounded-[13px] bg-white text-[#B93D2A] ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:ring-[#F8B5A8]" aria-label="Bulan berikutnya">
+                <ChevronRight size={16} />
+            </button>
+        </div>
+    );
+}
+
+function InfoChip({ color, label }: { color: string; label: string }) {
+    return (
+        <span className="inline-flex h-9 items-center justify-center gap-2 rounded-[14px] border border-slate-200 bg-white/80 px-3 font-bdo text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm">
+            <LiveDot size="xs" color={color} halo={`${color}3d`} />
+            {label}
+        </span>
+    );
+}
+
+function FinanceToolbar({ period, rows, stats }: { period: { month: number; year: number }; rows: LedgerRow[]; stats: FinanceStats }) {
+    return (
+        <section className="finance-no-print card-glint animate-fade-in-up rounded-[22px] border border-[#FFE0D8] bg-[linear-gradient(135deg,#ffffff_0%,#fff8f6_58%,#f8fafc_100%)] p-2.5 shadow-[0_18px_42px_-36px_rgba(185,61,42,.5)]">
+            <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center xl:justify-between">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                    <InfoChip color="#10B981" label={`${stats.paidTransactions} lunas`} />
+                    <InfoChip color="#E35336" label={`${stats.totalBookings ?? 0} reservasi`} />
+                    <InfoChip color="#0EA5E9" label={`${stats.activeMemberships ?? 0} member`} />
+                    <InfoChip color="#64748B" label={`${rows.length} ledger`} />
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-[minmax(210px,1fr)_auto_auto]">
+                    <PeriodPicker period={period} />
+                    <button type="button" onClick={() => downloadFinanceCsv(rows, period)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] border border-[#FFD5CD] bg-white px-4 font-bdo text-xs font-bold text-[#B93D2A] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#FFF1EE]">
+                        <Download size={15} />
+                        CSV
+                    </button>
+                    <button type="button" onClick={() => window.print()} className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] bg-[linear-gradient(135deg,#F08C78,#E35336_55%,#B93D2A)] px-4 font-bdo text-xs font-bold text-white shadow-[0_16px_28px_-22px_rgba(227,83,54,.95)] transition hover:-translate-y-0.5">
+                        <Printer size={15} />
+                        Print
+                    </button>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function RevenueHero({ stats, trend, period, dailyRevenue }: { stats: FinanceStats; trend: number; period: { month: number; year: number }; dailyRevenue: number[] }) {
+    const bookingShare = stats.totalRevenue > 0 ? Math.round((stats.bookingRevenue / stats.totalRevenue) * 100) : 0;
+    const membershipShare = stats.totalRevenue > 0 ? Math.round((stats.membershipRevenue / stats.totalRevenue) * 100) : 0;
+    const positive = trend >= 0;
+    const sparkData = dailyRevenue.slice(-20);
+    const sparkMax = maxValue(sparkData);
+
+    return (
+        <section className="shimmer-once animate-fade-in-up delay-100 group relative flex min-h-[336px] flex-col justify-between overflow-hidden rounded-[26px] bg-[linear-gradient(135deg,#E35336_0%,#C6422E_45%,#8F2E20_100%)] p-5 text-white shadow-2xl shadow-[#F8B5A8]/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[#F08C78]/50 sm:p-6">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full border border-white/18" />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-[#EA684F]/20 blur-3xl" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,.06)_0,rgba(255,255,255,.06)_1px,transparent_1px,transparent_18px)]" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+            <div className="relative z-10 flex items-start justify-between gap-4">
+                <div>
+                    <div className="mb-3 flex items-center gap-2">
+                        <div className="rounded-lg bg-white/18 p-1.5 backdrop-blur-md ring-1 ring-white/15">
+                            <Wallet className="h-4 w-4 text-white" />
+                        </div>
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-[#FFD5CD]">Finance Command</p>
                     </div>
-                )}
+                    <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.2em] text-white/58">Total Pendapatan</p>
+                    <h2 className="mt-1 font-clash text-[1.9rem] font-bold leading-none tracking-tight text-white sm:text-[2.35rem] 2xl:text-[2.5rem]">
+                        Rp <ShinyText text={formatCompact(stats.totalRevenue).replace("Rp ", "")} speed={4} />
+                    </h2>
+                    <p className="mt-2 font-bdo text-xs font-semibold text-[#FFD5CD]/80">{formatRupiah(stats.totalRevenue)} - {MONTH_NAMES[period.month]} {period.year}</p>
+                    <div className={cn("mt-3 inline-flex items-center gap-1 rounded-lg px-2.5 py-1 font-bdo text-[10px] font-bold backdrop-blur-md", positive ? "border border-white/20 bg-white/15 text-white" : "border border-red-700/30 bg-red-900/30 text-red-200")}>
+                        {positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                        {Math.abs(trend).toLocaleString("id-ID", { maximumFractionDigits: 1 })}% bulan ini
+                    </div>
+                </div>
+                <div className="flex shrink-0 animate-float items-center justify-center rounded-[18px] border border-white/25 bg-white/15 p-3 shadow-lg backdrop-blur-xl">
+                    <TrendingUp className="h-5 w-5 text-white" />
+                </div>
+            </div>
+
+            <div className="relative z-10 my-4 flex flex-1 flex-col justify-center">
+                <p className="mb-3 font-bdo text-[10px] font-bold uppercase tracking-widest text-[#F8B5A8]/80">Pemisahan sumber pendapatan</p>
+                <div className="overflow-hidden rounded-[18px] border border-white/15 bg-white/10 backdrop-blur-xl">
+                    <RevenueHeroLine label="Booking Revenue" value={formatCompact(stats.bookingRevenue)} share={bookingShare} icon={<Landmark size={14} />} />
+                    <RevenueHeroLine label="Membership Revenue" value={formatCompact(stats.membershipRevenue)} share={membershipShare} icon={<CreditCard size={14} />} />
+                    <RevenueHeroLine label="Transaksi Lunas" value={String(stats.paidTransactions)} share={100} icon={<ReceiptText size={14} />} muted />
+                </div>
+            </div>
+
+            {sparkData.length > 0 && (
+                <div className="relative z-10 mb-4">
+                    <p className="mb-1.5 font-bdo text-[9px] uppercase tracking-widest text-[#F8B5A8]/60">Tren 20 hari terakhir</p>
+                    <div className="flex items-end gap-[2px]" style={{ height: 24 }}>
+                        {sparkData.map((value, index) => {
+                            const height = Math.max((value / sparkMax) * 22, value > 0 ? 3 : 1.5);
+                            return <span key={index} className="flex-1 rounded-sm bg-white/45" style={{ height }} />;
+                        })}
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+}
+
+function RevenueHeroLine({ label, value, share, icon, muted = false }: { label: string; value: string; share: number; icon: ReactNode; muted?: boolean }) {
+    return (
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3.5 py-2.5 last:border-b-0">
+            <div className="flex min-w-0 items-center gap-2.5">
+                <span className="rounded-lg bg-white/15 p-1.5 text-white">{icon}</span>
+                <span className="truncate font-bdo text-[11px] font-medium text-[#FFD5CD]">{label}</span>
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+                {!muted && <span className="font-bdo text-[10px] font-bold text-emerald-200">{share}%</span>}
+                <span className="font-clash text-sm font-bold text-white">{value}</span>
             </div>
         </div>
     );
 }
 
-// ── Monthly Revenue Bar Chart ─────────────────────────────────────────────────
+function MetricGrid({ stats }: { stats: FinanceStats }) {
+    return (
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <MetricCard icon={<Landmark size={18} />} label="Booking Revenue" value={formatRupiah(stats.bookingRevenue)} note={`${stats.totalBookings ?? 0} reservasi`} tone="terracotta" delay="delay-100" />
+            <MetricCard icon={<CreditCard size={18} />} label="Membership Revenue" value={formatRupiah(stats.membershipRevenue)} note={`${stats.activeMemberships ?? 0} member aktif`} tone="emerald" delay="delay-150" />
+            <MetricCard icon={<ReceiptText size={18} />} label="Transaksi Paid" value={formatNumber(stats.paidTransactions)} note={`Avg ${formatRupiah(stats.averagePaidTransaction)}`} tone="sky" delay="delay-200" />
+            <MetricCard icon={<Wallet size={18} />} label="Pending / Failed" value={formatRupiah(stats.pendingFailedAmount)} note="Perlu rekonsiliasi" tone="slate" delay="delay-250" />
+        </section>
+    );
+}
 
-function MonthlyRevenueBarChart({
-    data,
-    currentMonth,
-    currentYear,
-}: {
-    data: number[];
-    currentMonth: number;
-    currentYear: number;
-}) {
-    const [hoveredBar, setHoveredBar] = useState<number | null>(null);
-    const [loaded,     setLoaded]     = useState(false);
-    useEffect(() => { const t = setTimeout(() => setLoaded(true), 200); return () => clearTimeout(t); }, []);
-
-    const maxVal    = Math.max(...data, 1000);
-    const avgVal    = data.reduce((a, b) => a + b, 0) / 12;
-    const peakIdx   = data.indexOf(Math.max(...data));
-    const ytdTotal  = data.reduce((a, b) => a + b, 0);
-    const activeMo  = data.filter(v => v > 0).length;
+function MetricCard({ icon, label, value, note, tone, delay }: { icon: ReactNode; label: string; value: string; note: string; tone: "terracotta" | "emerald" | "sky" | "slate"; delay: string }) {
+    const styles = {
+        terracotta: {
+            card: "border-[#F08C78]/50 bg-[#21110e] text-white shadow-[0_18px_38px_-29px_rgba(227,83,54,.86)]",
+            icon: "border-white/15 bg-white/[.10] text-[#FFD5CD]",
+            chip: "border-[#F08C78]/40 bg-[#E35336]/20 text-[#FFD5CD]",
+            accent: "#F08C78",
+            bar: "linear-gradient(180deg,#FFD5CD,#E35336)",
+            note: "text-[#FFD5CD]/78",
+        },
+        emerald: {
+            card: "border-emerald-100 bg-white text-slate-950 shadow-[0_18px_38px_-30px_rgba(16,185,129,.52)]",
+            icon: "border-emerald-100 bg-emerald-50 text-emerald-600",
+            chip: "border-emerald-200 bg-emerald-50 text-emerald-700",
+            accent: "#10B981",
+            bar: "linear-gradient(180deg,#6ee7b7,#059669)",
+            note: "text-slate-500",
+        },
+        sky: {
+            card: "border-sky-100 bg-white text-slate-950 shadow-[0_18px_38px_-30px_rgba(14,165,233,.52)]",
+            icon: "border-sky-100 bg-sky-50 text-sky-600",
+            chip: "border-sky-200 bg-sky-50 text-sky-700",
+            accent: "#0EA5E9",
+            bar: "linear-gradient(180deg,#7dd3fc,#0284c7)",
+            note: "text-slate-500",
+        },
+        slate: {
+            card: "border-slate-200 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_55%,#FFF1EE_100%)] text-slate-950 shadow-[0_18px_38px_-30px_rgba(100,116,139,.42)]",
+            icon: "border-slate-200 bg-white text-[#B93D2A]",
+            chip: "border-slate-200 bg-white text-slate-600",
+            accent: "#64748B",
+            bar: "linear-gradient(180deg,#cbd5e1,#64748b)",
+            note: "text-slate-500",
+        },
+    }[tone];
+    const bars = Array.from({ length: 9 }, (_, index) => {
+        const wave = ((index * 17 + label.length * 7 + value.length * 11) % 54) + 28;
+        return Math.min(92, wave);
+    });
 
     return (
-        <div className="w-full">
-            {/* KPI strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+        <article className={cn("animate-fade-in-up relative min-h-[150px] overflow-hidden rounded-[20px] border p-3.5 transition-all duration-300 hover:-translate-y-1", styles.card, delay)}>
+            <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-20" />
+            <div className="relative z-10 flex h-full min-h-[124px] flex-col justify-between">
+                <div className="flex items-start justify-between gap-3">
+                    <span className={cn("flex h-9 w-9 items-center justify-center rounded-[13px] border shadow-[inset_0_1px_0_rgba(255,255,255,.34)]", styles.icon)}>{icon}</span>
+                    <span className={cn("rounded-full border px-2.5 py-1 font-bdo text-[9px] font-bold uppercase tracking-wide", styles.chip)}>
+                        Live
+                    </span>
+                </div>
+
+                <div className="mt-3">
+                    <div className="min-w-0">
+                        <div className="min-w-0">
+                            <p className="break-words font-clash text-[1.05rem] font-bold leading-[1.05] tracking-tight sm:text-[1.16rem] 2xl:text-[1.25rem]" title={value}>{value}</p>
+                            <p className="mt-2 font-bdo text-[12px] font-semibold opacity-85">{label}</p>
+                        </div>
+                    </div>
+                    <div className="mt-2.5 flex h-7 items-end gap-[3px] rounded-[12px] border border-current/10 bg-white/10 px-2 py-1.5">
+                        {bars.map((height, index) => (
+                            <span key={index} className="flex-1 rounded-t-[3px]" style={{ height: `${height}%`, background: styles.bar, opacity: index < 3 ? .48 : .9 }} />
+                        ))}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                        <p className={cn("min-w-0 break-words font-bdo text-[11px] font-semibold leading-tight", styles.note)}>{note}</p>
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: styles.accent, boxShadow: `0 0 0 4px ${styles.accent}22` }} />
+                    </div>
+                </div>
+            </div>
+        </article>
+    );
+}
+
+function DailyRevenueCard({ data, trend, period }: { data: number[]; trend: number; period: { month: number; year: number } }) {
+    const trendPositive = trend >= 0;
+    const currentDay = period.month === new Date().getMonth() + 1 && period.year === new Date().getFullYear()
+        ? new Date().getDate()
+        : data.length;
+
+    return (
+        <section className="card-glint animate-fade-in-up delay-200 group relative flex min-h-[344px] min-w-0 flex-col rounded-[22px] border border-slate-200/80 bg-white p-3.5 shadow-sm sm:p-4" style={{ overflow: "visible" }}>
+            <div className="pointer-events-none absolute inset-0 rounded-[24px] bg-gradient-to-br from-[#FFF1EE]/30 via-transparent to-slate-50/20 opacity-0 transition-opacity duration-1000 group-hover:opacity-100" />
+            <div className="pointer-events-none absolute left-5 right-5 top-0 z-10 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+
+            <div className="relative z-10 mb-3.5">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <ShinyIcon className="h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105">
+                            <TrendingUp className="h-4 w-4 text-white" />
+                        </ShinyIcon>
+                        <div className="min-w-0">
+                            <h2 className="whitespace-nowrap font-clash text-sm font-semibold leading-tight text-slate-900">Grafik Pendapatan</h2>
+                            <p className="mt-0.5 whitespace-nowrap font-bdo text-[10px] font-medium text-slate-400">Pendapatan bulan berjalan</p>
+                        </div>
+                    </div>
+                    <span className={cn("flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1.5 font-bdo text-[10px] font-bold shadow-sm", trendPositive ? "border-emerald-100 bg-emerald-50 text-emerald-700" : "border-rose-100 bg-rose-50 text-rose-600")}>
+                        {trendPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                        <span className="whitespace-nowrap">{Math.abs(trend).toLocaleString("id-ID", { maximumFractionDigits: 1 })}% vs bln lalu</span>
+                    </span>
+                </div>
+            </div>
+
+            <div className="relative z-10 mb-3 h-px bg-gradient-to-r from-transparent via-slate-100 to-transparent" />
+
+            <div className="relative z-10 flex-1" style={{ overflow: "visible" }}>
+                <FinanceInteractiveRevenueChart data={data} monthLabel={MONTH_SHORT[period.month]} currentDayInMonth={currentDay} />
+            </div>
+        </section>
+    );
+}
+
+function FinanceInteractiveRevenueChart({ data, monthLabel, currentDayInMonth }: { data: number[]; monthLabel: string; currentDayInMonth: number }) {
+    const detailWindowSize = 10;
+    const chartData = data && data.length > 0 ? data : Array(30).fill(0);
+    const totalDays = chartData.length;
+    const [winStart, setWinStart] = useState(() => Math.max(0, totalDays - detailWindowSize));
+    const [viewMode, setViewMode] = useState<"month" | "detail">("month");
+    const [activeIdx, setActiveIdx] = useState<number | null>(null);
+    const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+    const [jumpDay, setJumpDay] = useState("");
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => setIsLoaded(true), 180);
+        return () => window.clearTimeout(timer);
+    }, []);
+
+    const elapsedData = getElapsedMonthRevenue(chartData, currentDayInMonth);
+    const maxGlobal = Math.max(...chartData, 1000);
+    const avgGlobal = elapsedData.length > 0 ? elapsedData.reduce((sum, value) => sum + value, 0) / elapsedData.length : 0;
+    const peakValue = Math.max(...elapsedData, 0);
+    const peakIdx = peakValue > 0 ? chartData.indexOf(peakValue) : -1;
+    const activeDays = elapsedData.filter((value) => value > 0).length;
+    const fullMonth = viewMode === "month";
+    const effectiveWindowSize = fullMonth ? totalDays : Math.min(detailWindowSize, totalDays);
+    const chartStart = fullMonth ? 0 : winStart;
+    const winEnd = fullMonth ? totalDays : Math.min(winStart + effectiveWindowSize, totalDays);
+    const windowData = chartData.slice(chartStart, winEnd);
+    const canPrev = !fullMonth && winStart > 0;
+    const canNext = !fullMonth && winEnd < totalDays;
+    const maxStart = Math.max(0, totalDays - detailWindowSize);
+    const thumbPct = totalDays > 0 ? (detailWindowSize / totalDays) * 100 : 100;
+    const thumbLeft = maxStart > 0 ? (winStart / totalDays) * 100 : 0;
+    const avgLinePct = maxGlobal > 0 ? (avgGlobal / maxGlobal) * 100 : 0;
+    const avgLineBottom = `calc(${avgLinePct}% + 1px)`;
+
+    const slide = (direction: -1 | 1) => {
+        setWinStart((start) => {
+            const next = start + direction * Math.ceil(detailWindowSize / 2);
+            return Math.max(0, Math.min(totalDays - detailWindowSize, next));
+        });
+        setActiveIdx(null);
+        setHoverIdx(null);
+    };
+
+    const jumpTo = () => {
+        const day = parseInt(jumpDay, 10);
+        if (Number.isNaN(day) || day < 1 || day > totalDays) return;
+        const index = day - 1;
+        const nextStart = Math.min(Math.max(0, index - Math.floor(detailWindowSize / 2)), Math.max(0, totalDays - detailWindowSize));
+        setWinStart(nextStart);
+        setViewMode("detail");
+        setActiveIdx(index);
+        setHoverIdx(null);
+        setJumpDay("");
+    };
+
+    const bars = windowData.map((value, localIdx) => {
+        const globalIdx = chartStart + localIdx;
+        const rawHeight = maxGlobal > 0 ? (value / maxGlobal) * 100 : 0;
+        const heightPct = value > 0 ? Math.max(rawHeight, 4) : 1.5;
+        const day = globalIdx + 1;
+        const tooltipAlign = fullMonth
+            ? day <= 3 ? "left" : day >= 21 ? "right" : "center"
+            : localIdx <= 1 ? "left" : localIdx >= windowData.length - 2 ? "right" : "center";
+
+        return {
+            value,
+            localIdx,
+            globalIdx,
+            heightPct,
+            day,
+            isPeak: globalIdx === peakIdx,
+            isAboveAvg: value > avgGlobal && globalIdx !== peakIdx,
+            isActive: globalIdx === activeIdx,
+            isHovered: globalIdx === hoverIdx,
+            tooltipAlign,
+        };
+    });
+
+    return (
+        <div className="flex w-full select-none flex-col gap-3 font-bdo" style={{ overflow: "visible" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                    {([{ key: "month", label: "Bulan" }, { key: "detail", label: "10 Hari" }] as const).map((option) => (
+                        <button key={option.key} type="button" onClick={() => { setViewMode(option.key); setActiveIdx(null); setHoverIdx(null); }} className={cn("rounded-lg px-3 py-1.5 font-bdo text-[10px] font-bold uppercase tracking-wider transition-all", viewMode === option.key ? "bg-white text-[#B93D2A] shadow-sm ring-1 ring-[#FFD5CD]" : "text-slate-400 hover:text-slate-700")}>
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+                <span className="font-bdo text-[10px] font-medium text-slate-400">{fullMonth ? `${totalDays} hari dalam satu tampilan` : `Tgl ${chartStart + 1}-${winEnd}`}</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
                 {[
-                    { label: "Total YTD",      value: formatRevenue(ytdTotal),         accent: "text-slate-900", bg: "bg-slate-50 border-slate-100" },
-                    { label: "Rata-rata/Bulan", value: formatRevenue(Math.round(avgVal)), accent: "text-orange-600", bg: "bg-orange-50 border-orange-100" },
-                    { label: "Bulan Terbaik",  value: MONTH_SHORT[peakIdx + 1] || "—",   accent: "text-emerald-700", bg: "bg-emerald-50 border-emerald-100" },
-                ].map((kpi, i) => (
-                    <div key={i} className={cn("rounded-2xl p-3 sm:p-4 border animate-fade-in-up", kpi.bg, i === 2 && "kpi-third")} style={{ animationDelay: `${i * 60}ms` }}>
-                        <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{kpi.label}</p>
-                        <p className={cn("font-clash text-lg font-bold leading-tight", kpi.accent)}>{kpi.value}</p>
+                    { label: "Hari Puncak", value: peakIdx >= 0 ? `Tgl ${peakIdx + 1}` : "-", accent: "text-[#E35336]", bg: "border-[#FFD5CD] bg-[#FFF1EE]" },
+                    { label: "Rata-rata", value: formatChartRevenue(Math.round(avgGlobal)), accent: "text-slate-800", bg: "border-slate-100 bg-slate-50" },
+                    { label: "Hari Aktif", value: `${activeDays} hari`, accent: "text-emerald-600", bg: "border-emerald-100 bg-emerald-50" },
+                ].map((stat) => (
+                    <div key={stat.label} className={cn("rounded-xl border px-2.5 py-1.5", stat.bg)}>
+                        <p className="mb-0.5 font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
+                        <p className={cn("font-clash text-sm font-bold", stat.accent)}>{stat.value}</p>
                     </div>
                 ))}
             </div>
 
-            {/* Bar chart */}
-            <div className="relative overflow-x-hidden">
-                {/* Y axis labels */}
-                <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[9px] font-bdo font-medium text-slate-400 pointer-events-none" style={{ width: 30 }}>
-                    <span>{formatRevenue(maxVal)}</span>
-                    <span>{formatRevenue(maxVal / 2)}</span>
-                    <span>0</span>
+            {activeIdx !== null && (
+                <div className="animate-scale-in flex items-center justify-between gap-3 rounded-2xl border border-[#F8B5A8] bg-[#FFF1EE] px-3.5 py-2.5">
+                    <div>
+                        <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-[#E35336]/80">Detail Hari</p>
+                        <p className="font-clash text-sm font-bold text-slate-900">{formatRupiah(chartData[activeIdx])}</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="font-bdo text-[9px] uppercase tracking-wide text-slate-500">{activeIdx + 1} {monthLabel}</p>
+                        <p className={cn("mt-0.5 font-bdo text-[10px] font-bold", chartData[activeIdx] > avgGlobal ? "text-emerald-600" : chartData[activeIdx] === 0 ? "text-slate-400" : "text-rose-500")}>
+                            {chartData[activeIdx] > avgGlobal ? "di atas rata-rata" : chartData[activeIdx] === 0 ? "tidak ada transaksi" : "di bawah rata-rata"}
+                        </p>
+                    </div>
+                    <button type="button" onClick={() => setActiveIdx(null)} className="ml-auto shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-[#FFD5CD] hover:text-slate-700" aria-label="Tutup detail hari">
+                        <X className="h-3.5 w-3.5" />
+                    </button>
                 </div>
-                {/* Bars */}
-                <div className="ml-8 sm:ml-10 flex items-end gap-1 sm:gap-1.5" style={{ height: 160 }}>
-                    {data.map((val, i) => {
-                        const month     = i + 1;
-                        const isCurrent = month === currentMonth;
-                        const isPeak    = i === peakIdx && val > 0;
-                        const isHovered = hoveredBar === i;
-                        const pct       = maxVal > 0 ? (val / maxVal) * 100 : 0;
-                        const aboveAvg  = val > avgVal;
+            )}
 
-                        return (
-                            <div
-                                key={i}
-                                className="flex-1 flex flex-col items-center gap-1 group cursor-pointer"
-                                onMouseEnter={() => setHoveredBar(i)}
-                                onMouseLeave={() => setHoveredBar(null)}
-                            >
-                                {/* Tooltip */}
-                                {isHovered && val > 0 && (
-                                    <div className="absolute -top-10 z-20 bg-[#12131c] text-white text-[10px] font-bdo font-bold px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap animate-scale-in border border-orange-500/20">
-                                        {formatRupiahFull(val)}
-                                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900" />
-                                    </div>
-                                )}
-                                {/* Bar */}
-                                <div className="w-full flex-1 flex items-end relative">
-                                    <div
-                                        className={cn(
-                                            "w-full rounded-t-lg transition-all duration-200",
-                                            isCurrent
-                                                ? "bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]"
-                                                : isPeak
-                                                ? "bg-orange-400"
-                                                : aboveAvg
-                                                ? "bg-orange-200"
-                                                : val === 0
-                                                ? "bg-slate-100"
-                                                : "bg-slate-200",
-                                            isHovered && "brightness-110 scale-y-[1.03] origin-bottom",
-                                        )}
-                                        style={{
-                                            height: loaded && val > 0 ? `${Math.max(pct, 2)}%` : val > 0 ? "2%" : "2px",
-                                            transition: loaded ? "height 0.7s cubic-bezier(0.16,1,0.3,1)" : "none",
-                                            transitionDelay: loaded ? `${i * 30}ms` : "0ms",
-                                        }}
-                                    />
-                                    {isCurrent && val > 0 && (
-                                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_6px_rgba(249,115,22,0.8)] animate-pulse-glow" />
-                                    )}
-                                </div>
-                                {/* Label */}
-                                <span className={cn(
-                                    "font-bdo text-[9px] font-bold uppercase",
-                                    isCurrent ? "text-orange-500" : "text-slate-400",
-                                )}>
-                                    {MONTH_SHORT[month]}
-                                </span>
+            <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50/60 p-3" style={{ overflow: "visible", position: "relative" }}>
+                <div className="flex min-w-0 gap-2" style={{ overflow: "visible" }}>
+                    <div className="flex shrink-0 flex-col justify-between pb-7 text-right" style={{ width: 34 }}>
+                        <span className="font-bdo text-[9px] font-medium text-slate-300">{formatChartRevenue(maxGlobal)}</span>
+                        <span className="font-bdo text-[9px] font-medium text-slate-300">{formatChartRevenue(Math.round(maxGlobal * 0.5))}</span>
+                        <span className="font-bdo text-[9px] font-medium text-slate-200">0</span>
+                    </div>
+
+                    <div className="min-w-0 flex-1" style={{ overflow: "visible", position: "relative" }}>
+                        <div style={{ height: 112, position: "relative", overflow: "visible" }}>
+                            <div className="pointer-events-none absolute inset-x-0" style={{ top: 0, bottom: 0 }}>
+                                <div className="absolute inset-x-0" style={{ top: 0, borderTop: "1px dashed #f1f5f9" }} />
+                                <div className="absolute inset-x-0" style={{ top: "50%", borderTop: "1px dashed #f1f5f9" }} />
+                                <div className="absolute inset-x-0" style={{ bottom: 0, borderTop: "1px solid #e2e8f0" }} />
                             </div>
-                        );
-                    })}
+
+                            {avgGlobal > 0 && (
+                                <div className="pointer-events-none absolute inset-x-0" style={{ bottom: avgLineBottom, borderTop: "2px dashed rgba(227,83,54,.72)", filter: "drop-shadow(0 1px 2px rgba(227,83,54,.22))", zIndex: 20 }}>
+                                    <span className="absolute whitespace-nowrap font-bdo text-[8px] font-bold" style={{ right: 0, top: -15, background: "#FFF1EE", color: "#E35336", padding: "2px 5px", borderRadius: 6, lineHeight: 1.4, border: "1px solid #FFD5CD", boxShadow: "0 4px 10px rgba(227,83,54,.12)" }}>
+                                        avg {formatChartRevenue(Math.round(avgGlobal))}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className={cn("flex min-w-0 items-end", fullMonth ? "gap-px" : "gap-1.5")} style={{ height: "100%", overflow: "visible", position: "relative" }}>
+                                {bars.map((bar) => (
+                                    <button key={bar.globalIdx} type="button" className="relative flex min-w-0 flex-1 cursor-pointer flex-col items-stretch justify-end text-left" style={{ height: "100%", overflow: "visible" }} onClick={() => setActiveIdx(bar.isActive ? null : bar.globalIdx)} onMouseEnter={() => setHoverIdx(bar.globalIdx)} onMouseLeave={() => setHoverIdx(null)} aria-label={`Pendapatan tanggal ${bar.day}`}>
+                                        <div className={cn("pointer-events-none absolute z-30 w-max transition-opacity duration-150", bar.isActive || bar.isHovered ? "animate-scale-in opacity-100" : "opacity-0")} style={{ bottom: `${bar.heightPct}%`, ...(bar.tooltipAlign === "left" ? { left: 0, transform: "translateY(-10px)" } : bar.tooltipAlign === "right" ? { right: 0, transform: "translateY(-10px)" } : { left: "50%", transform: "translateX(-50%) translateY(-10px)" }) }}>
+                                            <div className="overflow-hidden rounded-xl ring-2 ring-[#F08C78]" style={{ minWidth: 142, background: "#fff", boxShadow: "0 12px 30px rgba(227,83,54,.22), 0 2px 8px rgba(15,23,42,.10)" }}>
+                                                <div className="flex items-center gap-1.5 px-3 py-1.5" style={{ background: "linear-gradient(90deg,#E35336,#B93D2A)" }}>
+                                                    <LiveDot size="xs" color="#ffffff" halo="rgba(255,255,255,.3)" />
+                                                    <p className="whitespace-nowrap font-bdo text-[9px] font-bold uppercase tracking-widest text-white">{bar.day} {monthLabel}</p>
+                                                </div>
+                                                <div className="px-3 py-2.5">
+                                                    <p className="whitespace-nowrap font-clash text-sm font-bold text-slate-950">{formatRupiah(bar.value)}</p>
+                                                    <p className="mt-0.5 font-bdo text-[9px] font-bold uppercase tracking-wider text-[#E35336]">Detail pendapatan</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {bar.isPeak && isLoaded && (
+                                            <div className="pointer-events-none absolute font-bdo text-[9px] font-bold text-[#E35336]" style={{ bottom: `calc(${bar.heightPct}% + 4px)`, left: "50%", transform: "translateX(-50%)", lineHeight: 1, zIndex: 4 }}>
+                                                Peak
+                                            </div>
+                                        )}
+
+                                        <div className="rev-bar w-full rounded-t-[5px]" style={{ height: isLoaded ? `${bar.heightPct}%` : "0%", transition: `height .65s cubic-bezier(.16,1,.3,1) ${bar.localIdx * 38}ms, filter .15s`, background: bar.isPeak ? "linear-gradient(180deg,#EA684F 0%,#8F2E20 100%)" : bar.isAboveAvg ? "linear-gradient(180deg,#F08C78 0%,#E35336 100%)" : "linear-gradient(180deg,#e2e8f0 0%,#cbd5e1 100%)", boxShadow: bar.isPeak ? "0 0 16px rgba(227,83,54,.4), inset 0 1px 0 rgba(255,255,255,.25)" : bar.isAboveAvg ? "0 0 6px rgba(227,83,54,.18)" : "none", outline: bar.isActive ? "2px solid #E35336" : "none", outlineOffset: "2px" }} />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={cn("mt-2 flex min-w-0", fullMonth ? "gap-px" : "gap-1.5")}>
+                            {bars.map((bar) => {
+                                const showLabel = !fullMonth || bar.day === 1 || bar.day === totalDays || bar.day % 5 === 0 || bar.isActive || bar.isHovered || bar.globalIdx === peakIdx;
+                                return (
+                                    <div key={bar.globalIdx} className="min-w-0 flex-1 text-center">
+                                        <span className={cn("block truncate font-bdo", fullMonth ? "text-[7px] sm:text-[8px]" : "text-[9px]")} style={{ fontWeight: bar.globalIdx === peakIdx || bar.isActive ? 700 : 500, color: bar.isActive ? "#B93D2A" : bar.globalIdx === peakIdx ? "#E35336" : "#94a3b8", opacity: showLabel ? 1 : 0 }}>
+                                            {showLabel ? bar.day : ""}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
-                {/* Avg dashed line */}
-                {maxVal > 0 && (
-                    <div
-                        className="absolute left-8 sm:left-10 right-0 border-t border-dashed border-orange-300/50 pointer-events-none"
-                        style={{ bottom: `calc(${(avgVal / maxVal) * 160}px + 32px)` }}
-                    >
-                        <span className="absolute right-0 -top-3.5 font-bdo text-[8px] text-orange-400/80 font-bold bg-white px-1 rounded">avg</span>
+
+                <div className="mt-3 flex items-center gap-3 border-t border-slate-100/80 pt-3">
+                    {[
+                        { color: "linear-gradient(135deg,#EA684F,#8F2E20)", label: "Puncak" },
+                        { color: "linear-gradient(135deg,#F08C78,#E35336)", label: "Di atas avg" },
+                        { color: "linear-gradient(135deg,#e2e8f0,#cbd5e1)", label: "Normal" },
+                    ].map((legend) => (
+                        <div key={legend.label} className="flex items-center gap-1.5">
+                            <div className="h-2.5 w-2.5 rounded-[3px]" style={{ background: legend.color }} />
+                            <span className="font-bdo text-[9px] text-slate-400">{legend.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className={cn("flex items-center gap-2", fullMonth && "opacity-60")}>
+                <button type="button" onClick={() => slide(-1)} disabled={!canPrev} className={cn("chart-nav-btn", canPrev ? "enabled" : "disabled")} title="Periode sebelumnya">
+                    <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <div className="flex justify-between px-0.5">
+                        <span className="font-bdo text-[9px] text-slate-400">Tgl {chartStart + 1}</span>
+                        <span className="font-bdo text-[9px] font-bold text-[#E35336]/70">{monthLabel}</span>
+                        <span className="font-bdo text-[9px] text-slate-400">Tgl {winEnd}</span>
+                    </div>
+                    <div className="scrubber-track" onClick={(event) => { if (fullMonth) setViewMode("detail"); const rect = event.currentTarget.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)); setWinStart(Math.round(pct * maxStart)); setActiveIdx(null); setHoverIdx(null); }}>
+                        <div className="scrubber-thumb" style={{ left: `${thumbLeft}%`, width: `${thumbPct}%` }} />
+                    </div>
+                </div>
+
+                <button type="button" onClick={() => slide(1)} disabled={!canNext} className={cn("chart-nav-btn", canNext ? "enabled" : "disabled")} title="Periode berikutnya">
+                    <ChevronRight className="h-4 w-4" />
+                </button>
+
+                <div className="flex shrink-0 items-center gap-1">
+                    <input type="number" min={1} max={totalDays} value={jumpDay} onChange={(event) => setJumpDay(event.target.value)} onKeyDown={(event) => event.key === "Enter" && jumpTo()} placeholder="Tgl" className="jump-input" />
+                    <button type="button" onClick={jumpTo} className="jump-go-btn">Go</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+interface InsightBar {
+    label: string;
+    value: number;
+    meta: string;
+    onClick?: () => void;
+}
+
+function FinanceInsightGrid({ monthlyRevenue, activeMonth, year, facilityRevenue, membershipPlanRevenue }: { monthlyRevenue: number[]; activeMonth: number; year: number; facilityRevenue: BreakdownRow[]; membershipPlanRevenue: BreakdownRow[] }) {
+    const annualBars = monthlyRevenue.map((value, index) => ({
+        label: MONTH_SHORT[index + 1],
+        value,
+        meta: MONTH_NAMES[index + 1],
+        onClick: () => router.get(route("admin.finance.index"), { month: index + 1, year }, { preserveScroll: true, preserveState: false }),
+    }));
+    const reservationBars = facilityRevenue.slice(0, 8).map((row) => ({ label: row.name, value: row.revenue, meta: `${row.count} trx` }));
+    const membershipBars = membershipPlanRevenue.slice(0, 8).map((row) => ({ label: row.name, value: row.revenue, meta: `${row.count} trx` }));
+
+    return (
+        <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <InsightBarCard title="Pendapatan Tahunan" subtitle={`Grafik bulanan ${year}`} bars={annualBars} activeLabel={MONTH_SHORT[activeMonth]} icon={<TrendingUp size={17} />} variant="paper" delay="delay-250" />
+            <InsightBarCard title="Reservasi" subtitle="Bar revenue per fasilitas" bars={reservationBars} icon={<LayoutGrid size={17} />} variant="ember" delay="delay-300" />
+            <InsightBarCard title="Membership" subtitle="Bar revenue per paket" bars={membershipBars} icon={<CreditCard size={17} />} variant="mint" delay="delay-400" />
+        </section>
+    );
+}
+
+function InsightBarCard({ title, subtitle, bars, activeLabel, icon, variant, delay }: { title: string; subtitle: string; bars: InsightBar[]; activeLabel?: string; icon: ReactNode; variant: "paper" | "ember" | "mint"; delay: string }) {
+    const max = maxValue(bars.map((bar) => bar.value));
+    const total = bars.reduce((sum, bar) => sum + bar.value, 0);
+    const top = bars.reduce<InsightBar | null>((leader, bar) => (!leader || bar.value > leader.value ? bar : leader), null);
+    const palette = {
+        paper: {
+            card: "border-slate-200/80 bg-white shadow-sm",
+            rail: "bg-slate-100",
+            bar: "linear-gradient(180deg,#EA684F 0%,#B93D2A 100%)",
+            chip: "border-[#F8B5A8]/70 bg-[#FFF7F5] text-[#B93D2A]",
+        },
+        ember: {
+            card: "border-[#F8B5A8]/70 bg-[#FFF7F5] shadow-[0_16px_38px_-32px_rgba(227,83,54,.58)]",
+            rail: "bg-white",
+            bar: "linear-gradient(180deg,#F08C78 0%,#E35336 58%,#B93D2A 100%)",
+            chip: "border-[#F8B5A8] bg-white text-[#B93D2A]",
+        },
+        mint: {
+            card: "border-emerald-100 bg-white shadow-[0_16px_38px_-32px_rgba(16,185,129,.48)]",
+            rail: "bg-emerald-50",
+            bar: "linear-gradient(180deg,#34d399 0%,#10b981 62%,#047857 100%)",
+            chip: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        },
+    }[variant];
+
+    return (
+        <article className={cn("card-glint animate-fade-in-up relative overflow-hidden rounded-[22px] border p-4", palette.card, delay)}>
+            <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                    <ShinyIcon className="h-9 w-9">{icon}</ShinyIcon>
+                    <div className="min-w-0">
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{subtitle}</p>
+                        <h2 className="truncate font-clash text-base font-semibold text-slate-950">{title}</h2>
+                    </div>
+                </div>
+                <span className={cn("shrink-0 rounded-full border px-3 py-1 font-bdo text-[11px] font-bold", palette.chip)}>{formatCompact(total)}</span>
+            </div>
+
+            <div className="mb-3 grid grid-cols-2 gap-2">
+                <div className="rounded-[14px] border border-slate-100 bg-white/70 p-2.5">
+                    <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">Top</p>
+                    <p className="mt-1 truncate font-clash text-sm font-bold text-slate-950">{top?.label ?? "-"}</p>
+                </div>
+                <div className="rounded-[14px] border border-slate-100 bg-white/70 p-2.5">
+                    <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">Nilai</p>
+                    <p className="mt-1 truncate font-clash text-sm font-bold text-slate-950">{top ? formatCompact(top.value) : "-"}</p>
+                </div>
+            </div>
+
+            <div className="finance-scrollbar overflow-x-auto pb-1">
+                {bars.length === 0 ? (
+                    <div className="rounded-[20px] border border-dashed border-slate-200 bg-white/70 p-8 text-center font-bdo text-sm font-semibold text-slate-400">Belum ada data pada periode ini.</div>
+                ) : (
+                    <div className="flex min-w-[390px] items-end gap-2">
+                        {bars.map((bar, index) => {
+                            const height = Math.max(10, Math.round((bar.value / max) * 118));
+                            const active = activeLabel === bar.label;
+                            const content = (
+                                <>
+                                    <div className={cn("flex h-[130px] w-full items-end rounded-[10px] px-1.5 py-1.5", palette.rail)}>
+                                        <div className="rev-bar bar-grow w-full rounded-t-[5px]" style={{ height, background: active ? "linear-gradient(180deg,#0f172a,#334155)" : palette.bar, animationDelay: `${index * 45}ms` }} />
+                                    </div>
+                                    <span className={cn("mt-2 block max-w-full truncate font-bdo text-[10px] font-bold", active ? "text-slate-950" : "text-slate-400")}>{bar.label}</span>
+                                </>
+                            );
+
+                            return bar.onClick ? (
+                                <button key={`${bar.label}-${index}`} type="button" onClick={bar.onClick} className="group min-w-0 flex-1 rounded-[14px] p-1.5 text-center transition hover:bg-white/70" title={`${bar.meta}: ${formatRupiah(bar.value)}`}>
+                                    {content}
+                                </button>
+                            ) : (
+                                <div key={`${bar.label}-${index}`} className="group min-w-0 flex-1 rounded-[14px] p-1.5 text-center" title={`${bar.meta}: ${formatRupiah(bar.value)}`}>
+                                    {content}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </article>
+    );
+}
+
+function RevenueMixPanel({ rows, stats }: { rows: TypeBreakdown[]; stats: FinanceStats }) {
+    const fallbackRows: TypeBreakdown[] = rows.length > 0 ? rows : [
+        { name: "Booking", type: "booking", revenue: stats.bookingRevenue, share: stats.totalRevenue > 0 ? Math.round((stats.bookingRevenue / stats.totalRevenue) * 100) : 0, color: "#E35336" },
+        { name: "Membership", type: "membership", revenue: stats.membershipRevenue, share: stats.totalRevenue > 0 ? Math.round((stats.membershipRevenue / stats.totalRevenue) * 100) : 0, color: "#10B981" },
+    ];
+    const total = fallbackRows.reduce((sum, row) => sum + row.revenue, 0);
+    const booking = fallbackRows.find((row) => row.type === "booking");
+    const membership = fallbackRows.find((row) => row.type === "membership");
+
+    return (
+        <section className="card-glint animate-fade-in-up delay-250 overflow-hidden rounded-[22px] border border-[#FFE0D8] bg-[linear-gradient(135deg,#ffffff_0%,#fff7f4_60%,#f8fafc_100%)] p-4 shadow-[0_18px_42px_-36px_rgba(185,61,42,.48)]">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                    <ShinyIcon className="h-10 w-10">
+                        <PieChart size={17} />
+                    </ShinyIcon>
+                    <div className="min-w-0">
+                        <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.16em] text-[#B93D2A]/70">Revenue split</p>
+                        <h2 className="font-clash text-lg font-semibold leading-tight text-slate-950">Booking dan Membership</h2>
+                        <p className="mt-1 font-bdo text-xs font-semibold text-slate-500">Finance bisa langsung membaca kontribusi setiap sumber pendapatan.</p>
+                    </div>
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[560px]">
+                    <RevenueMixStat label="Total" value={formatCompact(total)} accent="#0f172a" />
+                    <RevenueMixStat label="Booking" value={booking ? formatCompact(booking.revenue) : "Rp 0"} accent="#E35336" share={booking?.share ?? 0} />
+                    <RevenueMixStat label="Membership" value={membership ? formatCompact(membership.revenue) : "Rp 0"} accent="#10B981" share={membership?.share ?? 0} />
+                </div>
+            </div>
+
+            <div className="mt-4 overflow-hidden rounded-[18px] border border-white bg-white/72 p-2 shadow-sm">
+                <div className="flex h-4 overflow-hidden rounded-full bg-slate-100">
+                    {fallbackRows.map((row) => (
+                        <div
+                            key={row.type}
+                            className="h-full transition-all"
+                            style={{ width: `${Math.max(0, Math.min(100, row.share))}%`, background: `linear-gradient(90deg, ${row.color}, ${row.type === "membership" ? "#34d399" : "#F08C78"})` }}
+                            title={`${row.name}: ${row.share}%`}
+                        />
+                    ))}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                    {fallbackRows.map((row) => (
+                        <span key={row.type} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 font-bdo text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                            <span className="h-2 w-2 rounded-full" style={{ background: row.color }} />
+                            {row.name} {row.share}%
+                        </span>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function RevenueMixStat({ label, value, accent, share }: { label: string; value: string; accent: string; share?: number }) {
+    return (
+        <div className="rounded-[16px] border border-white bg-white/78 p-3 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+                <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+                {share !== undefined && <p className="font-bdo text-[10px] font-bold" style={{ color: accent }}>{share}%</p>}
+            </div>
+            <p className="mt-1 truncate font-clash text-base font-bold text-slate-950">{value}</p>
+        </div>
+    );
+}
+
+function BreakdownPanel({ title, subtitle, rows, icon, tone = "terracotta" }: { title: string; subtitle: string; rows: BreakdownRow[]; icon: ReactNode; tone?: "terracotta" | "emerald" }) {
+    const total = rows.reduce((sum, row) => sum + row.revenue, 0);
+    const transactions = rows.reduce((sum, row) => sum + row.count, 0);
+    const leader = rows[0];
+    const avgTransaction = transactions > 0 ? Math.round(total / transactions) : 0;
+    const topThreeShare = rows.slice(0, 3).reduce((sum, row) => sum + row.share, 0);
+    const maxRevenue = maxValue(rows.map((row) => row.revenue));
+    const accent = tone === "emerald" ? "#10B981" : "#E35336";
+    const soft = tone === "emerald" ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-[#FFF1EE] border-[#FFD5CD] text-[#B93D2A]";
+
+    return (
+        <section className="card-glint animate-fade-in-up delay-300 overflow-hidden rounded-[22px] border border-slate-200/80 bg-white shadow-sm">
+            <div className="border-b border-slate-100 p-3.5">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <ShinyIcon className="h-9 w-9">{icon}</ShinyIcon>
+                        <div className="min-w-0">
+                            <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{subtitle}</p>
+                            <h2 className="truncate font-clash text-base font-semibold text-slate-950">{title}</h2>
+                        </div>
+                    </div>
+                    <span className={cn("hidden rounded-full border px-3 py-1 font-bdo text-[11px] font-bold sm:inline-flex", soft)}>{rows.length} item</span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-4">
+                    <BreakdownStat label="Total" value={formatCompact(total)} />
+                    <BreakdownStat label="Transaksi" value={formatNumber(transactions)} />
+                    <BreakdownStat label="Avg / trx" value={formatCompact(avgTransaction)} />
+                    <BreakdownStat label="Top 3" value={`${Math.min(100, Math.round(topThreeShare))}%`} active color={accent} />
+                </div>
+
+                {leader && (
+                    <div className={cn("mt-3 rounded-[16px] border p-3", soft)}>
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                                <p className="font-bdo text-[9px] font-bold uppercase tracking-widest opacity-70">Kontributor terbesar</p>
+                                <p className="mt-1 truncate font-clash text-base font-bold text-slate-950">{leader.name}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-clash text-base font-bold text-slate-950">{formatCompact(leader.revenue)}</p>
+                                <p className="font-bdo text-[10px] font-bold opacity-80">{leader.share}% dari total</p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
 
-            {/* Legend */}
-            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-bdo text-[10px] text-slate-400">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-orange-500 inline-block shadow-[0_0_4px_rgba(249,115,22,0.4)]" /> Bulan ini</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-orange-400 inline-block" /> Puncak</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-orange-200 inline-block" /> Di atas rata-rata</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-slate-200 inline-block" /> Di bawah rata-rata</span>
-                <span className="font-bold text-slate-500">{activeMo}/12 bulan aktif</span>
+            <div className="finance-scrollbar max-h-[360px] space-y-2.5 overflow-y-auto p-3.5">
+                {rows.length === 0 ? (
+                    <div className="rounded-[20px] border border-dashed border-slate-200 bg-slate-50 p-6 text-center font-bdo text-sm font-semibold text-slate-400">Belum ada data pada periode ini.</div>
+                ) : rows.map((row, index) => {
+                    const avg = row.count > 0 ? Math.round(row.revenue / row.count) : 0;
+                    const barWidth = Math.max(4, Math.round((row.revenue / maxRevenue) * 100));
+                    return (
+                        <article key={`${row.name}-${index}`} className="rounded-[18px] border border-slate-100 bg-slate-50/70 p-3 transition hover:border-[#F8B5A8] hover:bg-white hover:shadow-sm">
+                            <div className="grid grid-cols-[32px_minmax(0,1fr)_auto] items-start gap-3">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-white font-clash text-xs font-bold text-slate-500 ring-1 ring-slate-100">{index + 1}</span>
+                                <div className="min-w-0">
+                                    <p className="truncate font-clash text-sm font-semibold text-slate-950">{row.name}</p>
+                                    <div className="mt-2 grid grid-cols-3 gap-1.5">
+                                        <BreakdownMicro label="Share" value={`${row.share}%`} />
+                                        <BreakdownMicro label="Trx" value={formatNumber(row.count)} />
+                                        <BreakdownMicro label="Avg" value={formatCompact(avg)} />
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-clash text-sm font-semibold text-slate-950">{formatCompact(row.revenue)}</p>
+                                    <p className="mt-1 font-bdo text-[10px] font-bold" style={{ color: accent }}>{formatRupiah(row.revenue)}</p>
+                                </div>
+                            </div>
+                            <div className="mt-3 h-3 overflow-hidden rounded-[6px] bg-white ring-1 ring-slate-100">
+                                <div className="progress-fill h-full rounded-[6px]" style={{ width: `${barWidth}%`, background: `linear-gradient(90deg, ${row.color}, ${accent})` }} />
+                            </div>
+                        </article>
+                    );
+                })}
             </div>
+        </section>
+    );
+}
+
+function BreakdownStat({ label, value, active = false, color = "#E35336" }: { label: string; value: string; active?: boolean; color?: string }) {
+    return (
+        <div className={cn("rounded-[16px] border p-2.5", active ? "bg-white" : "border-slate-100 bg-slate-50")}>
+            <p className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+            <p className="mt-1 truncate font-clash text-sm font-bold text-slate-950" style={active ? { color } : undefined}>{value}</p>
         </div>
     );
 }
 
-// ── Finance Doughnut ──────────────────────────────────────────────────────────
-
-interface DoughnutSegment { name: string; value: number; color: string; displayValue: string; }
-
-function FinanceDoughnut({ segments, centerValue, centerSub }: { segments: DoughnutSegment[]; centerValue: string; centerSub: string }) {
-    const total = segments.reduce((sum, s) => sum + s.value, 0);
-    let cumulative = 0;
-    // FIX: removed duplicate `const stops` declaration — kept only one
-    const stops = segments.map((s) => {
-        const start = (cumulative / total) * 100;
-        cumulative += s.value;
-        const end = (cumulative / total) * 100;
-        return `${s.color} ${start.toFixed(1)}% ${end.toFixed(1)}%`;
-    }).join(", ");
-
+function BreakdownMicro({ label, value }: { label: string; value: string }) {
     return (
-        <div className="flex flex-col items-center gap-8 animate-fade-in-up">
-            <div className="relative h-44 w-44 shrink-0 hover:scale-105 transition-transform duration-500">
-                <div className="absolute inset-0 rounded-full bg-orange-500/20 blur-xl" />
-                <div className="h-full w-full rounded-full shadow-lg border-4 border-white/50" style={{ background: `conic-gradient(${stops})` }} />
-                <div className="absolute inset-[22px] flex flex-col items-center justify-center rounded-full bg-white shadow-[inset_0_4px_10px_rgba(0,0,0,0.05),_0_10px_20px_rgba(0,0,0,0.1)]">
-                    <span className="font-clash text-xl font-bold tracking-tight text-slate-900 text-center px-2">{centerValue}</span>
-                    <span className="font-bdo mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">{centerSub}</span>
-                </div>
-            </div>
+        <div className="min-w-0 rounded-[10px] bg-white px-2 py-1 ring-1 ring-slate-100">
+            <p className="font-bdo text-[8px] font-bold uppercase tracking-wide text-slate-400">{label}</p>
+            <p className="truncate font-bdo text-[10px] font-bold text-slate-700">{value}</p>
         </div>
     );
 }
 
-// ── Facility Breakdown Row ────────────────────────────────────────────────────
-
-function FacilityRow({ color, name, share, valueLabel }: { color: string; name: string; share: number; valueLabel: string }) {
-    return (
-        <li className="flex flex-col gap-2 p-3 hover:bg-slate-50 rounded-xl transition-colors group">
-            <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-3 font-bdo font-medium text-slate-700 min-w-0">
-                    <div className="h-3 w-3 shrink-0 rounded-full shadow-sm group-hover:scale-125 transition-transform relative" style={{ backgroundColor: color }}>
-                        <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 bg-white/60 rounded-full" />
-                    </div>
-                    {name}
-                </span>
-                <div className="flex items-center gap-3">
-                    <span className="font-clash text-sm font-medium text-slate-900">{valueLabel}</span>
-                    <span className="w-8 text-right font-clash text-[12px] font-bold text-slate-400">{share}%</span>
-                </div>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner">
-                <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${share}%`, backgroundColor: color }} />
-            </div>
-        </li>
-    );
-}
-
-// ── Export Modal with Month Picker ────────────────────────────────────────────
-
-const YEARS_BACK = 3;
-
-function ExportModal({
-    isOpen,
-    onClose,
-    currentMonth,
-    currentYear,
-    onPrint,
-    onBackendExport,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    currentMonth: number;
-    currentYear: number;
-    onPrint: (month: number, year: number) => void;
-    onBackendExport: (month: number, year: number) => void;
-}) {
-    const [selMonth, setSelMonth] = useState(currentMonth);
-    const [selYear,  setSelYear]  = useState(currentYear);
-
-    const isCurrentPeriod = selMonth === currentMonth && selYear === currentYear;
-    const nowYear = new Date().getFullYear();
-    const years = Array.from({ length: YEARS_BACK + 1 }, (_, i) => nowYear - i);
-
-    if (!isOpen) return null;
+function LedgerTable({ rows, search, setSearch, typeFilter, setTypeFilter, statusFilter, setStatusFilter }: { rows: LedgerRow[]; search: string; setSearch: (value: string) => void; typeFilter: LedgerTypeFilter; setTypeFilter: (value: LedgerTypeFilter) => void; statusFilter: LedgerStatusFilter; setStatusFilter: (value: LedgerStatusFilter) => void }) {
+    const paidRows = rows.filter((row) => row.payment_status === "PAID");
+    const attentionRows = rows.filter((row) => row.payment_status !== "PAID");
+    const paidAmount = paidRows.reduce((sum, row) => sum + row.amount, 0);
+    const attentionAmount = attentionRows.reduce((sum, row) => sum + row.amount, 0);
+    const bookingRows = rows.filter((row) => row.type === "booking").length;
+    const membershipRows = rows.filter((row) => row.type === "membership").length;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Backdrop */}
-            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
-            {/* Modal */}
-            <div className="relative z-10 w-full max-w-sm mx-4 bg-white rounded-[28px] shadow-[0_32px_80px_-12px_rgba(0,0,0,0.25)] overflow-hidden modal-enter">
-                {/* Top shimmer */}
-                <div className="pointer-events-none absolute top-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-white to-transparent z-10" />
-
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-orange-50/60 via-white to-white">
-                    <div className="flex items-center gap-3">
+        <section className="card-glint animate-fade-in-up delay-400 overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-sm">
+            <div className="relative overflow-hidden border-b border-slate-100 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#FFF1EE_100%)] p-3.5 sm:p-4">
+                <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full bg-[#F8B5A8]/25 blur-3xl" />
+                <div className="relative z-10 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="flex min-w-0 items-start gap-3">
                         <ShinyIcon className="h-10 w-10">
-                            <Download className="w-4 h-4 text-orange-300" />
+                            <ReceiptText size={18} />
                         </ShinyIcon>
-                        <div>
-                            <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-orange-500">Export Laporan</p>
-                            <p className="font-clash text-base font-semibold text-slate-900 leading-tight">Pilih Periode</p>
+                        <div className="min-w-0">
+                            <p className="font-bdo text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Ledger transaksi lengkap</p>
+                            <h2 className="font-clash text-base font-semibold leading-tight text-slate-950">Rekonsiliasi dan Invoice</h2>
+                            <p className="mt-1 max-w-2xl font-bdo text-[11px] font-medium leading-relaxed text-slate-500">
+                                {rows.length} transaksi tampil sesuai filter, dengan nominal lunas dan transaksi yang perlu perhatian langsung terlihat.
+                            </p>
                         </div>
                     </div>
-                    <button title="X" onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700">
-                        <X className="w-4 h-4" />
-                    </button>
+
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:min-w-[580px]">
+                        <LedgerSummaryStat label="Lunas" value={formatRupiah(paidAmount)} detail={`${paidRows.length} trx`} tone="emerald" />
+                        <LedgerSummaryStat label="Perhatian" value={formatRupiah(attentionAmount)} detail={`${attentionRows.length} trx`} tone="rose" />
+                        <LedgerSummaryStat label="Booking" value={formatNumber(bookingRows)} detail="reservasi" tone="terracotta" />
+                        <LedgerSummaryStat label="Member" value={formatNumber(membershipRows)} detail="membership" tone="sky" />
+                    </div>
                 </div>
 
-                {/* Body */}
-                <div className="px-6 py-5 flex flex-col gap-5">
-                    <p className="font-bdo text-sm text-slate-500 leading-relaxed">
-                        Pilih bulan dan tahun yang ingin Anda ekspor sebagai laporan PDF.
-                    </p>
-
-                    {/* Month + Year selectors */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Bulan</label>
-                            <select
-                                title="nama"
-                                value={selMonth}
-                                onChange={e => setSelMonth(Number(e.target.value))}
-                                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-sm font-bdo text-slate-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
-                            >
-                                {MONTH_NAMES.slice(1).map((name, i) => (
-                                    <option key={i + 1} value={i + 1}>{name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-bdo text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Tahun</label>
-                            <select
-                                title="tahun"
-                                value={selYear}
-                                onChange={e => setSelYear(Number(e.target.value))}
-                                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-sm font-bdo text-slate-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none"
-                            >
-                                {years.map(y => <option key={y} value={y}>{y}</option>)}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Preview badge */}
-                    <div className={cn(
-                        "flex items-center gap-2 rounded-xl px-3.5 py-2.5 border text-sm font-bdo font-medium",
-                        isCurrentPeriod
-                            ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                            : "bg-orange-50 border-orange-200 text-orange-700",
-                    )}>
-                        {isCurrentPeriod ? <CheckCircle2 size={15} /> : <CalendarDays size={15} />}
-                        <span>
-                            {isCurrentPeriod
-                                ? `Mencetak data aktif — ${MONTH_NAMES[selMonth]} ${selYear}`
-                                : `Mengekspor via server — ${MONTH_NAMES[selMonth]} ${selYear}`}
-                        </span>
-                    </div>
-
-                    <p className="font-bdo text-[11px] text-slate-400 -mt-2">
-                        {isCurrentPeriod
-                            ? "Laporan akan dibuka di dialog cetak browser Anda."
-                            : "Data periode lain akan diproses oleh server dan diunduh otomatis."}
-                    </p>
-                </div>
-
-                {/* Footer actions */}
-                <div className="flex items-center gap-3 px-6 py-4 bg-slate-50/60 border-t border-slate-100">
-                    <button
-                        onClick={onClose}
-                        className="flex-1 rounded-xl py-3 font-clash text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 transition-all active:scale-95"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (isCurrentPeriod) onPrint(selMonth, selYear);
-                            else onBackendExport(selMonth, selYear);
-                        }}
-                        className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-[#12131c] py-3 font-clash text-sm font-medium text-white btn-sheen shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.5)] transition-all hover:scale-[0.98] active:scale-95"
-                    >
-                        <Download size={15} className="text-orange-400" />
-                        Export Laporan
-                    </button>
+                <div className="finance-no-print relative z-10 mt-3 grid gap-2 rounded-[20px] border border-white bg-white/78 p-2 shadow-[0_16px_34px_-30px_rgba(15,23,42,.38)] backdrop-blur sm:grid-cols-[minmax(220px,1fr)_minmax(135px,160px)_minmax(135px,160px)]">
+                    <label className="relative">
+                        <span className="sr-only">Cari transaksi</span>
+                        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Cari invoice, customer, fasilitas..." className="h-10 w-full rounded-[15px] border border-slate-200 bg-slate-50 pl-10 pr-10 font-bdo text-sm font-semibold text-slate-700 outline-none transition focus:border-[#F08C78] focus:bg-white focus:ring-2 focus:ring-[#FFD5CD]" />
+                        {search && (
+                            <button type="button" onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Hapus pencarian">
+                                <X size={13} />
+                            </button>
+                        )}
+                    </label>
+                    <FilterSelect label="Filter tipe transaksi" value={typeFilter} onChange={(value) => setTypeFilter(value as LedgerTypeFilter)}>
+                        <option value="all">Semua tipe</option>
+                        <option value="booking">Booking</option>
+                        <option value="membership">Membership</option>
+                        <option value="other">Lainnya</option>
+                    </FilterSelect>
+                    <FilterSelect label="Filter status pembayaran" value={statusFilter} onChange={(value) => setStatusFilter(value as LedgerStatusFilter)}>
+                        <option value="all">Semua status</option>
+                        <option value="PAID">Lunas</option>
+                        <option value="UNPAID">Belum bayar</option>
+                        <option value="FAILED">Gagal</option>
+                        <option value="EXPIRED">Expired</option>
+                    </FilterSelect>
                 </div>
             </div>
+
+            <div className="hidden md:block">
+                <div className="finance-scrollbar max-h-[500px] overflow-auto">
+                    <table className="w-full min-w-[1120px] border-separate border-spacing-0">
+                        <thead className="sticky top-0 z-10">
+                            <tr className="bg-slate-50/95 text-left backdrop-blur">
+                                {["Invoice", "Tanggal", "Customer", "Tipe", "Detail", "Status", "Nominal", "Xendit"].map((header) => (
+                                    <th key={header} className="border-b border-slate-100 px-4 py-2.5 font-bdo text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{header}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="px-4 py-12 text-center font-bdo text-sm font-medium text-slate-400">Tidak ada transaksi yang cocok dengan filter.</td>
+                                </tr>
+                            ) : rows.map((row) => (
+                                <tr key={row.id} className="group transition hover:bg-[#FFF1EE]/45">
+                                    <td className="border-b border-slate-100 px-4 py-3">
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-9 w-9 items-center justify-center rounded-[13px] border border-slate-100 bg-slate-50 text-slate-500 transition group-hover:border-[#F8B5A8] group-hover:bg-white group-hover:text-[#B93D2A]">
+                                                <FileText size={15} />
+                                            </span>
+                                            <div>
+                                                <p className="font-clash text-sm font-semibold text-slate-900">{row.receipt_number}</p>
+                                                <p className="mt-0.5 font-bdo text-[11px] font-medium text-slate-400">#{row.id}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="border-b border-slate-100 px-4 py-3 font-bdo text-xs font-semibold text-slate-600">{row.paid_at ?? row.created_at ?? "-"}</td>
+                                    <td className="border-b border-slate-100 px-4 py-3">
+                                        <p className="max-w-[180px] truncate font-clash text-sm font-semibold text-slate-900">{row.customer_name}</p>
+                                    </td>
+                                    <td className="border-b border-slate-100 px-4 py-3"><TypeBadge type={row.type} /></td>
+                                    <td className="border-b border-slate-100 px-4 py-3">
+                                        <p className="max-w-[240px] truncate font-bdo text-sm font-semibold text-slate-700">{row.subject}</p>
+                                    </td>
+                                    <td className="border-b border-slate-100 px-4 py-3"><PaymentBadge status={row.payment_status} /></td>
+                                    <td className="border-b border-slate-100 px-4 py-3 text-right">
+                                        <p className="font-clash text-sm font-bold text-slate-950">{formatRupiah(row.amount)}</p>
+                                        <p className="mt-0.5 font-bdo text-[10px] font-bold text-slate-400">{row.payment_status === "PAID" ? "settled" : "open"}</p>
+                                    </td>
+                                    <td className="border-b border-slate-100 px-4 py-3">
+                                        <span className="block max-w-[170px] truncate font-bdo text-xs font-semibold text-slate-400">{row.invoice_id ?? "-"}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="finance-scrollbar max-h-[560px] space-y-3 overflow-y-auto p-3.5 md:hidden">
+                {rows.length === 0 ? (
+                    <div className="rounded-[20px] border border-dashed border-slate-200 bg-slate-50 p-6 text-center font-bdo text-sm font-semibold text-slate-400">Tidak ada transaksi yang cocok dengan filter.</div>
+                ) : rows.map((row) => (
+                    <article key={row.id} className="overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-sm">
+                        <div className="border-b border-slate-100 bg-slate-50/80 p-4">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="truncate font-clash text-sm font-semibold text-slate-950">{row.customer_name}</p>
+                                    <p className="mt-1 font-bdo text-[11px] font-semibold text-slate-400">{row.receipt_number}</p>
+                                </div>
+                                <PaymentBadge status={row.payment_status} />
+                            </div>
+                            <p className="mt-3 break-words font-clash text-xl font-bold leading-tight text-slate-950">{formatRupiah(row.amount)}</p>
+                        </div>
+                        <div className="p-4">
+                            <p className="font-bdo text-xs font-semibold text-slate-600">{row.subject}</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                <TypeBadge type={row.type} />
+                                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 font-bdo text-[11px] font-bold text-slate-500">{row.paid_at ?? row.created_at ?? "-"}</span>
+                            </div>
+                            <p className="mt-3 truncate font-bdo text-[11px] font-semibold text-slate-400">Xendit: {row.invoice_id ?? "-"}</p>
+                        </div>
+                    </article>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+function LedgerSummaryStat({ label, value, detail, tone }: { label: string; value: string; detail: string; tone: "emerald" | "rose" | "terracotta" | "sky" }) {
+    const style = {
+        emerald: "border-emerald-100 bg-emerald-50 text-emerald-700",
+        rose: "border-rose-100 bg-rose-50 text-rose-600",
+        terracotta: "border-[#F8B5A8] bg-[#FFF1EE] text-[#B93D2A]",
+        sky: "border-sky-100 bg-sky-50 text-sky-700",
+    }[tone];
+
+    return (
+        <div className={cn("min-w-0 rounded-[16px] border p-2.5", style)}>
+            <p className="font-bdo text-[9px] font-bold uppercase tracking-widest opacity-70">{label}</p>
+            <p className="mt-1 break-words font-clash text-sm font-bold leading-tight text-slate-950">{value}</p>
+            <p className="mt-1 font-bdo text-[10px] font-bold opacity-80">{detail}</p>
         </div>
     );
 }
 
-// ── Finance Print Template ────────────────────────────────────────────────────
-
-interface FinancePrintTemplateProps {
-    stats: FinanceStats;
-    facilityRevenue: FacilityRevenue[];
-    dailyRevenue: number[];
-    revenueTrend: number;
-    period: { month: number; year: number };
-    exportMonth: number;
-    exportYear: number;
+function FilterSelect({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
+    return (
+        <label className="relative">
+            <span className="sr-only">{label}</span>
+            <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <select aria-label={label} title={label} value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-[15px] border border-slate-200 bg-slate-50 pl-9 pr-3 font-bdo text-sm font-bold text-slate-600 outline-none transition focus:border-[#F08C78] focus:ring-2 focus:ring-[#FFD5CD]">
+                {children}
+            </select>
+        </label>
+    );
 }
 
-function FinancePrintTemplate({
-    stats, facilityRevenue, dailyRevenue, revenueTrend, period, exportMonth, exportYear,
-}: FinancePrintTemplateProps) {
-    const now       = new Date();
-    const dateStr   = now.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
-    const reportNo  = `LPK/${exportYear}/${String(exportMonth).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
+function TypeBadge({ type }: { type: LedgerRow["type"] }) {
+    return (
+        <span className="rounded-full border border-[#F8B5A8]/70 bg-[#FFF1EE] px-3 py-1 font-bdo text-[11px] font-bold text-[#B93D2A]">
+            {type === "booking" ? "Booking" : type === "membership" ? "Membership" : "Lainnya"}
+        </span>
+    );
+}
+
+function FinancePrintTemplate({ stats, dailyRevenue, revenueTrend, period }: { stats: FinanceStats; dailyRevenue: number[]; revenueTrend: number; period: { month: number; year: number } }) {
+    const periodLabel = `${MONTH_NAMES[period.month]} ${period.year}`;
+    const activeDays = dailyRevenue.filter((value) => value > 0).length;
+    const totalDaily = dailyRevenue.reduce((sum, value) => sum + value, 0);
+    const avgRevenue = activeDays > 0 ? Math.round(totalDaily / activeDays) : 0;
+    const peakRevenue = Math.max(0, ...dailyRevenue);
+    const peakDay = peakRevenue > 0 ? dailyRevenue.findIndex((value) => value === peakRevenue) + 1 : 0;
     const trendSign = revenueTrend >= 0 ? "+" : "";
-
-    const safe       = dailyRevenue ?? [];
-    const activeDays = safe.filter(v => v > 0).length;
-    const avgRevenue = activeDays > 0 ? Math.round(safe.reduce((a, b) => a + b, 0) / safe.length) : 0;
-    const peakRev    = safe.length > 0 ? Math.max(...safe) : 0;
-    const peakDay    = safe.indexOf(peakRev) + 1;
-
-    const rp  = (v: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v);
-    const num = (v: number) => new Intl.NumberFormat("id-ID").format(v);
-
-    const periodLabel = `${MONTH_NAMES[exportMonth]} ${exportYear}`;
-
-    const rows: { kategori: string; detail: string; satuan: string; nilai: string }[] = [
-        { kategori: "Keuangan",    detail: "Total Pendapatan Periode",           satuan: periodLabel,                nilai: rp(stats.totalRevenue)  },
-        { kategori: "Keuangan",    detail: "Rata-rata Pendapatan Harian",        satuan: `${activeDays} hari aktif`, nilai: rp(avgRevenue)          },
-        { kategori: "Keuangan",    detail: `Puncak Pendapatan (Tgl ${peakDay})`, satuan: "1 hari",                  nilai: rp(peakRev)             },
-        { kategori: "Trend",       detail: "Perubahan vs Bulan Lalu",            satuan: "MoM",                     nilai: `${trendSign}${revenueTrend}%` },
-        { kategori: "Operasional", detail: "Total Reservasi Bulan Ini",          satuan: "transaksi",               nilai: num(stats.totalBookings)      },
-        { kategori: "Operasional", detail: "Membership Aktif",                   satuan: "anggota",                 nilai: num(stats.activeMemberships)  },
-        ...facilityRevenue.map(f => ({
-            kategori: "Fasilitas", detail: f.name, satuan: `${f.share}% pangsa pasar`, nilai: rp(f.revenue),
-        })),
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("id-ID", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const rows = [
+        { kategori: "Keuangan", detail: "Total Pendapatan Periode", satuan: periodLabel, nilai: formatRupiah(stats.totalRevenue) },
+        { kategori: "Keuangan", detail: "Pendapatan Reservasi", satuan: "booking", nilai: formatRupiah(stats.bookingRevenue) },
+        { kategori: "Keuangan", detail: "Pendapatan Membership", satuan: "membership", nilai: formatRupiah(stats.membershipRevenue) },
+        { kategori: "Keuangan", detail: "Rata-rata Pendapatan Harian", satuan: `${activeDays} hari aktif`, nilai: formatRupiah(avgRevenue) },
+        { kategori: "Keuangan", detail: `Puncak Pendapatan${peakDay ? ` (Tgl ${peakDay})` : ""}`, satuan: peakDay ? "1 hari" : "-", nilai: formatRupiah(peakRevenue) },
+        { kategori: "Trend", detail: "Perubahan vs Bulan Lalu", satuan: "MoM", nilai: `${trendSign}${revenueTrend}%` },
+        { kategori: "Operasional", detail: "Total Reservasi Bulan Ini", satuan: "transaksi", nilai: formatNumber(stats.totalBookings ?? 0) },
+        { kategori: "Operasional", detail: "Membership Aktif", satuan: "anggota", nilai: formatNumber(stats.activeMemberships ?? 0) },
     ];
-
-    const MINIMUM_ROWS = 10;
-    const fillerCount  = Math.max(0, MINIMUM_ROWS - rows.length);
 
     return (
         <div className="print-finance-template">
@@ -735,16 +1437,20 @@ function FinancePrintTemplate({
                         <img src="/BES.png" alt="Brawijaya Edusport" className="prt-logo-img" />
                     </div>
                     <div className="prt-header-right">
-                        <div className="prt-company-name-main">BRAWIJAYA EDUSPORT</div>
-                        <div className="prt-company-name-sub">PT BRAWIJAYA MULTI USAHA</div>
-                        <div className="prt-company-address">Jln. Terusan Cibogo No.1 Kota Malang<br />NPWP 3295.65.312</div>
+                        <p className="prt-company-name-main">BRAWIJAYA EDUSPORT</p>
+                        <p className="prt-company-name-sub">PT BRAWIJAYA MULTI USAHA</p>
+                        <div className="prt-company-address">
+                            Jln. Terusan Cibogo No.1 Kota Malang<br />
+                            NPWP 3295.65.312
+                        </div>
                         <hr className="prt-header-divider" />
-                        <div className="prt-doc-title">Laporan Keuangan</div>
+                        <p className="prt-doc-title">LAPORAN KEUANGAN</p>
                     </div>
                 </div>
 
                 <div className="prt-meta-outer">
                     <div className="prt-meta-left">
+                        Laporan ini merangkum pendapatan reservasi fasilitas dan membership gym pada periode terpilih.
                         <div className="prt-payment-note">
                             Pembayaran melalui Bank Mandiri<br />
                             144-0-02487884-2<br />
@@ -755,11 +1461,11 @@ function FinancePrintTemplate({
                         <table>
                             <tbody>
                                 <tr><td className="meta-label-col">Tanggal</td><td className="meta-value-col">{dateStr}</td></tr>
-                                <tr><td className="meta-label-col">Nomor</td><td className="meta-value-col">{reportNo}</td></tr>
+                                <tr><td className="meta-label-col">Nomor</td><td className="meta-value-col meta-value-bold">KEUANGAN/{period.year}/{String(period.month).padStart(2, "0")}</td></tr>
                                 <tr><td className="meta-label-col">Periode</td><td className="meta-value-col">{periodLabel}</td></tr>
                                 <tr><td className="meta-label-col">Hari Aktif</td><td className="meta-value-col">{activeDays} hari</td></tr>
-                                <tr><td className="meta-label-col">Trend Bulan Ini</td><td className="meta-value-col">{trendSign}{revenueTrend}% vs bln lalu</td></tr>
-                                <tr><td className="meta-label-col">Mata Uang</td><td className="meta-value-col meta-value-bold">Indonesian Rupiah</td></tr>
+                                <tr><td className="meta-label-col">Trend Bulan Ini</td><td className="meta-value-col">{trendSign}{revenueTrend}%</td></tr>
+                                <tr><td className="meta-label-col">Mata Uang</td><td className="meta-value-col">Indonesian Rupiah</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -768,26 +1474,21 @@ function FinancePrintTemplate({
                 <table className="prt-report-table">
                     <thead>
                         <tr>
-                            <th style={{ width: "5%"  }}>No.</th>
-                            <th style={{ width: "16%" }}>Kategori</th>
-                            <th style={{ width: "43%" }}>Keterangan / Detail</th>
-                            <th style={{ width: "18%" }}>Satuan</th>
-                            <th style={{ width: "18%" }}>Nilai</th>
+                            <th style={{ width: "32pt" }}>No.</th>
+                            <th style={{ width: "74pt" }}>Kategori</th>
+                            <th>Keterangan / Detail</th>
+                            <th style={{ width: "86pt" }}>Satuan</th>
+                            <th style={{ width: "94pt" }}>Nilai</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, idx) => (
-                            <tr key={idx}>
-                                <td className="rt-center">{idx + 1}</td>
+                        {rows.map((row, index) => (
+                            <tr key={`${row.kategori}-${row.detail}`}>
+                                <td className="rt-center">{index + 1}</td>
                                 <td>{row.kategori}</td>
                                 <td>{row.detail}</td>
                                 <td className="rt-center">{row.satuan}</td>
                                 <td className="rt-right rt-bold">{row.nilai}</td>
-                            </tr>
-                        ))}
-                        {Array.from({ length: fillerCount }).map((_, i) => (
-                            <tr key={`f${i}`} className="rt-filler">
-                                <td>&nbsp;</td><td /><td /><td /><td />
                             </tr>
                         ))}
                     </tbody>
@@ -795,16 +1496,16 @@ function FinancePrintTemplate({
 
                 <div className="prt-bottom-row">
                     <div className="prt-keterangan">
-                        <span className="prt-keterangan-label">Keterangan :</span>
+                        <span className="prt-keterangan-label">KETERANGAN</span>
+                        Data laporan diambil dari transaksi yang masuk pada periode {periodLabel}. Nilai pendapatan dihitung dari transaksi berstatus lunas. Pending, gagal, dan expired disajikan sebagai bahan rekonsiliasi finance.
                     </div>
                     <div className="prt-summary">
                         <table>
                             <tbody>
-                                <tr><td>Total Pendapatan</td><td>{rp(stats.totalRevenue)}</td></tr>
-                                <tr><td>Rata-rata Harian</td><td>{rp(avgRevenue)}</td></tr>
-                                <tr><td>Total Reservasi</td><td>{num(stats.totalBookings)} trx</td></tr>
-                                <tr><td>Membership Aktif</td><td>{num(stats.activeMemberships)} orang</td></tr>
-                                <tr className="sum-total"><td>Trend Bulan Ini</td><td>{trendSign}{revenueTrend}%</td></tr>
+                                <tr><td>Booking</td><td>{formatRupiah(stats.bookingRevenue)}</td></tr>
+                                <tr><td>Membership</td><td>{formatRupiah(stats.membershipRevenue)}</td></tr>
+                                <tr><td>Pending/Gagal</td><td>{formatRupiah(stats.pendingFailedAmount)}</td></tr>
+                                <tr className="sum-total"><td>Total</td><td>{formatRupiah(stats.totalRevenue)}</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -812,7 +1513,7 @@ function FinancePrintTemplate({
 
                 <div className="prt-page-footer">
                     <span>Halaman 1 dari 1</span>
-                    <span>Laporan Keuangan — {periodLabel} — Brawijaya Edusport</span>
+                    <span>Laporan Keuangan - {periodLabel} - Brawijaya Edusport</span>
                     <span>Dicetak: {dateStr}</span>
                 </div>
             </div>
@@ -820,439 +1521,104 @@ function FinancePrintTemplate({
     );
 }
 
-// ── Main Page Component ───────────────────────────────────────────────────────
-
-type DetailTab = "revenue" | "bookings";
+function downloadFinanceCsv(rows: LedgerRow[], period: { month: number; year: number }) {
+    const periodLabel = `${MONTH_NAMES[period.month]} ${period.year}`;
+    const headers = [
+        "No",
+        "Periode",
+        "Receipt Number",
+        "Xendit Invoice ID",
+        "Tanggal",
+        "Customer",
+        "Tipe Transaksi",
+        "Detail",
+        "Status Pembayaran",
+        "Nominal",
+        "Checkout URL",
+    ];
+    const escapeCell = (value: string | number | null) => `"${String(value ?? "").replaceAll("\"", "\"\"")}"`;
+    const body = rows.map((row, index) => [
+        index + 1,
+        periodLabel,
+        row.receipt_number,
+        row.invoice_id,
+        row.paid_at ?? row.created_at ?? "",
+        row.customer_name,
+        row.type === "booking" ? "Booking" : row.type === "membership" ? "Membership" : "Lainnya",
+        row.subject,
+        PAYMENT_LABEL[row.payment_status],
+        row.amount,
+        row.checkout_url,
+    ].map(escapeCell).join(","));
+    const csv = [
+        headers.map(escapeCell).join(","),
+        ...body,
+        "",
+        ["Ringkasan", periodLabel, "", "", "", "", "", "Total baris", rows.length, rows.reduce((sum, row) => sum + row.amount, 0), ""].map(escapeCell).join(","),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `UBSC-Finance-Ledger-${MONTH_NAMES[period.month]}-${period.year}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
 
 export default function FinanceIndex() {
-    const {
-        facilityRevenue, facilityBookings, dailyRevenue,
-        monthlyRevenue, stats, period, revenueTrend, recentTransactions,
-    } = usePage<FinanceProps>().props;
+    const { stats, revenueTrend, dailyRevenue, monthlyRevenue, facilityRevenue, membershipPlanRevenue, typeBreakdown, ledger, period } = usePage<FinanceProps>().props;
+    const [search, setSearch] = useState("");
+    const [typeFilter, setTypeFilter] = useState<LedgerTypeFilter>("all");
+    const [statusFilter, setStatusFilter] = useState<LedgerStatusFilter>("all");
 
-    const trendPositive = revenueTrend >= 0;
-    const [activeTab,       setActiveTab]       = useState<DetailTab>("revenue");
-    const [showExportModal, setShowExportModal] = useState(false);
-    const [exportMonth,     setExportMonth]     = useState(period.month);
-    const [exportYear,      setExportYear]      = useState(period.year);
-
-    const periodLabel = `${MONTH_NAMES[period.month] ?? ""} ${period.year}`;
-
-    const totalFacilityRevenue  = facilityRevenue.reduce((s, f) => s + f.revenue, 0);
-    const totalFacilityBookings = facilityBookings.reduce((s, f) => s + f.count, 0);
-
-    const revenueDoughnutSegments: DoughnutSegment[] = facilityRevenue.map(f => ({
-        name: f.name, value: f.share, color: f.color, displayValue: formatRupiahFull(f.revenue),
-    }));
-    const bookingDoughnutSegments: DoughnutSegment[] = facilityBookings.map(f => ({
-        name: f.name, value: f.share, color: f.color, displayValue: `${f.count} booking`,
-    }));
-
-    const safeMonthlyRevenue = monthlyRevenue
-        ?? Array.from({ length: 12 }, (_, i) => i + 1 === period.month ? stats.totalRevenue : 0);
-
-    const avgPerBooking = stats.totalBookings > 0
-        ? Math.round(stats.totalRevenue / stats.totalBookings)
-        : 0;
-
-    function handlePrint(month: number, year: number) {
-        setExportMonth(month);
-        setExportYear(year);
-        setShowExportModal(false);
-        setTimeout(() => window.print(), 150);
-    }
-
-    function handleBackendExport(month: number, year: number) {
-        setShowExportModal(false);
-        router.get(route("admin.finance.export", { month, year }));
-    }
+    const filteredLedger = useMemo(() => {
+        const needle = search.trim().toLowerCase();
+        return ledger.filter((row) => {
+            const matchType = typeFilter === "all" || row.type === typeFilter;
+            const matchStatus = statusFilter === "all" || row.payment_status === statusFilter;
+            const matchSearch = !needle || [row.receipt_number, row.invoice_id ?? "", row.customer_name, row.subject, row.type, row.payment_status].join(" ").toLowerCase().includes(needle);
+            return matchType && matchStatus && matchSearch;
+        });
+    }, [ledger, search, statusFilter, typeFilter]);
 
     return (
         <AdminLayout
             header={
-                <div className="flex flex-col gap-1 pt-4 animate-fade-in-up">
+                <div className="flex flex-col gap-0.5 pt-3 animate-fade-in-up">
                     <style dangerouslySetInnerHTML={{ __html: FINANCE_STYLES }} />
-
-                    <span className="font-bdo text-[11px] font-bold tracking-wide text-orange-500">
-                        Analisis Keuangan
-                    </span>
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mt-1">
-                        <h1 className="font-clash text-3xl font-bold uppercase tracking-tight xl:text-4xl">
-                            <ShinyTextBlack text="Finance Overview" speed={5} />
-                        </h1>
-                        <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-3">
-                            <button
-                                onClick={() => setShowExportModal(true)}
-                                className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 sm:px-5 py-2 sm:py-2.5 font-clash text-sm font-medium text-white btn-sheen shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.5)] transition-all hover:scale-[1.02] active:scale-[0.97]"
-                            >
-                                <Download size={15} className="text-white" />
-                                Export PDF
-                            </button>
-                            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md px-4 sm:px-5 py-2 sm:py-2.5 font-bdo text-sm font-medium text-slate-700 shadow-sm">
-                                <CalendarDays size={15} className="text-orange-400" />
-                                <span>{periodLabel}</span>
-                            </div>
-                        </div>
-                    </div>
+                    <span className="font-bdo text-[10px] font-medium tracking-wide text-[#E35336]">Laporan Keuangan</span>
+                    <h1 className="font-clash text-2xl font-bold uppercase tracking-tight xl:text-3xl">
+                        <ShinyTextBlack text="Finance" speed={4} />
+                    </h1>
                 </div>
             }
         >
-            <Head title="Finance Overview" />
+            <Head title="Finance" />
 
-            <div className="flex flex-col gap-5 sm:gap-6 pt-6 pb-20 overflow-x-hidden">
+            <div className="flex flex-col gap-4 overflow-x-hidden pb-16 pt-3">
+                <FinanceToolbar period={period} rows={filteredLedger} stats={stats} />
 
-                {/* ── ROW 1: Hero Stats ── */}
-                <section className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
-
-                    {/* Main Revenue Card */}
-                    <div className="md:col-span-2 lg:col-span-1 relative rounded-[28px] overflow-hidden bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 p-5 sm:p-7 shadow-2xl shadow-orange-200/40 flex flex-col justify-between animate-fade-in-up group hover:-translate-y-1 transition-all duration-500 min-h-[260px] sm:min-h-[320px] lg:min-h-[380px]">
-                        <div className="absolute inset-0 water-caustics-effect pointer-events-none opacity-50" />
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="bg-white/20 backdrop-blur-md p-1.5 rounded-lg animate-float">
-                                    <Wallet className="w-4 h-4 text-white" />
-                                </div>
-                                <p className="font-bdo text-[11px] font-bold text-orange-100 uppercase tracking-widest">Total Pendapatan</p>
-                            </div>
-                            <h2 className="font-clash text-2xl sm:text-[2rem] font-bold text-white leading-none tracking-tight">
-                                Rp <ShinyText text={formatRevenue(stats.totalRevenue)} speed={4} />
-                            </h2>
-                            <div className={cn(
-                                "mt-4 inline-flex items-center gap-1 text-[11px] font-bold font-bdo px-2.5 py-1 rounded-lg backdrop-blur-md",
-                                trendPositive
-                                    ? "bg-white/15 text-white border border-white/20"
-                                    : "bg-red-900/30 text-red-200 border border-red-700/30",
-                            )}>
-                                {trendPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                                {Math.abs(revenueTrend)}% bulan ini
-                            </div>
-                        </div>
-
-                        <div className="relative z-10 my-5 flex-1 flex flex-col justify-center">
-                            <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 divide-y divide-white/10 overflow-hidden">
-                                <div className="flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors">
-                                    <span className="font-bdo text-[12px] font-medium text-orange-100">Total Reservasi</span>
-                                    <span className="font-clash text-sm font-bold text-white">{stats.totalBookings}</span>
-                                </div>
-                                <div className="flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors">
-                                    <span className="font-bdo text-[12px] font-medium text-orange-100">Membership Aktif</span>
-                                    <span className="font-clash text-sm font-bold text-white">{stats.activeMemberships}</span>
-                                </div>
-                                <div className="flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors">
-                                    <span className="font-bdo text-[12px] font-medium text-orange-100">Avg/Booking</span>
-                                    <span className="font-clash text-sm font-bold text-white">{formatRevenue(avgPerBooking)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button className="relative z-10 w-full bg-white text-orange-600 font-clash text-sm font-semibold py-3.5 rounded-xl hover:bg-orange-50 active:scale-95 transition-all flex items-center justify-center gap-2">
-                            <Activity className="w-4 h-4" /> Lihat Analitik Lengkap
-                        </button>
-                    </div>
-
-                    {/* Metrics Grid */}
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4 content-stretch animate-fade-in-up delay-100">
-                        {/* Reservasi Selesai */}
-                        <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-md hover:-translate-y-1 transition-all border border-orange-200 flex flex-col justify-between card-glint shimmer-once">
-                            <div className="bg-orange-400/75 p-2 rounded-xl w-fit animate-float">
-                                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </div>
-                            <div>
-                                <p className="font-clash text-xl sm:text-2xl font-bold text-white">{stats.totalBookings}</p>
-                                <p className="font-bdo text-[10px] sm:text-[11px] text-white mt-1">Reservasi Selesai</p>
-                            </div>
-                        </div>
-                        {/* Member Gym */}
-                        <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-md hover:-translate-y-1 transition-all border border-orange-300 flex flex-col justify-between card-glint shimmer-once">
-                            <div className="bg-orange-400/75 p-2 rounded-xl w-fit animate-float" style={{ animationDelay: "0.5s" }}>
-                                <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </div>
-                            <div>
-                                <p className="font-clash text-xl sm:text-2xl font-bold text-white">{stats.activeMemberships}</p>
-                                <p className="font-bdo text-[10px] sm:text-[11px] text-white mt-1">Member Gym</p>
-                            </div>
-                        </div>
-                        {/* Avg per Booking */}
-                        <div className="bg-white rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-sm border border-slate-200 hover:-translate-y-1 transition-all card-glint flex flex-col justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-emerald-100 p-1.5 sm:p-2 rounded-xl">
-                                    <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-                                </div>
-                                <span className="font-bdo text-[9px] font-bold uppercase tracking-widest text-slate-400">Avg Booking</span>
-                            </div>
-                            <div>
-                                <p className="font-clash text-xl sm:text-2xl font-bold text-slate-900">{formatRevenue(avgPerBooking)}</p>
-                                <p className="font-bdo text-[10px] sm:text-[11px] text-slate-500 mt-0.5">Per transaksi</p>
-                            </div>
-                        </div>
-                        {/* Trend KPI */}
-                        <div className={cn(
-                            "rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-sm border hover:-translate-y-1 transition-all flex flex-col justify-between card-glint",
-                            trendPositive
-                                ? "bg-emerald-50 border-emerald-200"
-                                : "bg-rose-50 border-rose-200",
-                        )}>
-                            <div className={cn("p-1.5 sm:p-2 rounded-xl w-fit", trendPositive ? "bg-emerald-100" : "bg-rose-100")}>
-                                {trendPositive
-                                    ? <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-                                    : <ArrowDownRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600" />}
-                            </div>
-                            <div>
-                                <p className={cn("font-clash text-xl sm:text-2xl font-bold", trendPositive ? "text-emerald-700" : "text-rose-600")}>
-                                    {trendPositive ? "+" : ""}{revenueTrend}%
-                                </p>
-                                <p className={cn("font-bdo text-[10px] sm:text-[11px] mt-0.5", trendPositive ? "text-emerald-600" : "text-rose-500")}>
-                                    vs bulan lalu
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Daily Revenue Chart */}
-                    <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 relative overflow-hidden group flex flex-col animate-fade-in-up delay-200 card-glint">
-                        <div className="absolute inset-0 bg-gradient-to-b from-orange-50/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
-                        <div className="mb-4 flex items-center justify-between relative z-10">
-                            <div className="flex items-center gap-3">
-                                <ShinyIcon className="h-10 w-10 group-hover:scale-105 transition-transform duration-300">
-                                    <TrendingUp className="w-4 h-4 text-orange-300" />
-                                </ShinyIcon>
-                                <div>
-                                    <h2 className="font-clash text-base font-semibold text-slate-900 leading-tight">
-                                        <SplitText text="Trend Harian" delay={300} />
-                                    </h2>
-                                    <p className="font-bdo text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">Bulan {MONTH_NAMES[period.month]}</p>
-                                </div>
-                            </div>
-                            <span className={cn(
-                                "flex items-center gap-1 rounded-xl px-2.5 py-1.5 font-bdo text-[10px] font-bold shadow-sm",
-                                trendPositive
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                    : "bg-rose-50 text-rose-600 border border-rose-100",
-                            )}>
-                                {trendPositive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
-                                {Math.abs(revenueTrend)}% vs bln lalu
-                            </span>
-                        </div>
-                        <div className="h-px bg-gradient-to-r from-transparent via-slate-100 to-transparent mb-2 relative z-10" />
-                        <div className="flex-1 relative z-10">
-                            <InteractiveRevenueChart data={dailyRevenue} monthLabel={MONTH_NAMES[period.month]} />
-                        </div>
-                    </div>
-
-                </section>
-
-                {/* ── ROW 2: Annual Monthly Revenue Chart ── */}
-                <section className="animate-fade-in-up delay-200">
-                    <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 relative overflow-hidden group card-glint">
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-50/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
-                        <div className="pointer-events-none absolute top-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-white to-transparent z-10" />
-
-                        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-                            <div className="flex items-center gap-3">
-                                <ShinyIcon className="h-10 w-10">
-                                    <BarChart3 className="w-4 h-4 text-orange-300" />
-                                </ShinyIcon>
-                                <div>
-                                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-orange-500">Tahun {period.year}</p>
-                                    <h2 className="font-clash text-lg font-semibold text-slate-900 leading-tight">
-                                        <SplitText text="Pendapatan Bulanan" delay={200} />
-                                    </h2>
-                                    <p className="font-bdo text-[11px] text-slate-400 mt-0.5">Ringkasan 12 bulan dalam satu tahun</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="font-bdo text-[11px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                                    Aktif: <span className="text-orange-500">{MONTH_NAMES[period.month]}</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="relative z-10">
-                            <MonthlyRevenueBarChart
-                                data={safeMonthlyRevenue}
-                                currentMonth={period.month}
-                                currentYear={period.year}
-                            />
-                        </div>
-
-                        {!monthlyRevenue && (
-                            <p className="mt-4 font-bdo text-[11px] text-slate-400 flex items-center gap-1.5 relative z-10">
-                                <Zap size={11} className="text-orange-400" />
-                                Chart menampilkan data bulan aktif. Data 12 bulan penuh tersedia setelah integrasi backend.
-                            </p>
-                        )}
+                <section className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2 2xl:grid-cols-[minmax(330px,0.84fr)_minmax(420px,1fr)_minmax(460px,1.12fr)]">
+                    <RevenueHero stats={stats} trend={revenueTrend} period={period} dailyRevenue={dailyRevenue} />
+                    <MetricGrid stats={stats} />
+                    <div className="lg:col-span-2 2xl:col-span-1">
+                        <DailyRevenueCard data={dailyRevenue} trend={revenueTrend} period={period} />
                     </div>
                 </section>
 
-                {/* ── ROW 3: Detailed Analytics ── */}
-                <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                <RevenueMixPanel rows={typeBreakdown} stats={stats} />
 
-                    {/* Left: Tabs & Breakdown */}
-                    <div className="lg:col-span-7 flex flex-col gap-6 animate-fade-in-up delay-300">
-                        {/* Tab switcher */}
-                        <div className="flex items-center gap-2 sm:gap-3 bg-white p-1.5 rounded-2xl w-full sm:w-fit border border-slate-200 shadow-inner overflow-hidden">
-                            <button
-                                onClick={() => setActiveTab("revenue")}
-                                className={cn(
-                                    "flex flex-1 sm:flex-none items-center justify-center sm:justify-start gap-2 rounded-xl px-3 sm:px-5 py-2.5 font-clash text-sm font-medium transition-all",
-                                    activeTab === "revenue"
-                                        ? "bg-slate-100 text-orange-600 shadow-inner"
-                                        : "text-slate-500 hover:bg-slate-200/50",
-                                )}
-                            >
-                                <Wallet size={16} className={activeTab === "revenue" ? "text-orange-400" : ""} />
-                                Pendapatan
-                            </button>
-                            <button
-                                onClick={() => setActiveTab("bookings")}
-                                className={cn(
-                                    "flex flex-1 sm:flex-none items-center justify-center sm:justify-start gap-2 rounded-xl px-3 sm:px-5 py-2.5 font-clash text-sm font-medium transition-all",
-                                    activeTab === "bookings"
-                                        ? "bg-slate-100 text-orange-600 shadow-inner"
-                                        : "text-slate-500 hover:bg-slate-200/50",
-                                )}
-                            >
-                                <BarChart3 size={16} className={activeTab === "bookings" ? "text-orange-400" : ""} />
-                                Reservasi
-                            </button>
-                        </div>
+                <FinanceInsightGrid monthlyRevenue={monthlyRevenue} activeMonth={period.month} year={period.year} facilityRevenue={facilityRevenue} membershipPlanRevenue={membershipPlanRevenue} />
 
-                        {/* Facility breakdown card */}
-                        <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 card-glint flex-1">
-                            <h3 className="font-clash text-lg font-semibold text-slate-900 mb-6 flex items-center gap-3">
-                                <div className="bg-orange-50 p-1.5 rounded-lg border border-orange-100">
-                                    <LayoutGrid className="w-4 h-4 text-orange-500" />
-                                </div>
-                                Detail per Fasilitas
-                            </h3>
-                            <ul className="space-y-2">
-                                {activeTab === "revenue"
-                                    ? facilityRevenue.map(f => <FacilityRow key={f.name} {...f} valueLabel={formatRupiahFull(f.revenue)} />)
-                                    : facilityBookings.map(f => <FacilityRow key={f.name} {...f} valueLabel={`${f.count} booking`} />)
-                                }
-                            </ul>
-                            <div className="mt-8 flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-4 sm:p-5 rounded-[20px] border border-slate-100">
-                                <span className="font-bdo text-xs font-bold text-slate-400 uppercase tracking-widest">Total Akumulasi</span>
-                                <span className="font-clash text-xl font-bold text-slate-900">
-                                    <ShinyTextBlack
-                                        text={activeTab === "revenue" ? formatRupiahFull(totalFacilityRevenue) : `${totalFacilityBookings} Bookings`}
-                                        speed={4}
-                                    />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right: Distribution */}
-                    <div className="lg:col-span-5 flex flex-col gap-6 animate-fade-in-up delay-300">
-                        <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 card-glint flex flex-col items-center justify-center min-h-[380px] sm:min-h-[450px]">
-                            <div className="w-full mb-6 sm:mb-8 flex items-center justify-between">
-                                <h3 className="font-clash text-lg font-semibold text-slate-900">Distribusi</h3>
-                                <div className="bg-orange-50 p-1.5 rounded-lg border border-orange-100">
-                                    <PieChart className="w-4 h-4 text-orange-500" />
-                                </div>
-                            </div>
-                            <FinanceDoughnut
-                                segments={activeTab === "revenue" ? revenueDoughnutSegments : bookingDoughnutSegments}
-                                centerValue={activeTab === "revenue" ? formatRevenue(totalFacilityRevenue) : String(totalFacilityBookings)}
-                                centerSub={activeTab === "revenue" ? "Pendapatan" : "Reservasi"}
-                            />
-                            <div className="mt-6 sm:mt-10 grid grid-cols-2 gap-2 sm:gap-3 w-full">
-                                {(activeTab === "revenue" ? revenueDoughnutSegments : bookingDoughnutSegments).slice(0, 4).map(seg => (
-                                    <div key={seg.name} className="flex items-center gap-2 bg-slate-50 p-2 sm:p-2.5 rounded-xl border border-slate-100 hover:bg-white hover:shadow-sm transition-all min-w-0">
-                                        <div className="h-2 w-2 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: seg.color }} />
-                                        <span className="font-bdo text-[10px] text-slate-600 truncate">{seg.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
+                <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                    <BreakdownPanel title="Breakdown per Fasilitas" subtitle="Kontribusi pendapatan reservasi" rows={facilityRevenue} icon={<LayoutGrid size={17} />} />
+                    <BreakdownPanel title="Breakdown per Paket" subtitle="Kontribusi pendapatan membership" rows={membershipPlanRevenue} icon={<BarChart3 size={17} />} tone="emerald" />
                 </section>
 
-                {/* ── ROW 4: Recent Transactions ── */}
-                <section className="animate-fade-in-up delay-400">
-                    <div className="bg-white rounded-[28px] p-5 sm:p-7 shadow-sm border border-slate-200 card-glint">
-                        <div className="pointer-events-none absolute top-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-white to-transparent z-10" />
-
-                        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex items-center gap-4">
-                                <ShinyIcon className="h-10 w-10 animate-float">
-                                    <CreditCard className="w-4 h-4 text-orange-300" />
-                                </ShinyIcon>
-                                <div>
-                                    <p className="font-bdo text-[10px] font-bold uppercase tracking-widest text-slate-400">Keuangan</p>
-                                    <h2 className="font-clash text-base font-semibold text-slate-900">
-                                        <SplitText text="Transaksi Lunas Terbaru" delay={500} />
-                                    </h2>
-                                    <p className="font-bdo text-[11px] text-slate-400 mt-0.5">Update real-time aktivitas pembayaran</p>
-                                </div>
-                            </div>
-                            <span className="font-bdo text-[11px] font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-xl border border-orange-100 uppercase tracking-wide flex items-center gap-1.5">
-                                <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
-                                Live Feed
-                            </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {recentTransactions.map((tx, idx) => (
-                                <div
-                                    key={tx.id}
-                                    className={cn(
-                                        "p-5 rounded-2xl transition-all border group relative overflow-hidden",
-                                        idx === 0
-                                            ? "bg-[#12131c] border-slate-800 shadow-xl"
-                                            : "bg-white border-slate-100 hover:border-orange-200 hover:shadow-md card-breath",
-                                    )}
-                                >
-                                    {idx === 0 && <div className="absolute inset-0 water-caustics-effect opacity-10 pointer-events-none" />}
-                                    <div className="flex justify-between items-start relative z-10 gap-2">
-                                        <div className="flex gap-3 min-w-0">
-                                            <div className={cn("p-2.5 rounded-xl shrink-0 animate-float", idx === 0 ? "bg-white/10" : "bg-orange-50")} style={{ animationDelay: `${idx * 0.3}s` }}>
-                                                <UserCheck className={cn("w-5 h-5", idx === 0 ? "text-white" : "text-orange-500")} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <h4 className={cn("font-clash text-sm font-medium leading-tight truncate", idx === 0 ? "text-white" : "text-slate-900")}>
-                                                    {tx.user_name}
-                                                </h4>
-                                                <p className={cn("font-bdo text-[10px] mt-1", idx === 0 ? "text-slate-400" : "text-slate-500")}>
-                                                    {tx.paid_at}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <p className={cn("font-clash text-sm sm:text-base font-bold shrink-0", idx === 0 ? "text-emerald-400" : "text-slate-900")}>
-                                            Rp {tx.amount.toLocaleString("id-ID")}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
+                <LedgerTable rows={filteredLedger} search={search} setSearch={setSearch} typeFilter={typeFilter} setTypeFilter={setTypeFilter} statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
             </div>
 
-            {/* ── Export Modal ── */}
-            <ExportModal
-                isOpen={showExportModal}
-                onClose={() => setShowExportModal(false)}
-                currentMonth={period.month}
-                currentYear={period.year}
-                onPrint={handlePrint}
-                onBackendExport={handleBackendExport}
-            />
-
-            {/* ── Finance Print Template ── */}
-            <FinancePrintTemplate
-                stats={stats}
-                facilityRevenue={facilityRevenue}
-                dailyRevenue={dailyRevenue}
-                revenueTrend={revenueTrend}
-                period={period}
-                exportMonth={exportMonth}
-                exportYear={exportYear}
-            />
-
+            <FinancePrintTemplate stats={stats} dailyRevenue={dailyRevenue} revenueTrend={revenueTrend} period={period} />
         </AdminLayout>
     );
 }
