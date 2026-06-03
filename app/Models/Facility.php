@@ -61,6 +61,11 @@ class Facility extends Model implements HasMedia
         return $this->hasMany(Booking::class);
     }
 
+    public function units(): HasMany
+    {
+        return $this->hasMany(FacilityUnit::class);
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);

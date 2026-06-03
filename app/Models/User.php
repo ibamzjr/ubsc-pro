@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -20,6 +21,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'avatar',
         'phone_number',
+        'birth_place',
+        'birth_date',
         'identity_category',
         'identity_number',
         'identity_file_path',
@@ -38,13 +41,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
             'password'          => 'hashed',
         ];
     }
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        if (! $this->avatar) {
+            return null;
+        }
+
+        return Str::startsWith($this->avatar, ['http://', 'https://', '/'])
+            ? $this->avatar
+            : asset('storage/' . $this->avatar);
     }
 
     public function news(): HasMany

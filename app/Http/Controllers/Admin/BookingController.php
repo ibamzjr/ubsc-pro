@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingSchedule;
 use App\Models\Facility;
-use App\Models\FacilityPrice;
+use App\Models\FacilityUnit;
+use App\Models\User;
+use App\Support\FacilityPriceResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -15,19 +17,32 @@ use Inertia\Response;
 
 class BookingController extends Controller
 {
+    public function __construct(private readonly FacilityPriceResolver $priceResolver)
+    {
+    }
+
     public function index(): Response
     {
-        $this->authorize('manage-bookings');
+        $this->authorizeAny(['view-bookings', 'manage-bookings', 'manage-payment-links']);
 
-        $bookings = Booking::with(['user', 'facility', 'transaction'])
+        $bookings = Booking::with(['user', 'facility', 'facilityUnit', 'transaction'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'asc')
             ->get()
             ->map(fn($b) => $this->transformBooking($b));
 
-        $facilities = Facility::where('is_active', true)
+        $facilities = Facility::with(['units' => fn ($query) => $query->where('is_active', true)->orderBy('id')])
+            ->where('is_active', true)
             ->orderBy('sort_order')
-            ->get(['id', 'name']);
+            ->get(['id', 'name'])
+            ->map(fn (Facility $facility) => [
+                'id' => $facility->id,
+                'name' => $facility->name,
+                'units' => $facility->units->map(fn (FacilityUnit $unit) => [
+                    'id' => $unit->id,
+                    'name' => $unit->name,
+                ])->values()->all(),
+            ]);
 
         return Inertia::render('Admin/Bookings/Index', [
             'bookings'   => $bookings,
@@ -42,6 +57,7 @@ class BookingController extends Controller
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'facility_id'   => ['required', 'exists:facilities,id'],
+            'facility_unit_id' => ['nullable', 'exists:facility_units,id'],
             'booking_date'  => ['required', 'date', 'after_or_equal:today'],
             'start_time'    => ['required', 'date_format:H:i'],
             'end_time'      => ['required', 'date_format:H:i'],
@@ -52,6 +68,26 @@ class BookingController extends Controller
 
         if ($data['end_time'] <= $data['start_time']) {
             return back()->withErrors(['end_time' => 'Jam selesai harus setelah jam mulai.']);
+        }
+
+        $facility = Facility::with(['prices', 'units.prices'])->findOrFail($data['facility_id']);
+        $unitId = isset($data['facility_unit_id']) ? (int) $data['facility_unit_id'] : null;
+
+        if ($unitId) {
+            $unitBelongsToFacility = FacilityUnit::where('id', $unitId)
+                ->where('facility_id', $facility->id)
+                ->where('is_active', true)
+                ->exists();
+
+            if (! $unitBelongsToFacility) {
+                return back()->withErrors([
+                    'facility_unit_id' => 'Unit tidak valid untuk fasilitas ini.',
+                ]);
+            }
+        } elseif ($facility->units->where('is_active', true)->isNotEmpty()) {
+            return back()->withErrors([
+                'facility_unit_id' => 'Pilih unit fasilitas terlebih dahulu.',
+            ]);
         }
 
         $date = Carbon::parse($data['booking_date']);
@@ -68,7 +104,7 @@ class BookingController extends Controller
             ]);
         }
 
-        if ($this->hasCollision($data['facility_id'], $data['booking_date'], $data['start_time'], $data['end_time'], (int) ($data['pax'] ?? 1))) {
+        if ($this->hasCollision($facility->id, $unitId, $data['booking_date'], $data['start_time'], $data['end_time'], (int) ($data['pax'] ?? 1))) {
             return back()->withErrors([
                 'start_time' => 'Jadwal sudah terpesan untuk fasilitas tersebut. Silakan pilih waktu lain.',
             ]);
@@ -78,6 +114,8 @@ class BookingController extends Controller
         $subtotal = $isFree ? 0 : $this->calculateSubtotal(
             null,
             (int) $data['facility_id'],
+            $unitId,
+            $data['booking_date'],
             $data['start_time'],
             $data['end_time'],
         );
@@ -85,7 +123,8 @@ class BookingController extends Controller
         $booking = Booking::create([
             'user_id'        => null,
             'customer_name'  => $data['customer_name'],
-            'facility_id'    => $data['facility_id'],
+            'facility_id'    => $facility->id,
+            'facility_unit_id' => $unitId,
             'booking_date'   => $data['booking_date'],
             'start_time'     => $data['start_time'],
             'end_time'       => $data['end_time'],
@@ -140,31 +179,57 @@ class BookingController extends Controller
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
-    private function hasCollision(int $facilityId, string $date, string $startTime, string $endTime, int $requestedPax = 1): bool
+    private function hasCollision(int $facilityId, ?int $facilityUnitId, string $date, string $startTime, string $endTime, int $requestedPax = 1): bool
     {
-        $capacity = Facility::find($facilityId)?->capacity ?? 1;
+        $capacity = $facilityUnitId ? 1 : (Facility::find($facilityId)?->capacity ?? 1);
 
-        $occupiedPax = Booking::where('facility_id', $facilityId)
-            ->where('booking_date', $date)
+        $bookingQuery = Booking::where('facility_id', $facilityId)
+            ->whereDate('booking_date', $date)
             ->whereIn('status', ['pending', 'confirmed'])
             ->where(function ($q) use ($startTime, $endTime) {
                 $q->where('start_time', '<', $endTime)
                   ->where('end_time', '>', $startTime);
-            })
-            ->sum('pax');
+            });
+
+        if ($facilityUnitId) {
+            $bookingQuery->where(function ($query) use ($facilityUnitId) {
+                $query->where('facility_unit_id', $facilityUnitId)
+                    ->orWhereNull('facility_unit_id');
+            });
+        }
+
+        $occupiedPax = $bookingQuery->sum('pax');
 
         return ($occupiedPax + $requestedPax) > $capacity;
     }
 
-    private function calculateSubtotal(?int $userId, int $facilityId, string $startTime, string $endTime): int
+    /**
+     * @param array<int, string> $permissions
+     */
+    private function authorizeAny(array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            if (auth()->user()?->can($permission)) {
+                return;
+            }
+        }
+
+        abort(403);
+    }
+
+    private function calculateSubtotal(?int $userId, int $facilityId, ?int $facilityUnitId, string $bookingDate, string $startTime, string $endTime): int
     {
         // Guest/walk-in bookings without a user account default to 'umum' pricing
         $user          = $userId ? User::find($userId) : null;
         $priceCategory = $user?->identity_category === 'warga_kampus' ? 'warga_ub' : 'umum';
 
-        $facilityPrice = FacilityPrice::where('facility_id', $facilityId)
-            ->where('user_category', $priceCategory)
-            ->first();
+        $facility = Facility::with('prices')->find($facilityId);
+        $unit = $facilityUnitId
+            ? FacilityUnit::with('prices')->find($facilityUnitId)
+            : null;
+        $facilityPrice = $facility
+            ? $this->priceResolver->resolveForUnit($facility, $unit, $priceCategory, $bookingDate, $startTime, $endTime)
+            : null;
 
         if (! $facilityPrice) {
             return 0;
@@ -193,6 +258,7 @@ class BookingController extends Controller
             'id'             => $booking->id,
             'user_id'        => $booking->user_id,
             'facility_id'    => $booking->facility_id,
+            'facility_unit_id' => $booking->facility_unit_id,
             'booking_date'   => $booking->booking_date->format('Y-m-d'),
             'start_time'     => substr($booking->start_time, 0, 5),
             'end_time'       => substr($booking->end_time, 0, 5),
@@ -204,6 +270,7 @@ class BookingController extends Controller
             'is_free'        => $booking->subtotal_price === 0 && $booking->user_id === null,
             'user_category'  => $userCategory,
             'facility_name'  => $booking->facility->name,
+            'facility_unit_name' => $booking->facilityUnit?->name,
             'transaction'    => $booking->transaction ? [
                 'id'             => $booking->transaction->id,
                 'amount'         => $booking->transaction->amount,

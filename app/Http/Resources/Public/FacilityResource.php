@@ -21,6 +21,16 @@ class FacilityResource extends JsonResource
             'rating'           => $this->rating,
             'display_metadata' => $this->display_metadata,
             'prices'           => FacilityPriceResource::collection($this->whenLoaded('prices'))->resolve(),
+            'units'            => $this->whenLoaded('units', fn () => $this->units
+                ->where('is_active', true)
+                ->sortBy('id')
+                ->map(fn ($unit) => [
+                    'id' => $unit->id,
+                    'name' => $unit->name,
+                    'image' => $unit->getFirstMediaUrl('unit_image') ?: $this->getFirstMediaUrl('hero'),
+                ])
+                ->values()
+                ->all()),
             'price_range'      => $this->computePriceRange(),
         ];
     }

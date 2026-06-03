@@ -16,10 +16,10 @@ class FacilityController extends Controller
 {
     public function index(): Response
     {
-        $this->authorize('manage-facilities');
+        $this->authorizeAny(['view-facilities', 'manage-facilities', 'manage-pricing']);
 
         $facilities = Facility::with(['category', 'media'])
-            ->withCount('prices')
+            ->withCount(['prices', 'units'])
             ->orderBy('sort_order')
             ->get()
             ->map(fn (Facility $f) => $this->transformFacility($f));
@@ -115,6 +115,21 @@ class FacilityController extends Controller
             'is_active'            => $data['is_active'],
             'sort_order'           => $data['sort_order'],
         ]);
+
+        if ($request->boolean('remove_hero') && ! $request->hasFile('hero')) {
+            $facility->clearMediaCollection('hero');
+        }
+
+        if ($request->hasFile('hero')) {
+            $facility->addMediaFromRequest('hero')
+                ->toMediaCollection('hero');
+        }
+
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $image) {
+                $facility->addMedia($image)->toMediaCollection('gallery');
+            }
+        }
 
         return redirect()
             ->route('admin.facilities.index')
@@ -212,7 +227,25 @@ class FacilityController extends Controller
             'display_metadata'     => ['nullable', 'string'],
             'is_active'            => ['boolean'],
             'sort_order'           => ['nullable', 'integer', 'min:0'],
+            'hero'                 => ['nullable', 'image', 'max:5120'],
+            'gallery'              => ['nullable', 'array'],
+            'gallery.*'            => ['image', 'max:5120'],
+            'remove_hero'          => ['nullable', 'boolean'],
         ]);
+    }
+
+    /**
+     * @param array<int, string> $permissions
+     */
+    private function authorizeAny(array $permissions): void
+    {
+        foreach ($permissions as $permission) {
+            if (auth()->user()?->can($permission)) {
+                return;
+            }
+        }
+
+        abort(403);
     }
 
     private function decodeMetadata(?string $json): ?array
@@ -243,6 +276,7 @@ class FacilityController extends Controller
             'is_active'        => $facility->is_active,
             'sort_order'       => $facility->sort_order,
             'prices_count'     => $facility->prices_count ?? 0,
+            'units_count'      => $facility->units_count ?? 0,
             'category'         => $facility->category ? [
                 'id'   => $facility->category->id,
                 'name' => $facility->category->name,

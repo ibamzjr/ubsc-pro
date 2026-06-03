@@ -21,6 +21,17 @@ class InfoBanner extends Model
 
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('sort_order');
+        return $query->orderBy('sort_order')->orderBy('id');
+    }
+
+    public static function normalizeSortOrder(): void
+    {
+        static::query()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['id'])
+            ->each(function (self $banner, int $index): void {
+                $banner->updateQuietly(['sort_order' => $index + 1]);
+            });
     }
 }

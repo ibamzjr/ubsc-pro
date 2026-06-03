@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InfoBanner;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InfoBannerController extends Controller
 {
@@ -19,11 +20,17 @@ class InfoBannerController extends Controller
             'sort_order' => ['integer', 'min:0'],
         ]);
 
-        InfoBanner::create([
-            'message'    => $data['message'],
-            'is_active'  => $data['is_active'] ?? true,
-            'sort_order' => $data['sort_order'] ?? 0,
-        ]);
+        DB::transaction(function () use ($data, $request) {
+            InfoBanner::create([
+                'message'    => $data['message'],
+                'is_active'  => $data['is_active'] ?? true,
+                'sort_order' => $request->integer('sort_order') > 0
+                    ? $request->integer('sort_order')
+                    : InfoBanner::max('sort_order') + 1,
+            ]);
+
+            InfoBanner::normalizeSortOrder();
+        });
 
         return redirect()->route('admin.news.index')->with('success', 'Banner created.');
     }
@@ -38,11 +45,15 @@ class InfoBannerController extends Controller
             'sort_order' => ['integer', 'min:0'],
         ]);
 
-        $infoBanner->update([
-            'message'    => $data['message'],
-            'is_active'  => $data['is_active'] ?? $infoBanner->is_active,
-            'sort_order' => $data['sort_order'] ?? $infoBanner->sort_order,
-        ]);
+        DB::transaction(function () use ($data, $infoBanner) {
+            $infoBanner->update([
+                'message'    => $data['message'],
+                'is_active'  => $data['is_active'] ?? $infoBanner->is_active,
+                'sort_order' => $data['sort_order'] ?? $infoBanner->sort_order,
+            ]);
+
+            InfoBanner::normalizeSortOrder();
+        });
 
         return redirect()->route('admin.news.index')->with('success', 'Banner updated.');
     }
@@ -51,10 +62,14 @@ class InfoBannerController extends Controller
     {
         $this->authorize('manage-cms');
 
-        $ids = $request->input('ids', []);
-        foreach ($ids as $index => $id) {
-            InfoBanner::where('id', $id)->update(['sort_order' => $index + 1]);
-        }
+        DB::transaction(function () use ($request) {
+            $ids = $request->input('ids', []);
+            foreach ($ids as $index => $id) {
+                InfoBanner::where('id', $id)->update(['sort_order' => $index + 1]);
+            }
+
+            InfoBanner::normalizeSortOrder();
+        });
 
         return back();
     }
@@ -63,7 +78,11 @@ class InfoBannerController extends Controller
     {
         $this->authorize('manage-cms');
 
-        $infoBanner->delete();
+        DB::transaction(function () use ($infoBanner) {
+            $infoBanner->delete();
+
+            InfoBanner::normalizeSortOrder();
+        });
 
         return redirect()->route('admin.news.index')->with('success', 'Banner deleted.');
     }

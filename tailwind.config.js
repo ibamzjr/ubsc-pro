@@ -18,16 +18,12 @@ export default {
     				'BDO Grotesk',
                     ...defaultTheme.fontFamily.sans
                 ],
-    			monument: [
-    				'Monument Extended"',
-    				'sans-serif'
-    			],
     			clash: [
     				'Clash Display',
     				'sans-serif'
     			],
     			bdo: [
-    				'BDO Grotesk"',
+    				'BDO Grotesk',
     				'sans-serif'
     			],
     			archivo: [

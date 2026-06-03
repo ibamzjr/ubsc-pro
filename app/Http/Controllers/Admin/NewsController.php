@@ -29,7 +29,9 @@ class NewsController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
 
-        $infoBanners = InfoBanner::orderBy('sort_order')->get(['id', 'message', 'is_active', 'sort_order']);
+        InfoBanner::normalizeSortOrder();
+
+        $infoBanners = InfoBanner::ordered()->get(['id', 'message', 'is_active', 'sort_order']);
 
         return Inertia::render('Admin/News/Index', [
             'news'         => $news,
@@ -153,6 +155,8 @@ class NewsController extends Controller
 
     private function transform(News $n): array
     {
+        $author = $n->author;
+
         return [
             'id'           => $n->id,
             'title'        => $n->title,
@@ -165,7 +169,12 @@ class NewsController extends Controller
             'category'     => $n->category
                 ? ['id' => $n->category->id, 'name' => $n->category->name, 'slug' => $n->category->slug]
                 : null,
-            'author'       => ['id' => $n->author->id, 'name' => $n->author->name],
+            'author'       => [
+                'id'         => $author?->id ?? 0,
+                'name'       => $author?->name ?? 'Admin UBSC',
+                'avatar'     => $author?->avatar,
+                'avatar_url' => $author?->avatar ? '/storage/' . $author->avatar : null,
+            ],
             'thumbnail'    => $n->getFirstMediaUrl('thumbnail') ?: null,
         ];
     }

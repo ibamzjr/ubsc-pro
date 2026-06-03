@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -17,21 +18,27 @@ class RoleController extends Controller
     public function index(): Response
     {
         $order = self::ROLE_ORDER;
+        $user = auth()->user();
 
         $roles = Role::with('permissions')
             ->whereNotIn('name', ['Administrator'])
+            ->when(! $user?->hasRole('Administrator'), function ($query) use ($user) {
+                $query->where('name', $user?->getRoleNames()->first());
+            })
             ->get()
             ->sortBy(fn (Role $r) => array_search($r->name, $order))
             ->values()
             ->map(function (Role $r) {
                 // Requires SESSION_DRIVER=database + sessions table
                 $userIds = $r->users()->pluck('users.id');
-                $onlineCount = DB::table('sessions')
-                    ->whereIn('user_id', $userIds)
-                    ->where('last_activity', '>=', now()->subMinutes(15)->getTimestamp())
-                    ->whereNotNull('user_id')
-                    ->distinct('user_id')
-                    ->count('user_id');
+                $onlineCount = Schema::hasTable('sessions')
+                    ? DB::table('sessions')
+                        ->whereIn('user_id', $userIds)
+                        ->where('last_activity', '>=', now()->subMinutes(15)->getTimestamp())
+                        ->whereNotNull('user_id')
+                        ->distinct('user_id')
+                        ->count('user_id')
+                    : 0;
 
                 return [
                     'id'                 => $r->id,

@@ -14,10 +14,7 @@ class MembershipPlanController extends Controller
 {
     private function gate(): void
     {
-        abort_unless(
-            auth()->user()?->hasAnyRole(['Administrator', 'Manager']),
-            403,
-        );
+        abort_unless(auth()->user()?->can('manage-members'), 403);
     }
 
     public function index(): Response

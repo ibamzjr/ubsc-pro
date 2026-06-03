@@ -50,11 +50,11 @@ class HomeController extends Controller
             )->resolve(),
             'testimonials' => Testimonial::active()->ordered()->with('media')->get()->map(fn ($t) => [
                 'id'         => $t->id,
-                'image'      => $t->getFirstMediaUrl('image') ?: null,
+                'image'      => $t->imageUrl(),
                 'quote'      => $t->quote,
                 'authorName' => $t->author_name,
                 'authorRole' => $t->author_role,
-                'authorLogo' => $t->getFirstMediaUrl('logo') ?: null,
+                'authorLogo' => $t->logoUrl(),
             ])->values()->all(),
             'reviews' => Review::approved()->latest()->take(10)->get()->map(fn ($r) => [
                 'id'            => $r->id,

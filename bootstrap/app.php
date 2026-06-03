@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -7,6 +8,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -37,12 +39,42 @@ return Application::configure(basePath: dirname(__DIR__))
                 ? route('ubsc-staff.login')
                 : route('login');
         });
+
+        $middleware->redirectUsersTo(function ($request) {
+            return $request->user()?->hasAnyRole([
+                'Administrator',
+                'Manager',
+                'Finance',
+                'Staff Central',
+                'Staff Front Office',
+            ])
+                ? route('admin.dashboard')
+                : '/';
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Condition B: authenticated regular users hitting /ubsc-staff/* are sent home with an error
-        $exceptions->render(function (UnauthorizedException $e, $request) {
-            if (! $request->expectsJson() && $request->is('ubsc-staff*')) {
-                return redirect('/')->with('error', 'Akses Ditolak. Anda bukan staff.');
+        $forbiddenResponse = fn (Request $request) => Inertia::render('Errors/Forbidden')
+            ->toResponse($request)
+            ->setStatusCode(403);
+
+        // Condition B: render a polished 403 page for authenticated users who lack permission.
+        $exceptions->render(function (AuthorizationException $e, Request $request) use ($forbiddenResponse) {
+            if (! $request->expectsJson()) {
+                return $forbiddenResponse($request);
+            }
+        });
+
+        // Condition C: Spatie role/permission failures use the same polished 403 page.
+        $exceptions->render(function (UnauthorizedException $e, Request $request) use ($forbiddenResponse) {
+            if (! $request->expectsJson()) {
+                return $forbiddenResponse($request);
+            }
+        });
+
+        // Plain abort(403) calls from controllers should never fall back to Laravel's default template.
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request) use ($forbiddenResponse) {
+            if ($e->getStatusCode() === 403 && ! $request->expectsJson()) {
+                return $forbiddenResponse($request);
             }
         });
 

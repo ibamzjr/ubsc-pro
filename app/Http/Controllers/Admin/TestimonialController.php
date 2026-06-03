@@ -26,8 +26,8 @@ class TestimonialController extends Controller
                 'quote'       => $t->quote,
                 'is_active'   => $t->is_active,
                 'sort_order'  => $t->sort_order,
-                'image_url'   => $t->getFirstMediaUrl('image') ?: null,
-                'logo_url'    => $t->getFirstMediaUrl('logo') ?: null,
+                'image_url'   => $t->imageUrl(),
+                'logo_url'    => $t->logoUrl(),
             ]);
 
         $reviews = Review::with('user')

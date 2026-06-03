@@ -19,6 +19,8 @@ class Transaction extends Model
         'paid_at',
     ];
 
+    protected $appends = ['receipt_number'];
+
     protected function casts(): array
     {
         return [
@@ -34,5 +36,10 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getReceiptNumberAttribute(): string
+    {
+        return 'UBSC-' . str_pad((string) $this->id, 6, '0', STR_PAD_LEFT);
     }
 }

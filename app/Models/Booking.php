@@ -12,6 +12,7 @@ class Booking extends Model
         'user_id',
         'customer_name',
         'facility_id',
+        'facility_unit_id',
         'booking_date',
         'start_time',
         'end_time',
@@ -37,6 +38,11 @@ class Booking extends Model
     public function facility(): BelongsTo
     {
         return $this->belongsTo(Facility::class);
+    }
+
+    public function facilityUnit(): BelongsTo
+    {
+        return $this->belongsTo(FacilityUnit::class);
     }
 
     public function transaction(): MorphOne

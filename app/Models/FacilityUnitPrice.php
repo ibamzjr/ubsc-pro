@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class FacilityPrice extends Model
+class FacilityUnitPrice extends Model
 {
     protected $fillable = [
-        'facility_id',
+        'facility_unit_id',
         'user_category',
         'label',
         'price',
@@ -32,8 +32,8 @@ class FacilityPrice extends Model
         ];
     }
 
-    public function facility(): BelongsTo
+    public function facilityUnit(): BelongsTo
     {
-        return $this->belongsTo(Facility::class);
+        return $this->belongsTo(FacilityUnit::class);
     }
 }

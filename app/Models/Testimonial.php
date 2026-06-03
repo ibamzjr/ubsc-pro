@@ -31,6 +31,33 @@ class Testimonial extends Model implements HasMedia
         $this->addMediaCollection('logo')->singleFile();
     }
 
+    public function imageUrl(): ?string
+    {
+        return $this->getFirstMediaUrl('image') ?: $this->fallbackImageUrl();
+    }
+
+    public function logoUrl(): ?string
+    {
+        return $this->getFirstMediaUrl('logo') ?: null;
+    }
+
+    private function fallbackImageUrl(): ?string
+    {
+        $fallbacks = [
+            'ub football club' => 'assets/icons/testimonial-ub-sport-center.avif',
+            'malang tennis academy' => 'assets/icons/ulasan-malang-tennis-academy-ubsc.avif',
+            'brawijaya badminton club' => 'assets/icons/testimonial-ub-sport-center.avif',
+        ];
+
+        $path = $fallbacks[strtolower($this->author_name)] ?? null;
+
+        if (! $path || ! file_exists(public_path($path))) {
+            return null;
+        }
+
+        return asset($path);
+    }
+
     public function scopeActive($q)
     {
         return $q->where('is_active', true);

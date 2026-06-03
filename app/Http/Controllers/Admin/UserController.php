@@ -13,12 +13,14 @@ use Inertia\Response;
 class UserController extends Controller
 {
     private const INTERNAL_ROLES = ['Manager', 'Finance', 'Staff Central', 'Staff Front Office'];
+    private const STAFF_ROLES = ['Administrator', 'Manager', 'Finance', 'Staff Central', 'Staff Front Office'];
+    private const STAFF_ROLE_ORDER = ['Manager', 'Administrator', 'Finance', 'Staff Central', 'Staff Front Office'];
 
     public function index(): Response
     {
-        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        abort_unless(auth()->user()?->hasAnyRole(self::STAFF_ROLES), 403);
 
-        $users = User::whereHas('roles', fn ($q) => $q->whereIn('name', self::INTERNAL_ROLES))
+        $users = User::whereHas('roles', fn ($q) => $q->whereIn('name', self::STAFF_ROLES))
             ->with('roles')
             ->orderBy('name')
             ->get()
@@ -27,11 +29,20 @@ class UserController extends Controller
                 'name'  => $u->name,
                 'email' => $u->email,
                 'role'  => $u->getRoleNames()->first() ?? '',
-            ]);
+                'avatar' => $u->avatar,
+                'avatar_url' => $u->avatar_url,
+            ])
+            ->sortBy(function (array $user) {
+                $rank = array_search($user['role'], self::STAFF_ROLE_ORDER, true);
+
+                return $rank === false ? 999 : $rank;
+            })
+            ->values();
 
         return Inertia::render('Admin/Settings/Users/Index', [
             'users' => $users,
             'roles' => self::INTERNAL_ROLES,
+            'can_manage_users' => auth()->user()?->hasRole('Administrator') ?? false,
         ]);
     }
 
@@ -61,6 +72,7 @@ class UserController extends Controller
     public function update(Request $request, User $user): RedirectResponse
     {
         abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        abort_if($user->hasRole('Administrator'), 422, 'Akun Administrator tidak dapat diubah dari halaman staff.');
 
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
@@ -84,6 +96,7 @@ class UserController extends Controller
     {
         abort_unless(auth()->user()?->hasRole('Administrator'), 403);
         abort_if($user->id === auth()->id(), 422, 'Tidak dapat menghapus akun sendiri.');
+        abort_if($user->hasRole('Administrator'), 422, 'Akun Administrator tidak dapat dihapus dari halaman staff.');
 
         $name = $user->name;
         $user->delete();

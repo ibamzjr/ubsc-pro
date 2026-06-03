@@ -7,6 +7,7 @@ use App\Models\BookingSchedule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,7 +22,7 @@ class ScheduleController extends Controller
 
     public function index(): Response
     {
-        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        $this->authorizeScheduleAccess();
 
         $rows = collect(range(0, 6))->map(function (int $offset) {
             $date  = Carbon::now()->startOfMonth()->addMonths($offset);
@@ -37,7 +38,7 @@ class ScheduleController extends Controller
                 'year'         => $year,
                 'label'        => self::MONTH_NAMES[$month] . ' ' . $year,
                 'is_open'      => (bool) ($schedule?->is_open ?? false),
-                'closed_dates' => $schedule?->closed_dates ?? [],
+                'closed_dates' => BookingSchedule::cleanClosedDatesForMonth($schedule?->closed_dates, $month, $year),
             ];
         });
 
@@ -48,7 +49,7 @@ class ScheduleController extends Controller
 
     public function toggle(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        $this->authorizeScheduleAccess();
 
         $data = $request->validate([
             'month' => ['required', 'integer', 'between:1,12'],
@@ -71,7 +72,7 @@ class ScheduleController extends Controller
 
     public function updateClosedDates(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        $this->authorizeScheduleAccess();
 
         $data = $request->validate([
             'month'        => ['required', 'integer', 'between:1,12'],
@@ -80,9 +81,38 @@ class ScheduleController extends Controller
             'closed_dates.*' => ['date_format:Y-m-d'],
         ]);
 
+        $closedDates = collect($data['closed_dates'])
+            ->map(function (string $date): string {
+                $parsed = Carbon::createFromFormat('Y-m-d', $date);
+
+                if ($parsed->format('Y-m-d') !== $date) {
+                    throw ValidationException::withMessages([
+                        'closed_dates' => 'Format tanggal tutup tidak valid.',
+                    ]);
+                }
+
+                return $date;
+            })
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        $invalidDate = collect($closedDates)->first(function (string $date) use ($data): bool {
+            $parsed = Carbon::createFromFormat('Y-m-d', $date);
+
+            return $parsed->month !== (int) $data['month'] || $parsed->year !== (int) $data['year'];
+        });
+
+        if ($invalidDate !== null) {
+            throw ValidationException::withMessages([
+                'closed_dates' => 'Tanggal tutup harus berada pada bulan yang sedang diedit.',
+            ]);
+        }
+
         BookingSchedule::updateOrCreate(
             ['month' => $data['month'], 'year' => $data['year']],
-            ['closed_dates' => $data['closed_dates']],
+            ['closed_dates' => $closedDates],
         );
 
         return back()->with('success', 'Tanggal tutup berhasil disimpan.');
@@ -90,7 +120,7 @@ class ScheduleController extends Controller
 
     public function quickOpenNext(): RedirectResponse
     {
-        abort_unless(auth()->user()?->hasRole('Administrator'), 403);
+        $this->authorizeScheduleAccess();
 
         $next = Carbon::now()->addMonth()->startOfMonth();
 
@@ -103,4 +133,10 @@ class ScheduleController extends Controller
 
         return back()->with('success', "Jadwal {$label} berhasil dibuka.");
     }
+
+    private function authorizeScheduleAccess(): void
+    {
+        abort_unless(auth()->user()?->can('manage-booking-limits'), 403);
+    }
+
 }
