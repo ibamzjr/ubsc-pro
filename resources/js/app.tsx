@@ -18,7 +18,7 @@ function LenisProvider({ children }: { children: React.ReactNode }) {
             duration: 1.7,       // makin besar makin smooth
             lerp: 0.09,          // inertia smoothness
             smoothWheel: true,
-            smoothTouch: false,
+            syncTouch: false,
         });
 
         function raf(time: number) {

@@ -6,6 +6,13 @@ interface TimeSlot {
     time: string;
     price: string;
     status: "available" | "selected" | "booked";
+    facilityUnitId?: number | null;
+}
+
+interface FacilityUnitOption {
+    id: number;
+    name: string;
+    image: string;
 }
 
 export interface BookingFacility {
@@ -16,6 +23,8 @@ export interface BookingFacility {
     image: string;
     badgeLocation: string;
     badgeType: string;
+    units: FacilityUnitOption[];
+    selectedUnitId: number | null;
     availableSlots: TimeSlot[];
 }
 
@@ -25,6 +34,7 @@ interface Props {
     onToggle: () => void;
     selectedDate: string;
     onDateChange: (date: string) => void;
+    onUnitChange: (unitId: number) => void;
     loadingSlots?: boolean;
     slotError?: string | null;
 }
@@ -47,12 +57,18 @@ function CalendarUI({
     slots,
     selectedDate,
     onDateChange,
+    units,
+    selectedUnitId,
+    onUnitChange,
     loading,
     slotError,
 }: {
     slots: TimeSlot[];
     selectedDate: string;
     onDateChange: (date: string) => void;
+    units: FacilityUnitOption[];
+    selectedUnitId: number | null;
+    onUnitChange: (unitId: number) => void;
     loading?: boolean;
     slotError?: string | null;
 }) {
@@ -76,6 +92,63 @@ function CalendarUI({
                     className="rounded-lg border border-gray-200 px-3 py-2 font-bdo text-sm text-gray-700 hover:bg-gray-50 focus:border-slate-400 focus:outline-none transition-colors"
                 />
             </div>
+
+            {units.length > 0 && (
+                <div className="mb-6 rounded-2xl border border-[#F8B5A8]/70 bg-[#FFF7F5]/70 p-3 sm:p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                            <p className="font-bdo text-sm font-semibold text-slate-800">
+                                Pilih Unit
+                            </p>
+                            <p className="font-bdo text-xs text-slate-500">
+                                Jadwal dihitung per lapangan/ruang yang dipilih.
+                            </p>
+                        </div>
+                        <span className="rounded-full bg-white px-3 py-1 font-bdo text-[11px] font-bold text-[#B93D2A] ring-1 ring-[#F8B5A8]/70">
+                            {units.length} unit
+                        </span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                        {units.map((unit) => {
+                            const active = selectedUnitId === unit.id;
+                            return (
+                                <button
+                                    key={unit.id}
+                                    type="button"
+                                    onClick={() => onUnitChange(unit.id)}
+                                    className={`group flex items-center gap-3 rounded-2xl border p-2 text-left transition-all ${
+                                        active
+                                            ? "border-[#E35336] bg-white shadow-[0_18px_30px_-24px_rgba(227,83,54,.8)]"
+                                            : "border-white bg-white/70 hover:border-[#F8B5A8] hover:bg-white"
+                                    }`}
+                                    aria-pressed={active}
+                                >
+                                    <span className="relative h-14 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                                        <img
+                                            src={unit.image || "/assets/images/comingsoon.avif"}
+                                            alt={unit.name}
+                                            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                        />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block truncate font-bdo text-sm font-semibold text-slate-800">
+                                            {unit.name}
+                                        </span>
+                                        <span className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-bdo text-[10px] font-bold ${
+                                            active
+                                                ? "bg-[#FFF7F5] text-[#B93D2A]"
+                                                : "bg-slate-50 text-slate-400"
+                                        }`}>
+                                            <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-[#E35336]" : "bg-slate-300"}`} />
+                                            {active ? "Dipilih" : "Pilih"}
+                                        </span>
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* Loading state */}
             {loading && (
@@ -145,7 +218,7 @@ function CalendarUI({
     );
 }
 
-export default function BookingListItem({ item, isOpen, onToggle, selectedDate, onDateChange, loadingSlots, slotError }: Props) {
+export default function BookingListItem({ item, isOpen, onToggle, selectedDate, onDateChange, onUnitChange, loadingSlots, slotError }: Props) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-6 xl:gap-8 py-6 border-b border-gray-200 w-full items-start">
 
@@ -211,6 +284,9 @@ export default function BookingListItem({ item, isOpen, onToggle, selectedDate, 
                                     slots={item.availableSlots}
                                     selectedDate={selectedDate}
                                     onDateChange={onDateChange}
+                                    units={item.units}
+                                    selectedUnitId={item.selectedUnitId}
+                                    onUnitChange={onUnitChange}
                                     loading={loadingSlots}
                                     slotError={slotError}
                                 />

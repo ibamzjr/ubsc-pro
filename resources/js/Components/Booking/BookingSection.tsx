@@ -11,6 +11,12 @@ interface FacilityPrice {
     notes?: string | null;
 }
 
+interface FacilityUnit {
+    id: number;
+    name: string;
+    image: string;
+}
+
 interface BackendFacility {
     id: number;
     name: string;
@@ -23,6 +29,7 @@ interface BackendFacility {
     rating?: number | null;
     display_metadata?: Record<string, unknown> | null;
     prices?: FacilityPrice[];
+    units?: FacilityUnit[];
 }
 
 interface Props {
@@ -36,7 +43,11 @@ interface ApiSlot {
     price: string;
     status: "available" | "booked";
     remaining: number;
+    facility_unit_id?: number | null;
 }
+
+const slotKeyFor = (facilityId: number, facilityUnitId?: number | null) =>
+    `${facilityId}:${facilityUnitId ?? "parent"}`;
 
 function todayStr(): string {
     const now = new Date();
@@ -56,14 +67,23 @@ export default function BookingSection({ facilities = [] }: Props) {
     const [slotError, setSlotError] = useState<Record<string, string | null>>(
         {},
     );
+    const [selectedUnits, setSelectedUnits] = useState<Record<string, number | null>>({});
 
-    const fetchSlots = async (facilityId: number, date: string) => {
-        const key = String(facilityId);
+    const fetchSlots = async (
+        facilityId: number,
+        date: string,
+        facilityUnitId?: number | null,
+    ) => {
+        const key = slotKeyFor(facilityId, facilityUnitId);
         setLoadingSlot((p) => ({ ...p, [key]: true }));
         setSlotError((p) => ({ ...p, [key]: null }));
         try {
             const res = await axios.get(route("booking.slots"), {
-                params: { facility_id: facilityId, date },
+                params: {
+                    facility_id: facilityId,
+                    date,
+                    ...(facilityUnitId ? { facility_unit_id: facilityUnitId } : {}),
+                },
             });
             if (res.data.closed) {
                 setSlotError((p) => ({
@@ -72,6 +92,12 @@ export default function BookingSection({ facilities = [] }: Props) {
                         res.data.reason === "month_closed"
                             ? "Bulan ini belum dibuka untuk reservasi."
                             : "Fasilitas tutup pada tanggal ini.",
+                }));
+                setSlots((p) => ({ ...p, [key]: [] }));
+            } else if (res.data.requires_unit) {
+                setSlotError((p) => ({
+                    ...p,
+                    [key]: "Pilih unit fasilitas untuk melihat jadwal.",
                 }));
                 setSlots((p) => ({ ...p, [key]: [] }));
             } else {
@@ -93,19 +119,35 @@ export default function BookingSection({ facilities = [] }: Props) {
         if (isOpening) {
             const key = String(item.facilityId);
             const date = selectedDates[key] ?? todayStr();
-            fetchSlots(item.facilityId, date);
+            const nextUnitId =
+                item.selectedUnitId ?? item.units[0]?.id ?? null;
+
+            if (nextUnitId && selectedUnits[key] !== nextUnitId) {
+                setSelectedUnits((p) => ({ ...p, [key]: nextUnitId }));
+            }
+
+            fetchSlots(item.facilityId, date, nextUnitId);
         }
     };
 
-    const handleDateChange = (facilityId: number, date: string) => {
-        const key = String(facilityId);
+    const handleDateChange = (item: BookingFacility, date: string) => {
+        const key = String(item.facilityId);
         setSelectedDates((p) => ({ ...p, [key]: date }));
-        fetchSlots(facilityId, date);
+        const unitId = item.selectedUnitId ?? item.units[0]?.id ?? null;
+        fetchSlots(item.facilityId, date, unitId);
+    };
+
+    const handleUnitChange = (item: BookingFacility, unitId: number) => {
+        const key = String(item.facilityId);
+        setSelectedUnits((p) => ({ ...p, [key]: unitId }));
+        fetchSlots(item.facilityId, selectedDates[key] ?? todayStr(), unitId);
     };
 
     const bookingsData: BookingFacility[] = facilities.map((f, idx) => {
         const key = String(f.id);
-        const apiSlots = slots[key] ?? [];
+        const units = f.units ?? [];
+        const selectedUnitId = selectedUnits[key] ?? units[0]?.id ?? null;
+        const apiSlots = slots[slotKeyFor(f.id, selectedUnitId)] ?? [];
         return {
             id: String(idx + 1).padStart(2, "0"),
             facilityId: f.id,
@@ -114,10 +156,13 @@ export default function BookingSection({ facilities = [] }: Props) {
             image: f.image || "/assets/images/comingsoon.avif",
             badgeLocation: f.location ?? "Veteran",
             badgeType: f.venue_type ?? f.category,
+            units,
+            selectedUnitId,
             availableSlots: apiSlots.map((s) => ({
                 time: s.label,
                 price: s.price,
                 status: s.status,
+                facilityUnitId: s.facility_unit_id ?? null,
             })),
         };
     });
@@ -156,19 +201,23 @@ export default function BookingSection({ facilities = [] }: Props) {
 
                 <div className="flex flex-col w-full border-t border-gray-200">
                     {bookingsData.map((item) => {
-                        const key = String(item.facilityId);
+                        const dateKey = String(item.facilityId);
+                        const slotKey = slotKeyFor(item.facilityId, item.selectedUnitId);
                         return (
                             <BookingListItem
                                 key={item.id}
                                 item={item}
                                 isOpen={openId === item.id}
                                 onToggle={() => handleToggle(item)}
-                                selectedDate={selectedDates[key] ?? todayStr()}
+                                selectedDate={selectedDates[dateKey] ?? todayStr()}
                                 onDateChange={(date) =>
-                                    handleDateChange(item.facilityId, date)
+                                    handleDateChange(item, date)
                                 }
-                                loadingSlots={loadingSlot[key] ?? false}
-                                slotError={slotError[key] ?? null}
+                                onUnitChange={(unitId) =>
+                                    handleUnitChange(item, unitId)
+                                }
+                                loadingSlots={loadingSlot[slotKey] ?? false}
+                                slotError={slotError[slotKey] ?? null}
                             />
                         );
                     })}

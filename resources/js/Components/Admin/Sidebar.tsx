@@ -3,7 +3,7 @@
 //  Lokasi: resources/js/Components/Admin/Sidebar.tsx
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Award,
     BadgeCheck,
@@ -27,8 +27,9 @@ import {
     Users2,
     X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { PageProps } from "@/types";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  STYLES
@@ -74,17 +75,17 @@ const SIDEBAR_STYLES = `
         0%   { transform: translateX(-100%); }
         100% { transform: translateX(280%);  }
     }
-    /* ── Logo orange breathe ── */
+    /* ── Logo terracotta breathe ── */
     @keyframes sbLogoBreathe {
-        0%,100% { box-shadow: 0 0 0  0   rgba(249,115,22,0.0); }
-        50%      { box-shadow: 0 0 22px 5px rgba(249,115,22,0.18); }
+        0%,100% { box-shadow: 0 0 0  0   rgba(227,83,54,0.0); }
+        50%      { box-shadow: 0 0 22px 5px rgba(227,83,54,0.18); }
     }
-    /* ── Orange glow pulse on active dot (collapsed) ── */
-    @keyframes sbOrangePulse {
-        0%,100% { box-shadow: 0 0 0 0   rgba(249,115,22,0.7); }
-        50%      { box-shadow: 0 0 8px 2px rgba(249,115,22,0.4); }
+    /* ── Terracotta glow pulse on active dot (collapsed) ── */
+    @keyframes sbTerracottaPulse {
+        0%,100% { box-shadow: 0 0 0 0   rgba(20,184,166,0.62); }
+        50%      { box-shadow: 0 0 9px 2px rgba(20,184,166,0.34); }
     }
-    /* ── Active item inner orange accent bar ── */
+    /* ── Active item inner terracotta accent bar ── */
     @keyframes sbAccentBar {
         from { transform: scaleY(0); opacity: 0; }
         to   { transform: scaleY(1); opacity: 1; }
@@ -96,7 +97,7 @@ const SIDEBAR_STYLES = `
     .sb-fade-in      { animation: sbFadeIn    0.3s  ease both; }
     .sb-slide-right  { animation: sbSlideRight 0.28s cubic-bezier(0.16,1,0.3,1) both; opacity: 0; }
 
-    /* Caustic orange overlay on active item */
+    /* Caustic terracotta overlay on active item */
     .sb-caustics {
         background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.22) 0%, transparent 50%),
                     radial-gradient(circle at 80% 70%, rgba(255,255,255,0.14) 0%, transparent 55%);
@@ -120,14 +121,14 @@ const SIDEBAR_STYLES = `
     .sb-logo-breathe { animation: sbLogoBreathe 4s ease-in-out infinite; }
 
     /* Active dot in collapsed mode */
-    .sb-active-dot { animation: sbOrangePulse 2.5s ease-in-out infinite; }
+    .sb-active-dot { animation: sbTerracottaPulse 2.5s ease-in-out infinite; }
 
     /* Top glint line on active item */
     .sb-active-glint::after {
         content: '';
         position: absolute;
         top: 0; left: 10px; right: 10px; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.92), transparent);
     }
 
     /* ── Submenu animation ── */
@@ -164,8 +165,8 @@ const SIDEBAR_STYLES = `
     }
     .sb-scroll::-webkit-scrollbar { width: 3px; }
     .sb-scroll::-webkit-scrollbar-track { background: transparent; }
-    .sb-scroll::-webkit-scrollbar-thumb { background: #fed7aa; border-radius: 4px; }
-    .sb-scroll::-webkit-scrollbar-thumb:hover { background: #fb923c; }
+    .sb-scroll::-webkit-scrollbar-thumb { background: #FFD5CD; border-radius: 4px; }
+    .sb-scroll::-webkit-scrollbar-thumb:hover { background: #EA684F; }
 
     /* ── Stagger delays (nav items) ── */
     .sb-d1  { animation-delay:  40ms; } .sb-d2  { animation-delay:  75ms; }
@@ -184,15 +185,17 @@ const SIDEBAR_STYLES = `
         font-size: 8.5px; font-weight: 800;
         letter-spacing: 0.08em; text-transform: uppercase;
         padding: 2px 6px; border-radius: 6px;
-        background: rgb(255 237 213); color: rgb(194 65 12);
-        border: 1px solid rgb(253 186 116 / 0.6);
+        background: #FFF1EE; color: #B93D2A;
+        border: 1px solid rgba(248,181,168,0.6);
     }
     .sb-badge-preview-active {
-        background: rgba(249,115,22,0.18);
-        color: rgb(253 186 116);
-        border: 1px solid rgba(249,115,22,0.3);
+        background: rgba(255,247,245,0.95);
+        color: #B93D2A;
+        border: 1px solid rgba(248,181,168,0.8);
     }
 `;
+
+const SIDEBAR_SCROLL_KEY = "ubsc_admin_sidebar_scroll_top";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  ROUTE HELPERS — TIDAK DIUBAH
@@ -223,13 +226,20 @@ interface SidebarProps {
     onClose: () => void;
 }
 
-interface NavChild {
+interface AccessGuard {
+    permissions?: string[];
+    requireAllPermissions?: boolean;
+    roles?: string[];
+}
+
+interface NavChild extends AccessGuard {
     icon: React.ElementType;
     label: string;
     href?: string;
     active: boolean;
     badge?: string;
     disabled?: boolean;
+    disabledReason?: string;
 }
 interface NavItem extends NavChild {
     method?: string;
@@ -293,31 +303,36 @@ function NavLink({
     const isLogout = item.label.toLowerCase().includes("log out");
     const hasChildren = "children" in item && !!item.children?.length;
     const Icon = item.icon;
+    const disabled = item.disabled ?? false;
 
     // ── Wrapper classes ──────────────────────────────────────
 
     const wrapperCls = cn(
         "group relative flex items-center gap-3 rounded-xl",
         "transition-all duration-200 outline-none w-full text-left",
-        "overflow-hidden select-none cursor-pointer",
+        "overflow-hidden select-none",
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
         collapsed
             ? "px-0 py-0 justify-center"
             : depth > 0
               ? "px-3 py-2"
               : "px-3 py-2.5",
-        // ── ORANGE active system — matches #12131c + orange shadow from pages ──
-        item.active
+        // ── TERRACOTTA active system — matches #12131c + terracotta shadow from pages ──
+        disabled
+            ? "border border-slate-200/80 bg-slate-50/75 text-slate-400 opacity-55 grayscale"
+            : item.active
             ? [
-                  "bg-[#12131c]",
-                  "shadow-[inset_0_-8px_15px_-5px_rgba(249,115,22,0.45),0_2px_12px_rgba(0,0,0,0.14)]",
+                  "border border-[#F8B5A8]/75",
+                  "bg-[radial-gradient(circle_at_13%_12%,rgba(255,255,255,.96),transparent_30%),radial-gradient(circle_at_86%_80%,rgba(153,246,228,.52),transparent_34%),linear-gradient(135deg,#FFFFFF_0%,#FFF7F5_54%,#ECFDF5_100%)]",
+                  "text-slate-950",
+                  "shadow-[0_16px_30px_-24px_rgba(20,184,166,.75),0_12px_30px_-28px_rgba(227,83,54,.8),inset_0_1px_0_rgba(255,255,255,.96)]",
                   "sb-active-glint",
               ].join(" ")
             : isLogout
               ? "border border-transparent hover:bg-rose-50 hover:border-rose-100"
               : depth > 0
-                ? "hover:bg-orange-50/60 hover:border hover:border-orange-100/50"
-                : "border border-transparent hover:bg-orange-50/40 hover:border-orange-100/40",
-        item.disabled && "opacity-40 cursor-not-allowed pointer-events-none",
+                ? "hover:bg-[#FFF1EE]/60 hover:border hover:border-[#FFD5CD]/50"
+                : "border border-transparent hover:bg-[#FFF1EE]/40 hover:border-[#FFD5CD]/40",
         !collapsed && animClass,
     );
 
@@ -326,13 +341,15 @@ function NavLink({
     const iconCls = cn(
         "shrink-0 transition-all duration-200",
         collapsed ? "mx-auto" : "",
-        item.active
-            ? "text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.9)] scale-105"
+        disabled
+            ? "text-slate-300"
+            : item.active
+            ? "text-[#0F766E] drop-shadow-[0_0_10px_rgba(45,212,191,0.36)] scale-105"
             : isLogout
               ? "text-slate-400 group-hover:text-rose-500 group-hover:scale-105"
               : depth > 0
-                ? "text-slate-400 group-hover:text-orange-500 group-hover:scale-105"
-                : "text-slate-400 group-hover:text-orange-500 group-hover:scale-105",
+                ? "text-slate-400 group-hover:text-[#E35336] group-hover:scale-105"
+                : "text-slate-400 group-hover:text-[#E35336] group-hover:scale-105",
     );
 
     // ── Label classes ────────────────────────────────────────
@@ -340,8 +357,10 @@ function NavLink({
     const labelCls = cn(
         "flex-1 font-clash leading-tight whitespace-nowrap transition-colors",
         depth > 0 ? "text-[12.5px] font-medium" : "text-[13.5px] font-semibold",
-        item.active
-            ? "text-white"
+        disabled
+            ? "text-slate-400"
+            : item.active
+            ? "text-slate-950"
             : isLogout
               ? "text-slate-600 group-hover:text-rose-600 font-medium"
               : depth > 0
@@ -363,6 +382,16 @@ function NavLink({
 
     // ── Inner content ────────────────────────────────────────
 
+    const lockedBadge = disabled && !collapsed ? (
+        <span className="rounded-md border border-slate-200 bg-white px-1.5 py-0.5 font-bdo text-[8px] font-bold uppercase tracking-wider text-slate-400">
+            Locked
+        </span>
+    ) : null;
+
+    const tooltipLabel = disabled
+        ? `${item.label} - ${item.disabledReason ?? "akses belum diberikan"}`
+        : item.label;
+
     const inner = (
         <>
             {/* Caustic shimmer on active */}
@@ -370,11 +399,11 @@ function NavLink({
                 <div className="pointer-events-none absolute inset-0 rounded-xl sb-caustics opacity-100" />
             )}
 
-            {/* Orange left accent bar on active (expanded) */}
+            {/* Terracotta left accent bar on active (expanded) */}
             {item.active && !collapsed && (
                 <div
-                    className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-full bg-gradient-to-b from-orange-400 to-amber-500
-                    shadow-[0_0_6px_rgba(249,115,22,0.7)]"
+                    className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-full bg-gradient-to-b from-[#EA684F] to-[#B93D2A]
+                    shadow-[0_0_6px_rgba(227,83,54,0.7)]"
                 />
             )}
 
@@ -386,10 +415,10 @@ function NavLink({
                         ? cn(
                               "h-10 w-10 rounded-xl",
                               item.active
-                                  ? "bg-[#12131c] shadow-[inset_0_-4px_8px_-3px_rgba(249,115,22,0.45)]"
+                                  ? "border border-[#99F6E4]/70 bg-[linear-gradient(135deg,#ECFDF5,#FFFFFF_52%,#FFF7F5)] shadow-[0_10px_22px_-16px_rgba(20,184,166,.75),inset_0_1px_0_rgba(255,255,255,.95)]"
                                   : isLogout
                                     ? "hover:bg-rose-50"
-                                    : "hover:bg-orange-50",
+                                    : "hover:bg-[#FFF1EE]",
                           )
                         : "h-[26px] w-[26px] rounded-lg",
                 )}
@@ -400,7 +429,7 @@ function NavLink({
                 {collapsed && item.active && (
                     <span
                         className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full
-                        bg-orange-400 sb-active-dot"
+                        bg-[#14B8A6] sb-active-dot"
                     />
                 )}
             </div>
@@ -410,12 +439,13 @@ function NavLink({
                 <>
                     <span className={labelCls}>{item.label}</span>
                     {badgeEl}
+                    {lockedBadge}
                     {hasChildren && (
                         <ChevronDown
                             size={12}
                             className={cn(
                                 "shrink-0 text-slate-400 transition-transform duration-200",
-                                subOpen && "rotate-180 text-orange-500",
+                                subOpen && "rotate-180 text-[#E35336]",
                             )}
                         />
                     )}
@@ -423,7 +453,7 @@ function NavLink({
             )}
 
             {/* Tooltip (collapsed mode hover) */}
-            {collapsed && <Tooltip label={item.label} visible={hovered} />}
+            {collapsed && <Tooltip label={tooltipLabel} visible={hovered} />}
         </>
     );
 
@@ -439,9 +469,14 @@ function NavLink({
     const isLogoutPost = "method" in item && item.method === "post";
 
     const wrapped = (() => {
-        if (item.disabled || !item.href) {
+        if (disabled || !item.href) {
             return (
-                <button type="button" disabled className={wrapperCls}>
+                <button
+                    type="button"
+                    disabled
+                    title={item.disabledReason ?? "Akses belum diberikan oleh Administrator"}
+                    className={wrapperCls}
+                >
                     {inner}
                 </button>
             );
@@ -482,6 +517,7 @@ function NavLink({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             className={cn("relative", collapsed && "flex justify-center")}
+            data-sidebar-active={item.active ? "true" : undefined}
         >
             {wrapped}
 
@@ -489,7 +525,7 @@ function NavLink({
             {hasChildren && !collapsed && (
                 <div
                     className={cn(
-                        "mt-0.5 ml-5 pl-3 flex flex-col gap-0.5 border-l-2 border-orange-100",
+                        "mt-0.5 ml-5 pl-3 flex flex-col gap-0.5 border-l-2 border-[#FFD5CD]",
                         subOpen ? "sb-submenu-open" : "sb-submenu-close",
                     )}
                 >
@@ -537,7 +573,7 @@ function NavGroup({
             {/* Collapsed: separator dot */}
             {collapsed && (
                 <div className="flex justify-center my-2">
-                    <span className="h-1 w-1 rounded-full bg-orange-200" />
+                    <span className="h-1 w-1 rounded-full bg-[#F8B5A8]" />
                 </div>
             )}
 
@@ -565,6 +601,52 @@ function NavGroup({
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+    const { auth } = usePage<PageProps>().props;
+    const navScrollRef = useRef<HTMLElement | null>(null);
+    const userRole = auth.user?.role ?? null;
+    const permissionSet = new Set(auth.user?.permissions ?? []);
+    const isAdministrator = userRole === "Administrator";
+
+    const can = (permissions: string[] = [], requireAll = false): boolean => {
+        if (isAdministrator || permissions.length === 0) return true;
+
+        return requireAll
+            ? permissions.every((permission) => permissionSet.has(permission))
+            : permissions.some((permission) => permissionSet.has(permission));
+    };
+
+    const hasRole = (roles: string[] = []): boolean => {
+        if (isAdministrator || roles.length === 0) return true;
+
+        return Boolean(userRole && roles.includes(userRole));
+    };
+
+    const guardedItem = <T extends NavItem | NavChild>(
+        item: T & {
+            permissions?: string[];
+            requireAllPermissions?: boolean;
+            roles?: string[];
+        },
+    ): T => {
+        const children =
+            "children" in item && item.children
+                ? item.children.map((child) => guardedItem(child))
+                : undefined;
+        const allowed =
+            can(item.permissions, item.requireAllPermissions) &&
+            hasRole(item.roles);
+
+        return {
+            ...item,
+            disabled: item.disabled || !allowed,
+            disabledReason:
+                !allowed && !item.disabledReason
+                    ? "Akses belum diberikan oleh Administrator"
+                    : item.disabledReason,
+            ...(children ? { children } : {}),
+        } as T;
+    };
+
     // Persist collapse state in localStorage
     const [collapsed, setCollapsed] = useState<boolean>(() => {
         if (typeof window === "undefined") return false;
@@ -587,6 +669,37 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
     }, []);
 
     const effectiveCollapsed = collapsed && isDesktop;
+
+    useEffect(() => {
+        const nav = navScrollRef.current;
+        if (!nav || typeof window === "undefined") return;
+
+        const savedValue = sessionStorage.getItem(SIDEBAR_SCROLL_KEY);
+        const savedTop = Number(savedValue);
+        const hasSavedTop = savedValue !== null && Number.isFinite(savedTop);
+
+        const restore = () => {
+            if (hasSavedTop) {
+                nav.scrollTop = savedTop;
+                return;
+            }
+
+            nav.querySelector<HTMLElement>('[data-sidebar-active="true"]')
+                ?.scrollIntoView({ block: "center", inline: "nearest" });
+        };
+
+        const frame = window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(restore);
+        });
+
+        return () => window.cancelAnimationFrame(frame);
+    }, [effectiveCollapsed, mobileOpen]);
+
+    const rememberSidebarScroll = () => {
+        const nav = navScrollRef.current;
+        if (!nav || typeof window === "undefined") return;
+        sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(nav.scrollTop));
+    };
 
     // ── Active states — IDENTICAL to original ────────────────
     const dashboardActive = isCurrent("admin.dashboard");
@@ -623,36 +736,42 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     label: "Identity Queue",
                     href: safeRoute("admin.identity.index"),
                     active: identityActive,
+                    permissions: ["verify-identity"],
                 },
                 {
                     icon: Dumbbell,
                     label: "Facilities",
                     href: safeRoute("admin.facilities.index"),
                     active: facilitiesActive,
+                    permissions: ["view-facilities", "manage-facilities", "manage-pricing"],
                 },
                 {
                     icon: CalendarCheck2,
                     label: "Bookings",
                     href: safeRoute("admin.bookings.index"),
                     active: bookingsActive,
+                    permissions: ["view-bookings", "manage-bookings", "manage-payment-links"],
                 },
                 {
                     icon: Users2,
                     label: "Memberships",
                     href: safeRoute("admin.memberships.index"),
                     active: membershipsActive || plansActive,
+                    permissions: ["view-members", "manage-members", "manage-bookings", "manage-payment-links"],
                     children: [
                         {
                             icon: Users2,
                             label: "Anggota",
                             href: safeRoute("admin.memberships.index"),
                             active: membershipsActive,
+                            permissions: ["view-members", "manage-members", "manage-bookings", "manage-payment-links"],
                         },
                         {
                             icon: Package,
                             label: "Paket",
                             href: safeRoute("admin.memberships.plans.index"),
                             active: plansActive,
+                            permissions: ["manage-members"],
                         },
                     ],
                 },
@@ -661,6 +780,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     label: "Finance",
                     href: safeRoute("admin.finance.index"),
                     active: financeActive,
+                    permissions: ["view-reports"],
                 },
             ],
         },
@@ -672,30 +792,35 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     label: "News",
                     href: safeRoute("admin.news.index"),
                     active: newsActive,
+                    permissions: ["manage-cms"],
                 },
                 {
                     icon: ImagePlus,
                     label: "Promo",
                     href: safeRoute("admin.promo.index"),
                     active: promoActive,
+                    permissions: ["manage-cms"],
                 },
                 {
                     icon: Award,
                     label: "Sponsors",
                     href: safeRoute("admin.sponsors.index"),
                     active: sponsorsActive,
+                    permissions: ["manage-cms"],
                 },
                 {
                     icon: Film,
                     label: "Reels",
                     href: safeRoute("admin.reels.index"),
                     active: reelsActive,
+                    permissions: ["manage-cms"],
                 },
                 {
                     icon: MessageSquare,
                     label: "Testimonials",
                     href: safeRoute("admin.testimonials.index"),
                     active: testimonialsActive,
+                    permissions: ["manage-cms"],
                 },
             ],
         },
@@ -707,6 +832,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     label: "Schedule Control",
                     href: safeRoute("admin.settings.schedules"),
                     active: schedulesActive,
+                    permissions: ["manage-booking-limits"],
                 },
                 {
                     icon: ShieldCheck,
@@ -734,6 +860,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             ],
         },
     ];
+
+    const visibleNavGroups = navGroups.map((group) => ({
+        ...group,
+        items: group.items.map((item) => guardedItem(item)),
+    }));
 
     const logoutItem: NavItem = {
         icon: LogOut,
@@ -777,11 +908,11 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 )}
                 aria-label="Admin sidebar"
             >
-                {/* ── Top accent line — orange/amber gradient matching pages ── */}
-                <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 opacity-80 z-10" />
+                {/* ── Top accent line — terracotta gradient matching pages ── */}
+                <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#E35336] via-[#EA684F] to-[#F08C78] opacity-80 z-10" />
 
                 {/* ── Subtle inner left warm glow strip ── */}
-                <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-gradient-to-b from-orange-300/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-gradient-to-b from-[#F08C78]/60 via-transparent to-transparent pointer-events-none" />
 
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                     HEADER
@@ -802,7 +933,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         {/* Logo */}
                         <div className="relative shrink-0">
                             <div
-                                className="absolute inset-0 rounded-full bg-orange-400/15 blur-xl scale-75
+                                className="absolute inset-0 rounded-full bg-[#EA684F]/15 blur-xl scale-75
                                 group-hover:scale-125 transition-transform duration-500 sb-logo-breathe"
                             />
                             <img
@@ -821,7 +952,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl p-1.5 text-slate-400 hover:bg-orange-50 hover:text-orange-600
+                            className="rounded-xl p-1.5 text-slate-400 hover:bg-[#FFF1EE] hover:text-[#B93D2A]
                                 xl:hidden transition-colors"
                             aria-label="Close sidebar"
                         >
@@ -833,7 +964,45 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                     NAV — scroll isolation applied here
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+                {/* Minimize control - separate from logo section */}
+                <div
+                    className={cn(
+                        "hidden shrink-0 border-b border-slate-100 bg-white/95 xl:flex",
+                        effectiveCollapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
+                    )}
+                >
+                    <button
+                        type="button"
+                        onClick={toggleCollapsed}
+                        title={effectiveCollapsed ? "Expand sidebar" : "Minimize sidebar"}
+                        aria-label={effectiveCollapsed ? "Expand sidebar" : "Minimize sidebar"}
+                        className={cn(
+                            "group flex w-full items-center gap-2.5 rounded-xl py-2",
+                            "border border-transparent font-bdo text-[10.5px] font-bold uppercase tracking-wider text-slate-400",
+                            "transition-all duration-200 hover:border-[#FFD5CD] hover:bg-[#FFF1EE] hover:text-[#B93D2A]",
+                            effectiveCollapsed ? "justify-center px-0" : "px-3",
+                        )}
+                    >
+                        {effectiveCollapsed ? (
+                            <PanelLeftOpen
+                                size={15}
+                                className="text-slate-400 transition-colors group-hover:text-[#E35336]"
+                            />
+                        ) : (
+                            <>
+                                <PanelLeftClose
+                                    size={15}
+                                    className="shrink-0 text-slate-400 transition-colors group-hover:text-[#E35336]"
+                                />
+                                <span className="sb-fade-in">Minimize</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+
                 <nav
+                    ref={navScrollRef}
+                    onScroll={rememberSidebarScroll}
                     className={cn(
                         // sb-scroll carries overscroll-behavior: contain (CSS above)
                         "flex-1 sb-scroll transition-all duration-300",
@@ -841,7 +1010,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     )}
                     data-lenis-prevent="true"
                 >
-                    {navGroups.map((group) => {
+                    {visibleNavGroups.map((group) => {
                         const groupStart = delayCounter;
                         delayCounter += group.items.length;
                         return (
@@ -856,7 +1025,7 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                 </nav>
 
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    FOOTER — logout + collapse toggle
+                    FOOTER — logout
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
                 <div
                     className={cn(
@@ -867,46 +1036,6 @@ export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                     {/* Logout */}
                     <NavLink item={logoutItem} collapsed={effectiveCollapsed} />
 
-                    {/* Collapse toggle — desktop only */}
-                    <button
-                        type="button"
-                        onClick={toggleCollapsed}
-                        title={
-                            effectiveCollapsed
-                                ? "Expand sidebar"
-                                : "Collapse sidebar"
-                        }
-                        className={cn(
-                            "hidden xl:flex mt-1.5 w-full items-center gap-2.5 rounded-xl py-2",
-                            "font-bdo text-[10.5px] font-bold uppercase tracking-wider text-slate-400",
-                            "border border-transparent transition-all duration-200 group",
-                            "hover:bg-orange-50 hover:border-orange-100 hover:text-orange-600",
-                            effectiveCollapsed ? "justify-center px-0" : "px-3",
-                        )}
-                    >
-                        {effectiveCollapsed ? (
-                            <PanelLeftOpen
-                                size={15}
-                                className="text-slate-400 group-hover:text-orange-500 transition-colors"
-                            />
-                        ) : (
-                            <>
-                                <PanelLeftClose
-                                    size={15}
-                                    className="shrink-0 text-slate-400 group-hover:text-orange-500 transition-colors"
-                                />
-                                <span className="sb-fade-in">Collapse</span>
-                                <span
-                                    className="ml-auto font-mono text-[9px] bg-slate-100 text-slate-400
-                                    px-1.5 py-0.5 rounded-md border border-slate-200
-                                    group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-500
-                                    transition-colors"
-                                >
-                                    ⌘B
-                                </span>
-                            </>
-                        )}
-                    </button>
                 </div>
             </aside>
         </>

@@ -29,7 +29,7 @@ export default function SortableListItem({ id, children, className }: Props) {
             ref={setNodeRef}
             style={style}
             className={cn(
-                "flex items-center gap-2 touch-none",
+                "flex items-center gap-2 touch-pan-y",
                 isDragging && "z-50 opacity-60 shadow-lg rounded-xl",
                 className,
             )}
@@ -38,7 +38,7 @@ export default function SortableListItem({ id, children, className }: Props) {
                 type="button"
                 {...attributes}
                 {...listeners}
-                className="flex h-6 w-6 shrink-0 cursor-grab items-center justify-center rounded-md text-slate-300 hover:text-slate-500 active:cursor-grabbing focus:outline-none transition-colors"
+                className="flex h-6 w-6 shrink-0 touch-none cursor-grab items-center justify-center rounded-md text-slate-300 hover:text-slate-500 active:cursor-grabbing focus:outline-none transition-colors"
                 aria-label="Drag to reorder"
             >
                 <GripVertical size={14} />

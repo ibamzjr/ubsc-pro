@@ -62,7 +62,7 @@ export default function DoughnutPlaceholder({
                         }}
                     />
                     <div className="absolute inset-3 flex flex-col items-center justify-center rounded-full bg-white shadow-[0_4px_16px_rgb(0,0,0,0.04)]">
-                        <span className="font-monument text-2xl font-normal leading-none text-gray-900">
+                        <span className="font-archivo text-2xl font-normal leading-none text-gray-900">
                             {completed}%
                         </span>
                         <span className="mt-1 text-[10px] uppercase tracking-wide text-gray-400">

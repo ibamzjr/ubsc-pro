@@ -44,7 +44,7 @@ export default function BookingHero() {
                 </div>
 
                 <div className="flex flex-col justify-center overflow-hidden px-8 py-12 xl:px-20 xl:py-20">
-                    <h2 className="font-monument font-extrabold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
+                    <h2 className="font-archivo font-extrabold text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
                         Fasilitas Terbaik Kami
                     </h2>
 

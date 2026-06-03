@@ -35,8 +35,8 @@ export default function IdentityQueueCard({ count = 0 }: IdentityQueueCardProps)
                 <span
                     className={
                         count > 0
-                            ? "font-monument text-7xl font-normal text-gray-900"
-                            : "font-monument text-7xl font-normal text-gray-300"
+                            ? "font-archivo text-7xl font-normal text-gray-900"
+                            : "font-archivo text-7xl font-normal text-gray-300"
                     }
                 >
                     {count}

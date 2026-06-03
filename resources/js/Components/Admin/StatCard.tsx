@@ -50,7 +50,7 @@ export default function StatCard({
                     {label}
                 </div>
                 <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-monument text-4xl font-normal leading-none tracking-tight">
+                    <span className="font-archivo text-4xl font-normal leading-none tracking-tight">
                         {value}
                     </span>
                 </div>

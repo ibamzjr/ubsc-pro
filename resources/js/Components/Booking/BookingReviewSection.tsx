@@ -1,7 +1,6 @@
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
 import { CheckCircle, ChevronLeft, ChevronRight, MessageSquareQuote, Star } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
@@ -225,10 +224,27 @@ export default function BookingReviewSection() {
     } = usePage<BookingPageInertiaProps>().props;
     const user = auth.user;
 
-    const [emblaRef, emblaApi] = useEmblaCarousel(
-        { loop: true, align: "start", containScroll: "trimSnaps" },
-        [Autoplay({ delay: 7000, stopOnInteraction: true })],
-    );
+    // Use real approved reviews; fall back to dummy data until reviews accumulate
+    const reviews =
+        approved_reviews.length > 0 ? approved_reviews : DUMMY_REVIEWS;
+    const duplicatedReviews = [...reviews, ...reviews];
+
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+        loop: true,
+        align: "start",
+        containScroll: "trimSnaps",
+    });
+
+    useEffect(() => {
+        if (!emblaApi || reviews.length <= 1) return;
+
+        const autoplay = window.setInterval(() => {
+            emblaApi.scrollNext();
+        }, 7000);
+
+        return () => window.clearInterval(autoplay);
+    }, [emblaApi, reviews.length]);
+
     const scrollPrev = useCallback(
         () => emblaApi && emblaApi.scrollPrev(),
         [emblaApi],
@@ -237,11 +253,6 @@ export default function BookingReviewSection() {
         () => emblaApi && emblaApi.scrollNext(),
         [emblaApi],
     );
-
-    // Use real approved reviews; fall back to dummy data until reviews accumulate
-    const reviews =
-        approved_reviews.length > 0 ? approved_reviews : DUMMY_REVIEWS;
-    const duplicatedReviews = [...reviews, ...reviews];
 
     return (
         <section className="w-full bg-[#F9F9F9] py-24 overflow-hidden">

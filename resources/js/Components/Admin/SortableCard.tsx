@@ -33,7 +33,7 @@ export default function SortableCard({ id, children, className }: Props) {
                 "flex h-7 w-7 cursor-grab items-center justify-center rounded-lg",
                 "bg-black/30 text-white backdrop-blur-sm",
                 "hover:bg-black/50 active:cursor-grabbing",
-                "transition-colors focus:outline-none",
+                "touch-none transition-colors focus:outline-none",
             )}
             aria-label="Drag to reorder"
         >
@@ -46,7 +46,7 @@ export default function SortableCard({ id, children, className }: Props) {
             ref={setNodeRef}
             style={style}
             className={cn(
-                "touch-none",
+                "touch-pan-y",
                 isDragging && "z-50 opacity-60 shadow-2xl scale-[1.02]",
                 className,
             )}

@@ -12,25 +12,29 @@ interface SingleDropzoneProps {
     label?: string;
     currentUrl?: string | null;
     onFileSelect: (file: File | null) => void;
+    onRemoveExisting?: () => void;
 }
 
 export function SingleDropzone({
-    label = "Hero Image",
+    label = "Gambar Utama",
     currentUrl,
     onFileSelect,
+    onRemoveExisting,
 }: SingleDropzoneProps) {
     const [preview, setPreview] = useState<string | null>(null);
+    const [currentRemoved, setCurrentRemoved] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const onDrop = useCallback(
         (accepted: File[], rejected: FileRejection[]) => {
             setError(null);
             if (rejected.length > 0) {
-                setError(rejected[0].errors[0]?.message ?? "Invalid file.");
+                setError(rejected[0].errors[0]?.message ?? "File tidak valid.");
                 return;
             }
             if (accepted[0]) {
                 setPreview(URL.createObjectURL(accepted[0]));
+                setCurrentRemoved(false);
                 onFileSelect(accepted[0]);
             }
         },
@@ -44,29 +48,36 @@ export function SingleDropzone({
         maxFiles: 1,
     });
 
-    const displayUrl = preview ?? currentUrl ?? null;
+    const displayUrl = preview ?? (currentRemoved ? null : currentUrl) ?? null;
 
     return (
         <div className="flex flex-col gap-2">
-            <span className="font-clash text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="font-clash text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {label}
             </span>
 
             {displayUrl ? (
-                <div className="group relative overflow-hidden rounded-2xl">
+                <div className="group relative overflow-hidden rounded-[22px] ring-1 ring-[#F8B5A8]/60">
                     <img
                         src={displayUrl}
                         alt="Preview"
-                        className="h-48 w-full object-cover"
+                        className="h-48 w-full object-cover transition duration-500 group-hover:scale-105"
                     />
                     <button
                         type="button"
                         onClick={() => {
-                            setPreview(null);
-                            onFileSelect(null);
+                            if (preview) {
+                                URL.revokeObjectURL(preview);
+                                setPreview(null);
+                                onFileSelect(null);
+                                return;
+                            }
+
+                            setCurrentRemoved(true);
+                            onRemoveExisting?.();
                         }}
-                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 text-rose-500 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
-                        aria-label="Remove image"
+                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-xl bg-white/92 text-rose-500 opacity-0 shadow-[0_14px_24px_-18px_rgba(15,23,42,.45)] transition-opacity group-hover:opacity-100"
+                        aria-label="Hapus gambar"
                     >
                         <Trash2 size={14} />
                     </button>
@@ -75,21 +86,23 @@ export function SingleDropzone({
                 <div
                     {...getRootProps()}
                     className={cn(
-                        "flex h-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed transition-colors",
+                        "flex h-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-[24px] border-2 border-dashed transition-all",
                         isDragActive
-                            ? "border-gray-900 bg-gray-50"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50",
+                            ? "border-[#E35336] bg-[#FFF7F5]"
+                            : "border-[#F8B5A8]/80 bg-white hover:border-[#E35336]/70 hover:bg-[#FFF7F5]/70",
                     )}
                 >
                     <input {...getInputProps()} />
-                    <UploadCloud size={22} className="text-gray-400" />
-                    <p className="text-center text-xs text-gray-500">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#F08C78_0%,#E35336_52%,#B93D2A_100%)] text-white shadow-[0_16px_28px_-22px_rgba(227,83,54,.95)]">
+                        <UploadCloud size={20} />
+                    </div>
+                    <p className="text-center text-xs font-medium text-slate-500">
                         {isDragActive
-                            ? "Drop here"
-                            : "Drag & drop or click to upload"}
+                            ? "Lepaskan file di sini"
+                            : "Drag & drop atau klik untuk upload"}
                         <br />
-                        <span className="text-gray-400">
-                            JPG, PNG, WebP · max 5 MB
+                        <span className="text-slate-400">
+                            JPG, PNG, WebP - max 5 MB
                         </span>
                     </p>
                 </div>
@@ -148,7 +161,7 @@ export function VideoDropzone({
 
     return (
         <div className="flex flex-col gap-2">
-            <span className="font-clash text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="font-clash text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {label}
             </span>
 
@@ -174,10 +187,10 @@ export function VideoDropzone({
                 <div
                     {...getRootProps()}
                     className={cn(
-                        "flex h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed transition-colors",
+                        "flex h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-[24px] border-2 border-dashed transition-all",
                         isDragActive
-                            ? "border-amber-400 bg-amber-50"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50",
+                            ? "border-[#E35336] bg-[#FFF7F5]"
+                            : "border-[#F8B5A8]/80 hover:border-[#E35336]/70 hover:bg-[#FFF7F5]/70",
                     )}
                 >
                     <input {...getInputProps()} />
@@ -185,7 +198,7 @@ export function VideoDropzone({
                     <p className="text-center text-xs text-gray-500">
                         {isDragActive ? "Lepaskan di sini" : "Drag & drop atau klik untuk upload"}
                         <br />
-                        <span className="text-gray-400">MP4, WebM · maks 50 MB</span>
+                        <span className="text-gray-400">MP4, WebM - maks 50 MB</span>
                     </p>
                 </div>
             )}
@@ -206,14 +219,14 @@ export interface ExistingMedia {
 interface MultiDropzoneProps {
     label?: string;
     existing?: ExistingMedia[];
-    onFilesSelect: (files: File[]) => void;
+    onFilesChange: (files: File[]) => void;
     onRemoveExisting: (id: number) => void;
 }
 
 export function MultiDropzone({
-    label = "Gallery",
+    label = "Galeri",
     existing = [],
-    onFilesSelect,
+    onFilesChange,
     onRemoveExisting,
 }: MultiDropzoneProps) {
     const [previews, setPreviews] = useState<
@@ -226,7 +239,7 @@ export function MultiDropzone({
             setError(null);
             if (rejected.length > 0) {
                 setError(
-                    rejected[0].errors[0]?.message ?? "Some files were rejected.",
+                    rejected[0].errors[0]?.message ?? "Beberapa file ditolak.",
                 );
             }
             if (accepted.length > 0) {
@@ -234,11 +247,14 @@ export function MultiDropzone({
                     file,
                     url: URL.createObjectURL(file),
                 }));
-                setPreviews((prev) => [...prev, ...newPreviews]);
-                onFilesSelect(accepted);
+                setPreviews((prev) => {
+                    const next = [...prev, ...newPreviews];
+                    onFilesChange(next.map((item) => item.file));
+                    return next;
+                });
             }
         },
-        [onFilesSelect],
+        [onFilesChange],
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -248,12 +264,21 @@ export function MultiDropzone({
     });
 
     const removePreview = (index: number) => {
-        setPreviews((prev) => prev.filter((_, i) => i !== index));
+        setPreviews((prev) => {
+            const removed = prev[index];
+            if (removed) {
+                URL.revokeObjectURL(removed.url);
+            }
+
+            const next = prev.filter((_, i) => i !== index);
+            onFilesChange(next.map((item) => item.file));
+            return next;
+        });
     };
 
     return (
         <div className="flex flex-col gap-2">
-            <span className="font-clash text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="font-clash text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {label}
             </span>
 
@@ -262,7 +287,7 @@ export function MultiDropzone({
                     {existing.map((img) => (
                         <div
                             key={img.id}
-                            className="group relative overflow-hidden rounded-2xl"
+                            className="group relative overflow-hidden rounded-2xl ring-1 ring-[#F8B5A8]/50"
                         >
                             <img
                                 src={img.url}
@@ -273,7 +298,7 @@ export function MultiDropzone({
                                 type="button"
                                 onClick={() => onRemoveExisting(img.id)}
                                 className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-xl bg-white/90 text-rose-500 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
-                                aria-label="Remove"
+                                aria-label="Hapus gambar"
                             >
                                 <Trash2 size={12} />
                             </button>
@@ -282,23 +307,23 @@ export function MultiDropzone({
                     {previews.map((p, i) => (
                         <div
                             key={p.url}
-                            className="group relative overflow-hidden rounded-2xl ring-2 ring-blue-200"
+                            className="group relative overflow-hidden rounded-2xl ring-2 ring-[#F8B5A8]/70"
                         >
                             <img
                                 src={p.url}
-                                alt="New"
+                                alt="Gambar baru"
                                 className="h-24 w-full object-cover"
                             />
                             <button
                                 type="button"
                                 onClick={() => removePreview(i)}
                                 className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-xl bg-white/90 text-rose-500 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
-                                aria-label="Remove"
+                                aria-label="Hapus gambar"
                             >
                                 <Trash2 size={12} />
                             </button>
-                            <span className="absolute bottom-1 left-1 rounded-lg bg-blue-500 px-1.5 py-0.5 text-[9px] font-medium text-white">
-                                New
+                            <span className="absolute bottom-1 left-1 rounded-lg bg-[#E35336] px-1.5 py-0.5 text-[9px] font-medium text-white">
+                                Baru
                             </span>
                         </div>
                     ))}
@@ -308,17 +333,17 @@ export function MultiDropzone({
             <div
                 {...getRootProps()}
                 className={cn(
-                    "flex h-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-3xl border-2 border-dashed transition-colors",
+                    "flex h-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[24px] border-2 border-dashed transition-all",
                     isDragActive
-                        ? "border-gray-900 bg-gray-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50",
+                        ? "border-[#E35336] bg-[#FFF7F5]"
+                        : "border-[#F8B5A8]/80 hover:border-[#E35336]/70 hover:bg-[#FFF7F5]/70",
                 )}
             >
                 <input {...getInputProps()} />
-                <div className="flex items-center gap-1.5 text-gray-400">
+                <div className="flex items-center gap-1.5 text-[#B93D2A]">
                     <ImageIcon size={16} />
-                    <span className="text-xs">
-                        {isDragActive ? "Drop here" : "Add images"}
+                    <span className="text-xs font-semibold">
+                        {isDragActive ? "Lepaskan di sini" : "Tambah gambar"}
                     </span>
                 </div>
             </div>
