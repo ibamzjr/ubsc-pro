@@ -108,7 +108,7 @@ export default function Hero() {
                     </div>
 
                     <motion.div
-                        className="absolute bottom-12 right-16"
+                        className="absolute bottom-6 right-16"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
                         transition={{
@@ -122,7 +122,7 @@ export default function Hero() {
                             onMouseLeave={() => setIsHovered(false)}
                             onMouseDown={() => setIsHovered(true)}
                             onMouseUp={() => setIsHovered(false)}
-                            className="flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white shadow-xl"
+                            className="flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white shadow-xl"
                         >
                             <motion.img
                                 src="/BMU.svg"

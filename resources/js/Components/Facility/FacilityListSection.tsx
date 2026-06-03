@@ -68,6 +68,7 @@ interface FacilityListSectionProps {
     sectionTitle?: string;
     sectionSubtitle?: string;
     facilities?: FacilityItem[];
+    isLandingPage?: boolean;
 }
 
 export default function FacilityListSection({
@@ -75,9 +76,11 @@ export default function FacilityListSection({
     sectionTitle = "Kelas Outdoor",
     sectionSubtitle = "04 facility page",
     facilities,
+    isLandingPage = false,
 }: FacilityListSectionProps = {}) {
     const activeList =
         facilities && facilities.length > 0 ? facilities : FACILITIES;
+    const renderedList = isLandingPage ? activeList.slice(0, 4) : activeList;
     return (
         <section className="bg-[#242424] overflow-x-clip" id="facility-content">
             {/* --- MARQUEE STRIP --- */}
@@ -160,7 +163,7 @@ export default function FacilityListSection({
 
                 {/* --- FACILITY LIST (NO GAP) --- */}
                 <div className="flex flex-col gap-0 border-t border-white/10">
-                    {activeList.map((item) => (
+                    {renderedList.map((item) => (
                         <FacilityListItem key={item.id} item={item} />
                     ))}
                 </div>

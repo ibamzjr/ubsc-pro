@@ -2,8 +2,10 @@ import SectionDivider from "@/Components/Landing/SectionDivider";
 import ReservasiButton from "@/Components/Landing/ReservasiButton";
 import FacilityListSection from "@/Components/Facility/FacilityListSection";
 import FacilityClassSection from "@/Components/Facility/FacilityClassSection";
+import FacilityOutdoorSection from "@/Components/Facility/FacilityOutdoorSection";
 import type { FacilityItem } from "@/Components/Facility/FacilityListItem";
 import type { ClassItem } from "@/Components/Facility/FacilityClassSection";
+import type { OutdoorFacility } from "@/Components/Facility/FacilityOutdoorSection";
 
 interface BackendFacility {
     id: number;
@@ -18,9 +20,13 @@ interface BackendFacility {
 
 interface SectionFourProps {
     facilities?: BackendFacility[];
+    isLandingPage?: boolean;
 }
 
-export default function SectionFour({ facilities = [] }: SectionFourProps) {
+export default function SectionFour({
+    facilities = [],
+    isLandingPage = true,
+}: SectionFourProps) {
     const arenaFacilities: FacilityItem[] = facilities
         .filter((f) => f.category === "Lapangan & Arena")
         .map((f, idx) => ({
@@ -43,6 +49,16 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
             image: f.image || "/assets/images/comingsoon.avif",
             badgeLocation: f.location || "Veteran",
             badgeCategory: f.venue_type || "Kebugaran",
+        }));
+
+    const outdoorFacilities: OutdoorFacility[] = facilities
+        .filter((f) => f.category === "Lapangan & Arena")
+        .map((f) => ({
+            id: String(f.id),
+            name: f.name,
+            category: f.venue_type || "Arena Luar",
+            image: f.image || "/assets/images/comingsoon.avif",
+            mapLink: null,
         }));
     return (
         <section id="facilities" className="w-full bg-[#FAFAFA]">
@@ -102,6 +118,7 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
                 facilities={
                     arenaFacilities.length > 0 ? arenaFacilities : undefined
                 }
+                isLandingPage={isLandingPage}
             />
             <FacilityClassSection
                 sectionNumber="04"
@@ -110,6 +127,16 @@ export default function SectionFour({ facilities = [] }: SectionFourProps) {
                 classes={
                     classFacilities.length > 0 ? classFacilities : undefined
                 }
+                isLandingPage={isLandingPage}
+            />
+            <FacilityOutdoorSection
+                sectionNumber="05"
+                sectionTitle="Fasilitas Outdoor"
+                sectionSubtitle="01 homepage"
+                facilities={
+                    outdoorFacilities.length > 0 ? outdoorFacilities : undefined
+                }
+                isLandingPage={isLandingPage}
             />
         </section>
     );

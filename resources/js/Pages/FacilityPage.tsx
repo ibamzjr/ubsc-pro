@@ -11,6 +11,7 @@ import AboutSectionContact from "@/Components/About/AboutSectionContact";
 import Footer from "@/Components/Landing/Footer";
 import { Head, usePage } from "@inertiajs/react";
 import type { PageProps } from "@/types";
+import FacilityOutdoorSection from "@/Components/Facility/FacilityOutdoorSection";
 
 interface BackendFacility {
     id: number;
@@ -34,25 +35,27 @@ export default function FacilityPage() {
     const { facilities = [] } = usePage<FacilityPageProps>().props;
 
     const arenaFacilities: FacilityItem[] = facilities
-        .filter((f) => f.category === 'Lapangan & Arena')
+        .filter((f) => f.category === "Lapangan & Arena")
         .map((f, idx) => ({
-            id: String(idx + 1).padStart(2, '0'),
+            id: String(idx + 1).padStart(2, "0"),
             title: `/${f.name}.`,
-            code: f.class_code ? `/${f.class_code}/` : `/Tertutup ${String(idx + 1).padStart(3, '0')}/`,
-            image: f.image || '/assets/images/comingsoon.avif',
-            badgeLocation: f.location ?? 'Veteran',
-            badgeType: f.venue_type ?? 'Indoor Facility',
+            code: f.class_code
+                ? `/${f.class_code}/`
+                : `/Tertutup ${String(idx + 1).padStart(3, "0")}/`,
+            image: f.image || "/assets/images/comingsoon.avif",
+            badgeLocation: f.location ?? "Veteran",
+            badgeType: f.venue_type ?? "Indoor Facility",
         }));
 
     const classFacilities: ClassItem[] = facilities
-        .filter((f) => f.category === 'Kelas & Kebugaran')
+        .filter((f) => f.category === "Kelas & Kebugaran")
         .map((f, idx) => ({
-            id: String(idx + 1).padStart(2, '0'),
+            id: String(idx + 1).padStart(2, "0"),
             name: f.name,
-            code: f.class_code ?? String(idx + 1).padStart(3, '0'),
-            image: f.image || '/assets/images/comingsoon.avif',
-            badgeLocation: f.location ?? 'Veteran',
-            badgeCategory: 'Kebugaran',
+            code: f.class_code ?? String(idx + 1).padStart(3, "0"),
+            image: f.image || "/assets/images/comingsoon.avif",
+            badgeLocation: f.location ?? "Veteran",
+            badgeCategory: "Kebugaran",
         }));
 
     return (
@@ -85,10 +88,15 @@ export default function FacilityPage() {
                 <FacilityMembership />
                 <FacilityListSection facilities={arenaFacilities} />
                 <FacilityClassSection classes={classFacilities} />
-                <AboutBranches
+                <FacilityOutdoorSection
                     sectionNumber="04"
-                    sectionTitle="Cabang Kami"
-                    sectionSubtitle="04 facility page"
+                    sectionTitle="Fasilitas Outdoor"
+                    // sectionSubtitle="04 facility page"
+                    // facilities={
+                    //     outdoorFacilities.length > 0
+                    //         ? outdoorFacilities
+                    //         : undefined
+                    // }
                 />
                 <SectionSeven
                     sectionNumber="05"
