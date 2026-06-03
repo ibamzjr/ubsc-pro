@@ -1,10 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'guest'])->group(function () {
     Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])
-        ->name('admin.login');
+        ->name('ubsc-staff.login');
 
     Route::post('login', [AdminAuthenticatedSessionController::class, 'store']);
 });
@@ -32,5 +28,5 @@ Route::middleware(['web', 'guest'])->group(function () {
 // Dedicated admin logout — avoids conflict with the public logout route
 Route::middleware(['web', 'auth'])->group(function () {
     Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])
-        ->name('admin.logout');
+        ->name('ubsc-staff.logout');
 });

@@ -11,9 +11,11 @@ use App\Http\Controllers\Admin\FacilityCategoryController;
 use App\Http\Controllers\Admin\FinanceReportController;
 use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\MembershipPlanController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\FacilityPriceController;
+use App\Http\Controllers\Admin\FacilityUnitController;
 use App\Http\Controllers\Admin\IdentityQueueController;
 use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\Admin\NewsController;
@@ -21,7 +23,6 @@ use App\Http\Controllers\Admin\PromoCarouselController;
 use App\Http\Controllers\Admin\ReelController;
 use App\Http\Controllers\Admin\SponsorLogoController;
 use App\Http\Controllers\Admin\TestimonialController;
-use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\PublicBookingController;
@@ -29,32 +30,41 @@ use App\Http\Controllers\Public\PublicFacilityController;
 use App\Http\Controllers\Public\PublicNewsController;
 use App\Http\Controllers\Public\ReviewController;
 use App\Http\Resources\Public\FacilityResource;
+use App\Http\Middleware\RedirectStaffFromPublic;
 use App\Models\Booking;
 use App\Models\Facility;
 use App\Models\Membership;
 use App\Models\Review;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [HomeController::class, 'index'])->middleware('throttle:60,1');
+Route::get('/', [HomeController::class, 'index'])->middleware([RedirectStaffFromPublic::class, 'throttle:60,1']);
 
 Route::get('/about', function () {
     return Inertia::render('AboutPage');
-})->name('about');
+})->middleware(RedirectStaffFromPublic::class)->name('about');
 
-Route::get('/news', [PublicNewsController::class, 'index'])->middleware('throttle:60,1')->name('news');
+Route::get('/news', [PublicNewsController::class, 'index'])
+    ->middleware([RedirectStaffFromPublic::class, 'throttle:60,1'])
+    ->name('news');
 
 Route::get('/pricing', function () {
     return Inertia::render('PricingPage', [
         'facilities' => FacilityResource::collection(
-            Facility::active()->with('category', 'prices')->orderBy('sort_order')->get()
+            Facility::active()
+                ->with(['category', 'prices'])
+                ->orderBy('sort_order')
+                ->get()
         )->resolve(),
     ]);
-})->middleware('throttle:60,1')->name('pricing');
+})->middleware([RedirectStaffFromPublic::class, 'throttle:60,1'])->name('pricing');
 
-Route::get('/facilities', [PublicFacilityController::class, 'index'])->middleware('throttle:60,1')->name('facility');
+Route::get('/facilities', [PublicFacilityController::class, 'index'])
+    ->middleware([RedirectStaffFromPublic::class, 'throttle:60,1'])
+    ->name('facility');
 
 Route::get('/booking', function () {
     $user           = auth()->user();
@@ -63,7 +73,7 @@ Route::get('/booking', function () {
 
     return Inertia::render('BookingPage', [
         'facilities' => FacilityResource::collection(
-            Facility::active()->with('category', 'prices')->orderBy('sort_order')->get()
+            Facility::active()->with(['category', 'prices', 'units.media'])->orderBy('sort_order')->get()
         )->resolve(),
         'can_review'       => $canReview,
         'existing_review'  => $existingReview ? [
@@ -82,7 +92,7 @@ Route::get('/booking', function () {
                 : '/assets/icons/ulasan-malang-tennis-academy-ubsc.avif',
         ])->values()->all(),
     ]);
-})->middleware('throttle:60,1')->name('booking');
+})->middleware([RedirectStaffFromPublic::class, 'throttle:60,1'])->name('booking');
 
 Route::get('/booking/slots', [PublicBookingController::class, 'slots'])
     ->middleware('throttle:120,1')
@@ -90,25 +100,28 @@ Route::get('/booking/slots', [PublicBookingController::class, 'slots'])
 
 Route::get('/coming-soon', function () {
     return Inertia::render('ComingSoon');
-})->name('coming-soon');
+})->middleware(RedirectStaffFromPublic::class)->name('coming-soon');
 
 // ─── Staff Portal Auth ────────────────────────────────────────────────────────
 
-Route::middleware('guest')->group(function () {
-    Route::get('/ubsc-staff/login', [AdminAuthenticatedSessionController::class, 'create'])
-        ->name('ubsc-staff.login');
-    Route::post('/ubsc-staff/login', [AdminAuthenticatedSessionController::class, 'store']);
-});
-
-Route::middleware('auth')->post('/ubsc-staff/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
-    ->name('ubsc-staff.logout');
-
 // ─── Profile & User Endpoints ─────────────────────────────────────────────────
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', RedirectStaffFromPublic::class])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', function (Request $request) {
+        if ($request->user()?->hasAnyRole([
+            'Administrator',
+            'Manager',
+            'Finance',
+            'Staff Central',
+            'Staff Front Office',
+        ])) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect('/');
+    })->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
@@ -122,21 +135,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $transactions->each(function ($t) {
             if ($t->transactionable instanceof Booking) {
                 $t->transactionable->loadMissing('facility');
+            } elseif ($t->transactionable instanceof Membership) {
+                $t->transactionable->loadMissing('plan');
             }
         });
 
         return response()->json($transactions->map(fn ($t) => [
             'id'             => $t->id,
+            'receipt_number' => $t->receipt_number,
+            'xendit_invoice_id' => $t->xendit_invoice_id,
             'amount'         => $t->amount,
             'payment_status' => $t->payment_status,
             'checkout_url'   => $t->checkout_url,
             'paid_at'        => $t->paid_at?->toDateTimeString(),
             'created_at'     => $t->created_at->toDateTimeString(),
+            'type'           => $t->transactionable instanceof Membership ? 'membership' : 'booking',
             'facility_name'  => $t->transactionable instanceof Booking
                 ? ($t->transactionable->facility?->name ?? '-')
                 : '-',
             'booking_date'   => $t->transactionable instanceof Booking
                 ? $t->transactionable->booking_date
+                : null,
+            'membership_plan' => $t->transactionable instanceof Membership
+                ? ($t->transactionable->plan?->name ?? 'Manual')
+                : null,
+            'membership_period' => $t->transactionable instanceof Membership
+                ? [
+                    'start_date' => $t->transactionable->start_date?->format('Y-m-d'),
+                    'end_date' => $t->transactionable->end_date?->format('Y-m-d'),
+                ]
                 : null,
         ]));
     })->name('user.transactions');
@@ -151,6 +178,10 @@ Route::middleware([
     ->prefix('ubsc-staff')
     ->name('admin.')
     ->group(function () {
+
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('notifications/clear-read', [NotificationController::class, 'clearRead'])->name('notifications.clear-read');
 
         // Bookings
         Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
@@ -169,6 +200,7 @@ Route::middleware([
         // Memberships
         Route::get('memberships', [MembershipController::class, 'index'])->name('memberships.index');
         Route::post('memberships', [MembershipController::class, 'store'])->name('memberships.store');
+        Route::post('memberships/{membership}/renew', [MembershipController::class, 'renew'])->name('memberships.renew');
         Route::patch('memberships/{membership}', [MembershipController::class, 'update'])->name('memberships.update');
         Route::delete('memberships/{membership}', [MembershipController::class, 'destroy'])->name('memberships.destroy');
 
@@ -178,14 +210,17 @@ Route::middleware([
 
         // Finance & Analytics
         Route::get('finance', [FinanceReportController::class, 'index'])->name('finance.index');
-        Route::get('finance/export', [FinanceReportController::class, 'export'])->name('finance.export');
 
         // Dashboard
         Route::get('/', function () {
             $now              = now();
             $prevMonth        = $now->month === 1 ? 12 : $now->month - 1;
             $prevYear         = $now->month === 1 ? $now->year - 1 : $now->year;
-            $currentRevenue   = (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', $now)->whereYear('paid_at', $now)->sum('amount');
+            $currentRevenue   = (int) Transaction::where('payment_status', 'PAID')
+                ->whereMonth('paid_at', $now->month)
+                ->whereYear('paid_at', $now->year)
+                ->where('paid_at', '<=', $now)
+                ->sum('amount');
             $lastMonthRevenue = (int) Transaction::where('payment_status', 'PAID')->whereMonth('paid_at', $prevMonth)->whereYear('paid_at', $prevYear)->sum('amount');
             $revenueTrend = match(true) {
                 $lastMonthRevenue > 0 => round((($currentRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1),
@@ -193,16 +228,17 @@ Route::middleware([
                 default              => 0.0,
             };
 
-            // Daily revenue array for the current month (thousands IDR, one value per day)
+            // Daily revenue array for the current month (full IDR, one value per day)
             $daysInMonth    = (int) $now->daysInMonth;
             $dailyRaw       = Transaction::where('payment_status', 'PAID')
-                ->whereMonth('paid_at', $now)
-                ->whereYear('paid_at', $now)
+                ->whereMonth('paid_at', $now->month)
+                ->whereYear('paid_at', $now->year)
+                ->where('paid_at', '<=', $now)
                 ->selectRaw('DAY(paid_at) as day, SUM(amount) as total')
                 ->groupBy('day')
                 ->pluck('total', 'day');
             $dailyRevenue = array_map(
-                fn($d) => (int) round(($dailyRaw[$d] ?? 0) / 1000),
+                fn($d) => (int) ($dailyRaw[$d] ?? 0),
                 range(1, $daysInMonth),
             );
 
@@ -285,6 +321,7 @@ Route::middleware([
                 'revenueTrend'      => $revenueTrend,
                 'dailyRevenue'      => $dailyRevenue,
                 'daysInMonth'       => $daysInMonth,
+                'currentDayInMonth' => (int) $now->day,
                 'currentMonthLabel' => $now->translatedFormat('M Y'),
                 'occupancyData'     => array_values($occupancyData),
                 'recentActivity'    => $recentActivity,
@@ -334,9 +371,24 @@ Route::middleware([
         Route::delete('facilities/{facility}', [FacilityController::class, 'destroy'])
             ->name('facilities.destroy');
 
+        // Facility Units
+        Route::get('facilities/{facility}/units', [FacilityUnitController::class, 'index'])
+            ->name('facilities.units.index');
+        Route::post('facilities/{facility}/units', [FacilityUnitController::class, 'store'])
+            ->name('facilities.units.store');
+        Route::put('facility-units/{facilityUnit}', [FacilityUnitController::class, 'update'])
+            ->name('facility-units.update');
+        Route::delete('facility-units/{facilityUnit}', [FacilityUnitController::class, 'destroy'])
+            ->name('facility-units.destroy');
+
         // Facility Pricing
         Route::get('facilities/{facility}/pricing', function (Facility $facility) {
-            $facility->load('prices');
+            abort_unless(
+                auth()->user()?->can('manage-pricing') || auth()->user()?->can('manage-facilities'),
+                403,
+            );
+
+            $facility->load(['prices' => fn ($query) => $query->orderBy('sort_order')]);
             return Inertia::render('Admin/Facilities/Pricing', [
                 'facility' => ['id' => $facility->id, 'name' => $facility->name],
                 'prices'   => $facility->prices->map(fn ($p) => [
@@ -345,6 +397,12 @@ Route::middleware([
                     'label'            => $p->label,
                     'price'            => $p->price,
                     'duration_minutes' => $p->duration_minutes ?? 60,
+                    'schedule_type'    => $p->schedule_type,
+                    'applicable_days'  => $p->applicable_days,
+                    'starts_at'        => $p->starts_at ? substr($p->starts_at, 0, 5) : null,
+                    'ends_at'          => $p->ends_at ? substr($p->ends_at, 0, 5) : null,
+                    'starts_on'        => $p->starts_on?->format('Y-m-d'),
+                    'ends_on'          => $p->ends_on?->format('Y-m-d'),
                     'notes'            => $p->notes,
                     'sort_order'       => $p->sort_order,
                 ])->values()->all(),
@@ -363,7 +421,7 @@ Route::middleware([
         Route::get('settings/roles', [RoleController::class, 'index'])->name('settings.roles');
         Route::put('settings/roles/{role}', [RoleController::class, 'update'])->name('settings.roles.update');
 
-        // Settings — Internal User Management (Administrator only, enforced in controller)
+        // Settings — Internal User Directory (readable by staff; mutations enforced as Administrator only)
         Route::get('settings/users', [UserController::class, 'index'])->name('settings.users');
         Route::post('settings/users', [UserController::class, 'store'])->name('settings.users.store');
         Route::put('settings/users/{user}', [UserController::class, 'update'])->name('settings.users.update');

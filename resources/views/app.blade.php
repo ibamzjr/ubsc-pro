@@ -7,7 +7,7 @@
         <title inertia>{{ config('app.name', 'UBSC') }}</title>
 
         <!-- Fonts -->
-        <link rel="icon" type="image/x-icon" href="/ubsc.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="any" href="/ubsc-tab.svg?v=1" />
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 

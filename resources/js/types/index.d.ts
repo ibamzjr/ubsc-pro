@@ -9,11 +9,35 @@ export interface User {
     avatar?: string | null;
     avatar_url?: string | null;
     phone_number?: string | null;
+    birth_place?: string | null;
+    birth_date?: string | null;
     identity_category?: IdentityCategory | null;
     identity_number?: string | null;
     identity_status?: IdentityStatus;
     role?: string | null;
     permissions?: string[];
+}
+
+export type AdminNotificationTone = "info" | "success" | "warning" | "critical";
+
+export interface AdminNotificationItem {
+    id: string;
+    title: string;
+    description: string;
+    time: string;
+    read: boolean;
+    important?: boolean;
+    tone: AdminNotificationTone;
+    source?: string;
+    href?: string;
+    actionLabel?: string;
+}
+
+export interface AdminNotificationsPayload {
+    items: AdminNotificationItem[];
+    unread_count: number;
+    important_count: number;
+    generated_at: string;
 }
 
 export type PageProps<
@@ -27,6 +51,7 @@ export type PageProps<
         error?: string | null;
     };
     announcements?: string[];
+    admin_notifications?: AdminNotificationsPayload;
     gym_traffic?: string;
 };
 
@@ -66,6 +91,7 @@ export interface FacilityItem {
     hero?: FacilityMedia | null;
     gallery: FacilityMedia[];
     prices_count?: number;
+    units_count?: number;
 }
 
 // ─── Identity Queue Types ─────────────────────────────────────────────────────
@@ -103,7 +129,7 @@ export interface NewsItem {
     published_at?: string | null;
     updated_at: string;
     category?: NewsCategory | null;
-    author: { id: number; name: string };
+    author: { id: number; name: string; avatar_url?: string | null; avatar?: string | null };
     thumbnail?: string | null;
 }
 
@@ -172,6 +198,8 @@ export interface BookingTransaction {
     id: number;
     amount: number;
     payment_status: PaymentStatus;
+    receipt_number?: string | null;
+    xendit_invoice_id?: string | null;
     checkout_url: string | null;
     paid_at: string | null;
 }
@@ -196,6 +224,7 @@ export interface AdminBooking {
     id: number;
     user_id: number | null;
     facility_id: number;
+    facility_unit_id: number | null;
     booking_date: string;       // YYYY-MM-DD
     start_time: string;         // HH:MM
     end_time: string;           // HH:MM
@@ -207,6 +236,7 @@ export interface AdminBooking {
     is_free: boolean;
     user_category: UserCategory;
     facility_name: string;
+    facility_unit_name: string | null;
     transaction: BookingTransaction | null;
 }
 
@@ -228,6 +258,10 @@ export interface AdminMembership {
     id: number;
     user_id: number | null;
     membership_plan_id: number | null;
+    renewed_from_membership_id?: number | null;
+    renewed_from_label?: string | null;
+    created_by_name?: string | null;
+    created_via?: string | null;
     plan_name: string | null;
     customer_name: string;
     customer_phone: string | null;
@@ -235,4 +269,20 @@ export interface AdminMembership {
     end_date: string;            // YYYY-MM-DD
     status: MembershipStatus;
     transaction: BookingTransaction | null;
+    histories?: Array<{
+        id: number;
+        action: string;
+        plan_name: string;
+        start_date: string;
+        end_date: string;
+        transaction_id: number | null;
+        receipt_number: string | null;
+        renewed_from_membership_id: number | null;
+        renewed_from_label: string | null;
+        actor_name: string | null;
+        actor_type: string;
+        amount: number | null;
+        payment_status: string | null;
+        created_at: string | null;
+    }>;
 }
