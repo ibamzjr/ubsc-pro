@@ -20,6 +20,7 @@ interface BookingFacilityProp {
     rating?: number | null;
     display_metadata?: Record<string, unknown> | null;
     prices?: Array<{ id: number; user_category: string; label: string; price: number; notes?: string | null }>;
+    units?: Array<{ id: number; name: string; image: string }>;
 }
 
 export interface UserExistingReview {

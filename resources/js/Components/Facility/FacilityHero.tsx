@@ -57,14 +57,14 @@ export default function FacilityHero() {
             </div>
 
             <div className="relative z-10 pt-32 px-8 xl:px-20">
-                <h1 className="font-monument font-extrabold text-[clamp(3rem,5vw,52px)] text-white leading-[1.2]">
+                <h1 className="font-archivo font-extrabold text-[clamp(3rem,5vw,52px)] text-white leading-[1.2]">
                     Fasilitas Terbaik Kami
                 </h1>
             </div>
 
             <div className="flex-1 " />
 
-            <div className="relative z-10">
+            <div className="relative z-10"> 
                 <HeroBottomBar
                     variant="transparent"
                     sectionNumber="04/"

@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { Eye, EyeOff, Lock, Mail, User, X } from "lucide-react";
+import { CalendarDays, Eye, EyeOff, Lock, Mail, MapPin, User, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEventHandler } from "react";
 import InputError from "@/Components/InputError";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,9 @@ function LoginForm({ onSwitchTab }: { onSwitchTab: () => void }) {
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-4">
+            <GoogleAuthButton label="Masuk dengan Google" />
+            <AuthDivider />
+
             <div>
                 <label className={labelCls}>Email</label>
                 <div className="relative">
@@ -113,10 +116,48 @@ function LoginForm({ onSwitchTab }: { onSwitchTab: () => void }) {
     );
 }
 
+function GoogleAuthButton({ label }: { label: string }) {
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                window.location.href = "/auth/google";
+            }}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/12 bg-white px-4 py-3 font-bdo text-sm font-semibold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400/60 focus:ring-offset-2 focus:ring-offset-[#0d1422]"
+        >
+            <GoogleIcon />
+            <span>{label}</span>
+        </button>
+    );
+}
+
+function AuthDivider() {
+    return (
+        <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/10" />
+            <span className="font-bdo text-[10px] font-bold uppercase tracking-widest text-white/30">atau</span>
+            <span className="h-px flex-1 bg-white/10" />
+        </div>
+    );
+}
+
+function GoogleIcon() {
+    return (
+        <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C4 20.54 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 4 3.46 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+        </svg>
+    );
+}
+
 function RegisterForm({ onSwitchTab }: { onSwitchTab: () => void }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
+        birth_place: "",
+        birth_date: "",
         password: "",
         password_confirmation: "",
     });
@@ -133,6 +174,9 @@ function RegisterForm({ onSwitchTab }: { onSwitchTab: () => void }) {
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-4">
+            <GoogleAuthButton label="Daftar dengan Google" />
+            <AuthDivider />
+
             <div>
                 <label className={labelCls}>Nama Lengkap</label>
                 <div className="relative">
@@ -165,6 +209,38 @@ function RegisterForm({ onSwitchTab }: { onSwitchTab: () => void }) {
                     />
                 </div>
                 <InputError message={errors.email} className="mt-1 text-[11px]" />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                    <label className={labelCls}>Tempat Lahir</label>
+                    <div className="relative">
+                        <MapPin className={iconCls} />
+                        <input
+                            type="text"
+                            value={data.birth_place}
+                            onChange={(e) => setData("birth_place", e.target.value)}
+                            placeholder="Kota kelahiran"
+                            autoComplete="address-level2"
+                            className={cn(inputCls, "pl-10", errors.birth_place && errorRing)}
+                        />
+                    </div>
+                    <InputError message={errors.birth_place} className="mt-1 text-[11px]" />
+                </div>
+
+                <div>
+                    <label className={labelCls}>Tanggal Lahir</label>
+                    <div className="relative">
+                        <CalendarDays className={iconCls} />
+                        <input
+                            type="date"
+                            value={data.birth_date}
+                            onChange={(e) => setData("birth_date", e.target.value)}
+                            className={cn(inputCls, "pl-10 pr-3", errors.birth_date && errorRing)}
+                        />
+                    </div>
+                    <InputError message={errors.birth_date} className="mt-1 text-[11px]" />
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -345,7 +421,7 @@ export default function AuthModal({ open, initialTab = "login", onClose }: Props
                 </div>
 
                 {/* Form area */}
-                <div className="px-6 py-6">
+                <div className="custom-scrollbar max-h-[min(72vh,620px)] overflow-y-auto overscroll-contain px-6 py-6">
                     {tab === "login" ? (
                         <LoginForm onSwitchTab={() => setTab("register")} />
                     ) : (

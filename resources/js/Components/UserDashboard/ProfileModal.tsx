@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, FormEventHandler } from "react";
-import { User, X, Eye, EyeOff, Camera } from "lucide-react";
+import { CalendarDays, Camera, Eye, EyeOff, MapPin, User, X } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
 import { cn } from "@/lib/utils";
 import type { PageProps } from "@/types";
@@ -15,10 +15,14 @@ export default function ProfileModal({ onClose }: Props) {
     const profileForm = useForm<{
         _method: "patch";
         name: string;
+        birth_place: string;
+        birth_date: string;
         avatar: File | null;
     }>({
         _method: "patch",
         name: user.name,
+        birth_place: user.birth_place ?? "",
+        birth_date: user.birth_date ?? "",
         avatar: null,
     });
 
@@ -29,6 +33,7 @@ export default function ProfileModal({ onClose }: Props) {
     });
 
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarFailed, setAvatarFailed] = useState(false);
     const [showCurrent, setShowCurrent] = useState(false);
     const [showNew, setShowNew] = useState(false);
     const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +91,11 @@ export default function ProfileModal({ onClose }: Props) {
         .slice(0, 2)
         .toUpperCase();
 
-    const displayAvatar = avatarPreview ?? user.avatar ?? null;
+    const displayAvatar = avatarPreview ?? user.avatar_url ?? user.avatar ?? null;
+
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [displayAvatar]);
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -128,11 +137,13 @@ export default function ProfileModal({ onClose }: Props) {
                             className="group relative h-20 w-20 overflow-hidden rounded-full ring-2 ring-white/10 transition-all hover:ring-orange-400/40"
                             title="Ganti foto profil"
                         >
-                            {displayAvatar ? (
+                            {displayAvatar && !avatarFailed ? (
                                 <img
                                     src={displayAvatar}
                                     alt="Avatar"
                                     className="h-full w-full object-cover"
+                                    referrerPolicy="no-referrer"
+                                    onError={() => setAvatarFailed(true)}
                                 />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center bg-navy-900">
@@ -183,6 +194,51 @@ export default function ProfileModal({ onClose }: Props) {
                             {profileForm.errors.name && (
                                 <p className="font-bdo text-[11px] text-rose-400">{profileForm.errors.name}</p>
                             )}
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div className="space-y-1.5">
+                                <label className="font-bdo text-[12px] text-white/60">Tempat Lahir</label>
+                                <div className="relative">
+                                    <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
+                                    <input
+                                        type="text"
+                                        value={profileForm.data.birth_place}
+                                        onChange={(e) => profileForm.setData("birth_place", e.target.value)}
+                                        placeholder="Kota kelahiran"
+                                        className={cn(
+                                            "w-full rounded-xl border bg-white/[0.04] px-4 py-2.5 pl-10 font-bdo text-sm text-white outline-none transition-colors placeholder:text-white/20 focus:bg-white/[0.07]",
+                                            profileForm.errors.birth_place
+                                                ? "border-rose-500/50 focus:border-rose-500/50"
+                                                : "border-white/[0.08] focus:border-orange-400/40",
+                                        )}
+                                    />
+                                </div>
+                                {profileForm.errors.birth_place && (
+                                    <p className="font-bdo text-[11px] text-rose-400">{profileForm.errors.birth_place}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="font-bdo text-[12px] text-white/60">Tanggal Lahir</label>
+                                <div className="relative">
+                                    <CalendarDays className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
+                                    <input
+                                        type="date"
+                                        value={profileForm.data.birth_date}
+                                        onChange={(e) => profileForm.setData("birth_date", e.target.value)}
+                                        className={cn(
+                                            "w-full rounded-xl border bg-white/[0.04] px-4 py-2.5 pl-10 font-bdo text-sm text-white outline-none transition-colors focus:bg-white/[0.07]",
+                                            profileForm.errors.birth_date
+                                                ? "border-rose-500/50 focus:border-rose-500/50"
+                                                : "border-white/[0.08] focus:border-orange-400/40",
+                                        )}
+                                    />
+                                </div>
+                                {profileForm.errors.birth_date && (
+                                    <p className="font-bdo text-[11px] text-rose-400">{profileForm.errors.birth_date}</p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Email — read-only, cannot be changed after registration */}

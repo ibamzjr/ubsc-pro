@@ -78,7 +78,7 @@ export default function ReelCard({
             )}
 
             {/* <div className="absolute right-4 top-4 flex h-4 w-8 items-center justify-center rounded-sm bg-white/20">
-                <span className="font-monument text-[7px] font-black leading-none text-white">
+                <span className="font-archivo text-[7px] font-black leading-none text-white">
                     UB
                 </span>
             </div> */}

@@ -254,6 +254,7 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
     const [activeUserModal, setActiveUserModal] = useState<UserModal | null>(
         null,
     );
+    const [avatarFailed, setAvatarFailed] = useState(false);
 
     /* ── Navbar & Background Scroll Behavior ── */
     const [navHidden, setNavHidden] = useState(false);
@@ -610,6 +611,11 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
               .slice(0, 2)
               .toUpperCase()
         : "";
+    const userAvatar = user?.avatar_url ?? user?.avatar ?? null;
+
+    useEffect(() => {
+        setAvatarFailed(false);
+    }, [userAvatar]);
 
     /* ==============================================================
        RENDER
@@ -712,11 +718,13 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                     >
                                         {/* Avatar */}
                                         <div className="mt-1 mb-1 ml-1 w-14 flex-shrink-0 self-stretch overflow-hidden rounded-md">
-                                            {user?.avatar ? (
+                                            {userAvatar && !avatarFailed ? (
                                                 <img
-                                                    src={user.avatar}
+                                                    src={userAvatar}
                                                     alt={firstName}
                                                     className="h-full w-full object-cover"
+                                                    referrerPolicy="no-referrer"
+                                                    onError={() => setAvatarFailed(true)}
                                                 />
                                             ) : (
                                                 <div className="ubsc-avatar-bg h-full w-full flex items-center justify-center">
@@ -820,13 +828,13 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                                                     "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)",
                                                             }}
                                                         />
-                                                        {user?.avatar ? (
+                                                        {userAvatar && !avatarFailed ? (
                                                             <img
-                                                                src={
-                                                                    user.avatar
-                                                                }
+                                                                src={userAvatar}
                                                                 alt={firstName}
                                                                 className="relative z-10 w-full h-full rounded-lg object-cover"
+                                                                referrerPolicy="no-referrer"
+                                                                onError={() => setAvatarFailed(true)}
                                                             />
                                                         ) : (
                                                             <div className="relative z-10 w-full h-full rounded-lg flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
@@ -1237,11 +1245,13 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                                 className="group flex items-stretch overflow-hidden rounded-xl bg-white w-full"
                             >
                                 <div className="m-1.5 h-[clamp(3rem,10vw,5rem)] w-[clamp(3rem,10vw,5rem)] flex-shrink-0 overflow-hidden rounded-lg">
-                                    {user?.avatar ? (
+                                    {userAvatar && !avatarFailed ? (
                                         <img
-                                            src={user.avatar}
+                                            src={userAvatar}
                                             alt={firstName}
                                             className="h-full w-full object-cover"
+                                            referrerPolicy="no-referrer"
+                                            onError={() => setAvatarFailed(true)}
                                         />
                                     ) : (
                                         <div className="ubsc-avatar-bg h-full w-full flex items-center justify-center">
