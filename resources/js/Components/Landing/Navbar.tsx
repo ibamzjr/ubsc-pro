@@ -517,6 +517,97 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.90' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
                 background-size: 256px 256px;
             }
+
+            /* ════════════════════════════════════════════════════
+               LIQUID GLASS NAVBAR SURFACE
+               A real "kaca cair" feel — frosted refraction, a slow
+               flowing chroma core, a crisp specular top rim, and an
+               occasional light sweep gliding across the glass.
+            ════════════════════════════════════════════════════ */
+            .ubsc-liquid-glass {
+                overflow: hidden;
+                isolation: isolate;
+                /* readability base + top specular sheen */
+                background:
+                    linear-gradient(
+                        180deg,
+                        rgba(255,255,255,0.12) 0%,
+                        rgba(255,255,255,0.04) 20%,
+                        rgba(255,255,255,0.00) 52%
+                    ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(7, 10, 24, 0.55) 0%,
+                        rgba(7, 10, 24, 0.40) 42%,
+                        rgba(7, 10, 24, 0.12) 78%,
+                        rgba(0, 0, 0, 0.00) 100%
+                    );
+                backdrop-filter: blur(18px) saturate(185%) brightness(1.06);
+                -webkit-backdrop-filter: blur(18px) saturate(185%) brightness(1.06);
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+                    inset 0 10px 26px rgba(255, 255, 255, 0.05),
+                    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+                    inset 0 -14px 30px rgba(8, 12, 28, 0.28),
+                    0 8px 30px rgba(0, 0, 0, 0.20);
+            }
+            /* Flowing liquid chroma core — drifts slowly like fluid */
+            .ubsc-liquid-glass::before {
+                content: '';
+                position: absolute;
+                inset: -60%;
+                z-index: 0;
+                pointer-events: none;
+                background:
+                    radial-gradient(38% 60% at 24% 32%, rgba(120,176,255,0.20), transparent 70%),
+                    radial-gradient(34% 56% at 72% 58%, rgba(176,138,255,0.16), transparent 72%),
+                    radial-gradient(46% 72% at 52% 84%, rgba(120,224,255,0.14), transparent 75%);
+                filter: blur(26px) saturate(150%);
+                animation: ubsc-liquid-flow 16s ease-in-out infinite alternate;
+                will-change: transform;
+            }
+            /* Specular light sweep — a glint gliding across the glass */
+            .ubsc-liquid-glass::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: -35%;
+                width: 42%;
+                z-index: 0;
+                pointer-events: none;
+                mix-blend-mode: screen;
+                background: linear-gradient(
+                    105deg,
+                    transparent 0%,
+                    rgba(255,255,255,0.06) 42%,
+                    rgba(255,255,255,0.20) 50%,
+                    rgba(255,255,255,0.06) 58%,
+                    transparent 100%
+                );
+                filter: blur(7px);
+                transform: translateX(0) skewX(-12deg);
+                animation: ubsc-glass-sweep 11s cubic-bezier(0.45,0,0.2,1) infinite;
+                will-change: transform, opacity;
+            }
+            @keyframes ubsc-liquid-flow {
+                0%   { transform: translate3d(-6%, -5%, 0) rotate(0deg)  scale(1.06); }
+                50%  { transform: translate3d(6%,  4%,  0) rotate(8deg)  scale(1.16); }
+                100% { transform: translate3d(-3%, 6%,  0) rotate(-6deg) scale(1.10); }
+            }
+            @keyframes ubsc-glass-sweep {
+                0%   { transform: translateX(0)    skewX(-12deg); opacity: 0; }
+                12%  { opacity: 0.9; }
+                40%  { opacity: 0.45; }
+                70%  { transform: translateX(360%) skewX(-12deg); opacity: 0; }
+                100% { transform: translateX(360%) skewX(-12deg); opacity: 0; }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .ubsc-liquid-glass::before,
+                .ubsc-liquid-glass::after {
+                    animation: none;
+                }
+            }
         `;
         document.head.appendChild(style);
     }, []);
@@ -643,23 +734,8 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                 {/* Background overlay — stays inside wrapper, moves with navbar */}
                 <div
                     id="ubsc-nav-bg-overlay"
-                    className="absolute inset-0 pointer-events-none"
+                    className="ubsc-liquid-glass absolute inset-0 pointer-events-none"
                     style={{
-                        background: `
-                            linear-gradient(
-                                to bottom,
-                                rgba(5, 7, 16, 0.69) 0%,
-                                rgba(5, 7, 16, 0.49) 37%,
-                                rgba(5, 7, 16, 0.15) 70%,
-                                rgba(0, 0, 0, 0.00) 100%
-                            )
-                        `,
-                        backdropFilter: "blur(3.5px)",
-                        WebkitBackdropFilter: "blur(0px)",
-                        boxShadow: `
-                            inset 0 1px 0 rgba(255, 255, 255, 0.04),
-                            0 2px 16px rgba(0, 0, 0, 0.10)
-                        `,
                         opacity: showBg ? 1 : 0,
                         transition:
                             "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
