@@ -519,92 +519,100 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
             }
 
             /* ════════════════════════════════════════════════════
-               LIQUID GLASS NAVBAR SURFACE
-               A real "kaca cair" feel — frosted refraction, a slow
-               flowing chroma core, a crisp specular top rim, and an
-               occasional light sweep gliding across the glass.
+               LIQUID GLASS NAVBAR SURFACE — iOS 26 "kaca cair"
+               Real refraction: an SVG displacement map bends the
+               content behind the bar like a glass lens, topped with
+               a beveled edge catch-light and a soft specular drift.
+               Layered structure:
+                 .ubsc-lg-effect  → blurred + displaced backdrop
+                 .ubsc-lg-tint    → adaptive tint for text legibility
+                 .ubsc-lg-shine   → beveled rim / specular highlights
             ════════════════════════════════════════════════════ */
             .ubsc-liquid-glass {
+                position: absolute;
+                inset: 0;
                 overflow: hidden;
                 isolation: isolate;
-                /* readability base + top specular sheen */
+                box-shadow:
+                    0 8px 30px rgba(0, 0, 0, 0.22),
+                    0 1px 0 rgba(255, 255, 255, 0.10);
+            }
+            /* Refraction layer — blurred backdrop warped by the lens */
+            .ubsc-lg-effect {
+                position: absolute;
+                inset: 0;
+                z-index: 0;
+                backdrop-filter: blur(2px) saturate(180%) brightness(1.05);
+                -webkit-backdrop-filter: blur(2px) saturate(180%) brightness(1.05);
+                filter: url(#ubsc-glass-distortion);
+                -webkit-filter: url(#ubsc-glass-distortion);
+            }
+            /* Adaptive tint — keeps white nav text readable over any scene */
+            .ubsc-lg-tint {
+                position: absolute;
+                inset: 0;
+                z-index: 1;
                 background:
                     linear-gradient(
                         180deg,
-                        rgba(255,255,255,0.12) 0%,
-                        rgba(255,255,255,0.04) 20%,
-                        rgba(255,255,255,0.00) 52%
+                        rgba(255, 255, 255, 0.10) 0%,
+                        rgba(255, 255, 255, 0.02) 30%,
+                        rgba(255, 255, 255, 0.00) 60%
                     ),
                     linear-gradient(
                         to bottom,
-                        rgba(7, 10, 24, 0.55) 0%,
-                        rgba(7, 10, 24, 0.40) 42%,
-                        rgba(7, 10, 24, 0.12) 78%,
-                        rgba(0, 0, 0, 0.00) 100%
+                        rgba(8, 12, 28, 0.40) 0%,
+                        rgba(8, 12, 28, 0.22) 55%,
+                        rgba(8, 12, 28, 0.06) 86%,
+                        rgba(8, 12, 28, 0.00) 100%
                     );
-                backdrop-filter: blur(18px) saturate(185%) brightness(1.06);
-                -webkit-backdrop-filter: blur(18px) saturate(185%) brightness(1.06);
-                box-shadow:
-                    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-                    inset 0 10px 26px rgba(255, 255, 255, 0.05),
-                    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
-                    inset 0 -14px 30px rgba(8, 12, 28, 0.28),
-                    0 8px 30px rgba(0, 0, 0, 0.20);
             }
-            /* Flowing liquid chroma core — drifts slowly like fluid */
-            .ubsc-liquid-glass::before {
-                content: '';
+            /* Beveled rim + specular highlights — the iOS glass edge */
+            .ubsc-lg-shine {
                 position: absolute;
-                inset: -60%;
-                z-index: 0;
+                inset: 0;
+                z-index: 2;
                 pointer-events: none;
-                background:
-                    radial-gradient(38% 60% at 24% 32%, rgba(120,176,255,0.20), transparent 70%),
-                    radial-gradient(34% 56% at 72% 58%, rgba(176,138,255,0.16), transparent 72%),
-                    radial-gradient(46% 72% at 52% 84%, rgba(120,224,255,0.14), transparent 75%);
-                filter: blur(26px) saturate(150%);
-                animation: ubsc-liquid-flow 16s ease-in-out infinite alternate;
-                will-change: transform;
+                box-shadow:
+                    inset 0 1px 0 rgba(255, 255, 255, 0.60),
+                    inset 1px 0 0 rgba(255, 255, 255, 0.28),
+                    inset -1px 0 0 rgba(255, 255, 255, 0.20),
+                    inset 0 10px 22px rgba(255, 255, 255, 0.06),
+                    inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+                    inset 0 -16px 28px rgba(8, 12, 28, 0.20);
             }
-            /* Specular light sweep — a glint gliding across the glass */
-            .ubsc-liquid-glass::after {
+            /* Soft specular glint drifting across the lens */
+            .ubsc-lg-shine::after {
                 content: '';
                 position: absolute;
                 top: 0;
                 bottom: 0;
-                left: -35%;
-                width: 42%;
-                z-index: 0;
+                left: -40%;
+                width: 45%;
                 pointer-events: none;
                 mix-blend-mode: screen;
                 background: linear-gradient(
                     105deg,
                     transparent 0%,
-                    rgba(255,255,255,0.06) 42%,
-                    rgba(255,255,255,0.20) 50%,
-                    rgba(255,255,255,0.06) 58%,
+                    rgba(255,255,255,0.05) 40%,
+                    rgba(255,255,255,0.22) 50%,
+                    rgba(255,255,255,0.05) 60%,
                     transparent 100%
                 );
-                filter: blur(7px);
+                filter: blur(6px);
                 transform: translateX(0) skewX(-12deg);
-                animation: ubsc-glass-sweep 11s cubic-bezier(0.45,0,0.2,1) infinite;
+                animation: ubsc-glass-sweep 9s cubic-bezier(0.45,0,0.2,1) infinite;
                 will-change: transform, opacity;
-            }
-            @keyframes ubsc-liquid-flow {
-                0%   { transform: translate3d(-6%, -5%, 0) rotate(0deg)  scale(1.06); }
-                50%  { transform: translate3d(6%,  4%,  0) rotate(8deg)  scale(1.16); }
-                100% { transform: translate3d(-3%, 6%,  0) rotate(-6deg) scale(1.10); }
             }
             @keyframes ubsc-glass-sweep {
                 0%   { transform: translateX(0)    skewX(-12deg); opacity: 0; }
-                12%  { opacity: 0.9; }
-                40%  { opacity: 0.45; }
+                14%  { opacity: 0.85; }
+                45%  { opacity: 0.35; }
                 70%  { transform: translateX(360%) skewX(-12deg); opacity: 0; }
                 100% { transform: translateX(360%) skewX(-12deg); opacity: 0; }
             }
             @media (prefers-reduced-motion: reduce) {
-                .ubsc-liquid-glass::before,
-                .ubsc-liquid-glass::after {
+                .ubsc-lg-shine::after {
                     animation: none;
                 }
             }
@@ -715,6 +723,45 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
         <>
             <InfoBanner />
 
+            {/* SVG lens used by the liquid-glass refraction (.ubsc-lg-effect) */}
+            <svg
+                aria-hidden="true"
+                width="0"
+                height="0"
+                style={{ position: "absolute", width: 0, height: 0 }}
+            >
+                <defs>
+                    <filter
+                        id="ubsc-glass-distortion"
+                        x="-20%"
+                        y="-20%"
+                        width="140%"
+                        height="140%"
+                        filterUnits="objectBoundingBox"
+                    >
+                        <feTurbulence
+                            type="fractalNoise"
+                            baseFrequency="0.010 0.014"
+                            numOctaves={2}
+                            seed={42}
+                            result="noise"
+                        />
+                        <feGaussianBlur
+                            in="noise"
+                            stdDeviation="2.4"
+                            result="blurred"
+                        />
+                        <feDisplacementMap
+                            in="SourceGraphic"
+                            in2="blurred"
+                            scale={58}
+                            xChannelSelector="R"
+                            yChannelSelector="G"
+                        />
+                    </filter>
+                </defs>
+            </svg>
+
             {/* Wrapper: background + navbar move as ONE unit */}
             <div
                 id="ubsc-nav-wrapper"
@@ -740,7 +787,11 @@ export default function Navbar({ activeSection = "Home" }: NavbarProps) {
                         transition:
                             "opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
-                />
+                >
+                    <div className="ubsc-lg-effect" />
+                    <div className="ubsc-lg-tint" />
+                    <div className="ubsc-lg-shine" />
+                </div>
 
                 {/* Navbar content */}
                 <nav
