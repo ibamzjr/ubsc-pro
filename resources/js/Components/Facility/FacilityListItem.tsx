@@ -1,4 +1,5 @@
 import FacilityBadge from "@/Components/Landing/FacilityBadge";
+import ScrollTextReveal from "@/Components/Landing/ScrollTextReveal";
 
 export interface FacilityItem {
     id: string;
@@ -11,40 +12,66 @@ export interface FacilityItem {
 
 interface Props {
     item: FacilityItem;
+    revealDelay?: number;
 }
 
-export default function FacilityListItem({ item }: Props) {
+function formatCode(code: string): string {
+    return `/${code.replace(/^\/+|\/+$/g, "")}/`;
+}
+
+export default function FacilityListItem({ item, revealDelay = 0 }: Props) {
+    const formattedCode = formatCode(item.code);
+
     return (
-        <div className="flex flex-row items-start py-2 border-b border-white/10 w-full group cursor-pointer transition-colors hover:bg-white/5">
-            {/* Image — portrait on mobile (3:4), widescreen on desktop (16:9) */}
-            <div className="relative w-[82px] aspect-[3/4] xl:w-[280px] xl:aspect-[16/9] rounded-sm overflow-hidden flex-shrink-0">
+        <div className="group grid w-full cursor-pointer grid-cols-[86px_minmax(0,1fr)] border-b border-white/20 transition-colors hover:bg-white/[0.025] xl:grid-cols-[minmax(360px,496px)_minmax(0,1fr)_190px] xl:items-start xl:gap-x-[clamp(2rem,3.6vw,4.25rem)] xl:py-1">
+            <div className="relative aspect-[86/148] w-[86px] overflow-hidden rounded-[5px] xl:aspect-[496/220] xl:w-full">
                 <img
                     src={item.image}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
                 />
-            </div>
-
-            {/* Content column — min-h matches portrait image height (82px × 4/3 ≈ 110px) */}
-            <div className="flex-grow flex flex-col justify-between pt-3 xl:py-0 pl-4 min-h-[110px] xl:min-h-0">
-                {/* Top row: Title & Code */}
-                <div className="flex justify-between items-start w-full gap-2">
-                    <span className="font-bdo font-normal text-white tracking-tighter text-base xl:text-[clamp(2rem,3.5vw,2.5rem)] leading-tight">
-                        {item.title}
-                    </span>
-                    <span className="font-bdo font-medium text-xs xl:text-lg text-gray-400 whitespace-nowrap flex-shrink-0 pt-1">
-                        /{item.code}/
-                    </span>
-                </div>
-
-                {/* Bottom row: Badge */}
-                <div className="mt-auto pt-3">
+                <div className="absolute bottom-4 left-9 hidden xl:block">
                     <FacilityBadge
                         location={item.badgeLocation}
                         category={item.badgeType}
                     />
                 </div>
             </div>
+
+            <div className="flex min-w-0 flex-col justify-between py-4 pl-5 xl:min-h-[220px] xl:justify-start xl:p-0 xl:pt-10">
+                <div className="flex min-w-0 flex-col items-start gap-1.5 xl:block">
+                    <ScrollTextReveal
+                        delay={80 + revealDelay}
+                        className="-mb-[0.16em] pb-[0.16em] font-bdo text-[1.2rem] font-normal leading-[1.05] tracking-[-0.04em] text-white xl:text-[2rem]"
+                    >
+                        {item.title}
+                    </ScrollTextReveal>
+                    <span className="shrink-0 whitespace-nowrap xl:hidden">
+                        <ScrollTextReveal
+                            delay={130 + revealDelay}
+                            className="font-bdo text-[11px] font-normal leading-none text-white/55"
+                        >
+                            {formattedCode}
+                        </ScrollTextReveal>
+                    </span>
+                </div>
+
+                <div className="mt-auto xl:hidden">
+                    <FacilityBadge
+                        location={item.badgeLocation}
+                        category={item.badgeType}
+                    />
+                </div>
+            </div>
+
+            <span className="hidden pt-10 text-right xl:block">
+                <ScrollTextReveal
+                    delay={140 + revealDelay}
+                    className="font-bdo text-lg font-normal text-white/55"
+                >
+                    {formattedCode}
+                </ScrollTextReveal>
+            </span>
         </div>
     );
 }
