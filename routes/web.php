@@ -159,6 +159,9 @@ Route::middleware(['auth', 'verified', RedirectStaffFromPublic::class])->group(f
             'membership_plan' => $t->transactionable instanceof Membership
                 ? ($t->transactionable->plan?->name ?? 'Manual')
                 : null,
+            'membership_status' => $t->transactionable instanceof Membership
+                ? $t->transactionable->status
+                : null,
             'membership_period' => $t->transactionable instanceof Membership
                 ? [
                     'start_date' => $t->transactionable->start_date?->format('Y-m-d'),

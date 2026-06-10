@@ -27,6 +27,10 @@ type Props = PageProps<{ plans: MembershipPlanItem[] }>;
 type PlanFormData = {
     name: string;
     description: string;
+    public_badge: string;
+    savings_label: string;
+    cta_label: string;
+    card_image_url: string;
     price: string;
     duration_months: number;
     features: string[];
@@ -191,6 +195,10 @@ function PlanForm({ item, onClose }: { item: MembershipPlanItem | null; onClose:
     const { data, setData, post, patch, processing, errors } = useForm<PlanFormData>({
         name: item?.name ?? "",
         description: item?.description ?? "",
+        public_badge: item?.public_badge ?? "",
+        savings_label: item?.savings_label ?? "",
+        cta_label: item?.cta_label ?? "",
+        card_image_url: item?.card_image_url ?? "",
         price: item ? String(item.price) : "",
         duration_months: item?.duration_months ?? 1,
         features: item?.features ?? [],
@@ -280,6 +288,73 @@ function PlanForm({ item, onClose }: { item: MembershipPlanItem | null; onClose:
                 />
                 {errors.description && <p className="mt-1.5 font-bdo text-xs font-medium text-rose-500">{errors.description}</p>}
             </div>
+
+            <section className="rounded-[24px] border border-slate-200 bg-white p-4">
+                <div className="flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#F8B5A8]/70 bg-[#FFF7F5] text-[#E35336]">
+                        <Sparkles size={16} />
+                    </span>
+                    <div>
+                        <p className="font-clash text-base font-semibold leading-tight text-slate-950">
+                            Tampilan card publik
+                        </p>
+                        <p className="mt-1 font-bdo text-xs font-medium leading-relaxed text-slate-500">
+                            Field opsional untuk carousel membership di homepage. Jika kosong, website memakai fallback rapi dari data paket utama.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div>
+                        <label htmlFor="plan_public_badge" className={labelBase}>Badge kanan</label>
+                        <input
+                            id="plan_public_badge"
+                            type="text"
+                            value={data.public_badge}
+                            onChange={(event) => setData("public_badge", event.target.value)}
+                            placeholder="Contoh: Business & Team"
+                            className={inputBase}
+                        />
+                        {errors.public_badge && <p className="mt-1.5 font-bdo text-xs font-medium text-rose-500">{errors.public_badge}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="plan_savings_label" className={labelBase}>Label promo</label>
+                        <input
+                            id="plan_savings_label"
+                            type="text"
+                            value={data.savings_label}
+                            onChange={(event) => setData("savings_label", event.target.value)}
+                            placeholder="Contoh: Hemat 20%"
+                            className={inputBase}
+                        />
+                        {errors.savings_label && <p className="mt-1.5 font-bdo text-xs font-medium text-rose-500">{errors.savings_label}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="plan_cta_label" className={labelBase}>Label CTA</label>
+                        <input
+                            id="plan_cta_label"
+                            type="text"
+                            value={data.cta_label}
+                            onChange={(event) => setData("cta_label", event.target.value)}
+                            placeholder="Contoh: Membership"
+                            className={inputBase}
+                        />
+                        {errors.cta_label && <p className="mt-1.5 font-bdo text-xs font-medium text-rose-500">{errors.cta_label}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="plan_card_image_url" className={labelBase}>URL gambar card</label>
+                        <input
+                            id="plan_card_image_url"
+                            type="text"
+                            value={data.card_image_url}
+                            onChange={(event) => setData("card_image_url", event.target.value)}
+                            placeholder="/assets/images/ub-sport-center-gym-footer.avif"
+                            className={inputBase}
+                        />
+                        {errors.card_image_url && <p className="mt-1.5 font-bdo text-xs font-medium text-rose-500">{errors.card_image_url}</p>}
+                    </div>
+                </div>
+            </section>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>

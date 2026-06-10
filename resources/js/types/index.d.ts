@@ -246,6 +246,10 @@ export interface MembershipPlanItem {
     id: number;
     name: string;
     description: string | null;
+    public_badge?: string | null;
+    savings_label?: string | null;
+    cta_label?: string | null;
+    card_image_url?: string | null;
     price: number;
     duration_months: number;
     features: string[];

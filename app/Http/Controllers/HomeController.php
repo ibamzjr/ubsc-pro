@@ -24,14 +24,25 @@ class HomeController extends Controller
     {
         return Inertia::render('HomePage', [
             'membershipPlans' => MembershipPlan::where('is_active', true)
+                ->withCount([
+                    'memberships as active_members_count' => fn ($q) => $q->where('status', 'active'),
+                ])
                 ->orderBy('sort_order')
                 ->get()
                 ->map(fn ($p) => [
                     'id'              => $p->id,
                     'name'            => $p->name,
+                    'description'     => $p->description,
+                    'public_badge'    => $p->public_badge,
+                    'savings_label'   => $p->savings_label,
+                    'cta_label'       => $p->cta_label,
+                    'card_image_url'  => $p->card_image_url,
                     'price'           => $p->price,
                     'duration_months' => $p->duration_months,
                     'features'        => $p->features ?? [],
+                    'is_active'       => $p->is_active,
+                    'sort_order'      => $p->sort_order,
+                    'active_members_count' => $p->active_members_count,
                 ]),
             'promos'   => PromoCarouselResource::collection(
                 PromoCarousel::active()->ordered()->get()

@@ -10,6 +10,10 @@ class MembershipPlan extends Model
     protected $fillable = [
         'name',
         'description',
+        'public_badge',
+        'savings_label',
+        'cta_label',
+        'card_image_url',
         'price',
         'duration_months',
         'features',
