@@ -2,209 +2,193 @@ import GymTrafficBadge from "@/Components/Landing/GymTrafficBadge";
 import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import HeroContent from "@/Components/Landing/HeroContent";
 import HeroTitle from "@/Components/Landing/HeroTitle";
-import {
-    motion,
-    AnimatePresence,
-    useMotionValue,
-    useAnimationFrame,
-} from "framer-motion";
 import { Head } from "@inertiajs/react";
-import { useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
+
+import EntranceLoader from "@/Components/Landing/EntranceLoader";
+
+const revealStyle = (
+    delay: string,
+    x = "0px",
+    y = "24px",
+): CSSProperties =>
+    ({
+        "--hero-delay": delay,
+        "--hero-x": x,
+        "--hero-y": y,
+    }) as CSSProperties;
 
 export default function Hero() {
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
-    const rotate = useMotionValue(0);
-    useAnimationFrame((t, delta) => {
-        const speed = isHovered ? -0.012 : -0.045;
-        rotate.set(rotate.get() + delta * speed);
-    });
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const [isIntroComplete, setIsIntroComplete] = useState(false);
+    const [isSettled, setIsSettled] = useState(false);
+    const [isConstrainedDevice, setIsConstrainedDevice] = useState(false);
+    const isReady = isImageLoaded && isIntroComplete;
+
+    const heroClassName = useMemo(
+        () =>
+            [
+                "ubsc-hero relative flex min-h-screen flex-col overflow-hidden bg-[#040812]",
+                isReady ? "ubsc-hero-ready" : "",
+                isSettled ? "ubsc-hero-settled" : "ubsc-hero-prep",
+                isConstrainedDevice ? "ubsc-hero-lite" : "",
+            ]
+                .filter(Boolean)
+                .join(" "),
+        [isConstrainedDevice, isReady, isSettled],
+    );
+
+    useEffect(() => {
+        const connection = (
+            navigator as Navigator & {
+                connection?: { saveData?: boolean; effectiveType?: string };
+            }
+        ).connection;
+        const deviceMemory = (navigator as Navigator & { deviceMemory?: number })
+            .deviceMemory;
+        const cores = navigator.hardwareConcurrency;
+
+        setIsConstrainedDevice(
+            Boolean(
+                connection?.saveData ||
+                    connection?.effectiveType === "2g" ||
+                    connection?.effectiveType === "slow-2g" ||
+                    (deviceMemory && deviceMemory <= 4) ||
+                    (cores && cores <= 4),
+            ),
+        );
+    }, []);
+
+    useEffect(() => {
+        if (!isReady) return;
+
+        const timer = window.setTimeout(() => setIsSettled(true), 2100);
+        return () => window.clearTimeout(timer);
+    }, [isReady]);
+
     return (
         <>
             <Head>
                 <link rel="preload" as="image" href="/assets/hero/Hero.avif" />
+                <link rel="preload" as="image" href="/assets/images/ub-sport-enterence.png" />
             </Head>
+            <EntranceLoader 
+                onExitStart={() => setIsIntroComplete(true)} 
+                onComplete={() => {}} 
+            />
             <section
                 id="home"
-                className="relative flex min-h-screen flex-col overflow-hidden bg-slate-500"
+                className={heroClassName}
             >
-                <AnimatePresence>
-                    {!isLoaded && (
-                        <motion.div
-                            className="fixed inset-0 z-50 flex items-center justify-center"
-                            style={{
-                                background:
-                                    "linear-gradient(180deg, #000000 0%, #173859 100%)",
-                            }}
-                            initial={{ opacity: 1 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0, transition: { duration: 0.5 } }}
-                        >
-                            <img
-                                src="/ubsc.svg"
-                                alt="UBSC"
-                                className="h-24 w-24 animate-pulse"
-                            />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-                <motion.img
-                    src="/assets/hero/Hero.avif"
-                    alt="UBSC Hero Background"
-                    className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center select-none"
-                    initial={{ opacity: 0, scale: 1.15 }}
-                    animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-                    onLoad={() => setIsLoaded(true)}
-                    draggable={false}
-                    loading="eager"
-                    style={{ transitionProperty: "opacity, transform" }}
-                />
 
-                <motion.div
-                    className="absolute inset-0 z-0 bg-slate-500"
-                    animate={{ opacity: isLoaded ? 0 : 1 }}
-                    transition={{ duration: 0.5, delay: isLoaded ? 0.1 : 0 }}
-                />
+                    <img
+                        src="/assets/hero/Hero.avif"
+                        alt="UBSC Hero Background"
+                        className="ubsc-hero-bg pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover object-center"
+                        onLoad={() => setIsImageLoaded(true)}
+                        onError={() => setIsImageLoaded(true)}
+                        draggable={false}
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                    />
 
-                <div className="relative z-10 hidden xl:flex flex-col items-stretch min-h-screen max-h-[100vh] overflow-y-auto">
-                    <div className="flex flex-1 items-end justify-between xl:pb-32 xl:px-16 xl:pt-32 pb-12 px-6 pt-12 min-h-0">
-                        <motion.div
-                            initial={{ opacity: 0, x: -32 }}
-                            animate={isLoaded ? { opacity: 1, x: 0 } : {}}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.7,
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
-                        >
-                            <GymTrafficBadge />
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 32 }}
-                            animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.9,
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
-                        >
-                            <HeroContent />
-                        </motion.div>
+                    <div className="ubsc-hero-veil absolute inset-0 z-[1]" />
+                    <div className="ubsc-hero-depth absolute inset-0 z-[2]" />
+                    <div className="ubsc-hero-sweep absolute inset-0 z-[3]" />
+                    <div className="ubsc-hero-frame pointer-events-none absolute inset-0 z-[4]">
+                        <span className="ubsc-hero-frame-line ubsc-hero-frame-line--v left-[24%]" />
+                        <span className="ubsc-hero-frame-line ubsc-hero-frame-line--v right-[17%]" />
+                        <span className="ubsc-hero-frame-line ubsc-hero-frame-line--h bottom-[25%]" />
                     </div>
 
-                    <div className="flex flex-col justify-end px-16 min-h-0">
-                        <motion.div
-                            initial={{ opacity: 0, y: 32 }}
-                            animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-                            transition={{
-                                duration: 0.8,
-                                delay: 1.1,
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
-                        >
-                            <HeroTitle />
-                        </motion.div>
-                    </div>
-
-                    <motion.div
-                        className="absolute bottom-6 right-16"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
-                        transition={{
-                            duration: 0.8,
-                            delay: 1.3,
-                            ease: [0.4, 0, 0.2, 1],
-                        }}
-                    >
-                        <div
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
-                            onMouseDown={() => setIsHovered(true)}
-                            onMouseUp={() => setIsHovered(false)}
-                            className="flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white shadow-xl"
-                        >
-                            <motion.img
-                                src="/BMU.svg"
-                                alt="Brawijaya Multi Usaha"
-                                className="h-full w-full object-contain"
-                                style={{ rotate }}
-                            />
+                    <div className="relative z-10 hidden min-h-screen max-h-[100vh] flex-col items-stretch overflow-y-auto xl:flex">
+                        <div className="flex min-h-0 flex-1 items-end justify-between px-6 pb-12 pt-12 xl:px-16 xl:pb-32 xl:pt-32">
+                            <div
+                                className="ubsc-hero-reveal"
+                                style={revealStyle("520ms", "-28px", "0px")}
+                            >
+                                <GymTrafficBadge />
+                            </div>
+                            <div
+                                className="ubsc-hero-reveal ubsc-hero-reveal--copy"
+                                style={revealStyle("650ms", "0px", "28px")}
+                            >
+                                <HeroContent />
+                            </div>
                         </div>
-                    </motion.div>
-                </div>
 
-                <div className="relative z-10 flex min-h-screen flex-col px-8 pt-28  xl:hidden">
-                    <motion.div
-                        className="flex-shrink-0"
-                        initial={{ opacity: 0, x: -32 }}
-                        animate={isLoaded ? { opacity: 1, x: 0 } : {}}
-                        transition={{
-                            duration: 0.8,
-                            delay: 0.7,
-                            ease: [0.4, 0, 0.2, 1],
-                        }}
-                    >
-                        <GymTrafficBadge />
-                    </motion.div>
+                        <div className="flex min-h-0 flex-col justify-end px-16">
+                            <div
+                                className="ubsc-hero-reveal ubsc-hero-reveal--title"
+                                style={revealStyle("760ms", "0px", "26px")}
+                            >
+                                <HeroTitle />
+                            </div>
+                        </div>
 
-                    <motion.div
-                        className="mt-8 flex-shrink-0"
-                        initial={{ opacity: 0, y: 32 }}
-                        animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-                        transition={{
-                            duration: 0.8,
-                            delay: 0.9,
-                            ease: [0.4, 0, 0.2, 1],
-                        }}
-                    >
-                        <HeroContent />
-                    </motion.div>
-
-                    <div className="flex flex-1 flex-col justify-end pb-5">
-                        <motion.div
-                            className="mb-6"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={isLoaded ? { opacity: 1, scale: 1 } : {}}
-                            transition={{
-                                duration: 0.8,
-                                delay: 1.3,
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
+                        <div
+                            className="ubsc-hero-reveal absolute bottom-6 right-16"
+                            style={revealStyle("980ms", "0px", "20px")}
                         >
-                            <div className="flex h-20 w-20 mt-3 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
-                                <motion.img
+                            <div className="ubsc-hero-orbit flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
+                                <img
                                     src="/BMU.svg"
                                     alt="Brawijaya Multi Usaha"
                                     className="h-full w-full object-contain"
-                                    animate={{ rotate: -360 }}
-                                    transition={{
-                                        duration: 8,
-                                        repeat: Infinity,
-                                        ease: "linear",
-                                    }}
                                 />
                             </div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 32 }}
-                            animate={isLoaded ? { opacity: 1, y: 0 } : {}}
-                            transition={{
-                                duration: 0.8,
-                                delay: 1.1,
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
-                        >
-                            <HeroTitle />
-                        </motion.div>
+                        </div>
                     </div>
-                </div>
 
-                <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10" />
+                    <div className="relative z-10 flex min-h-screen flex-col px-8 pt-28 xl:hidden">
+                        <div
+                            className="ubsc-hero-reveal flex-shrink-0"
+                            style={revealStyle("520ms", "-24px", "0px")}
+                        >
+                            <GymTrafficBadge />
+                        </div>
+
+                        <div
+                            className="ubsc-hero-reveal ubsc-hero-reveal--copy mt-8 flex-shrink-0"
+                            style={revealStyle("650ms", "0px", "26px")}
+                        >
+                            <HeroContent />
+                        </div>
+
+                        <div className="flex flex-1 flex-col justify-end pb-5">
+                            <div
+                                className="ubsc-hero-reveal mb-6"
+                                style={revealStyle("980ms", "0px", "18px")}
+                            >
+                                <div className="ubsc-hero-orbit mt-3 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white shadow-xl">
+                                    <img
+                                        src="/BMU.svg"
+                                        alt="Brawijaya Multi Usaha"
+                                        className="h-full w-full object-contain"
+                                    />
+                                </div>
+                            </div>
+
+                            <div
+                                className="ubsc-hero-reveal ubsc-hero-reveal--title"
+                                style={revealStyle("760ms", "0px", "24px")}
+                            >
+                                <HeroTitle />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10" />
             </section>
 
-            <HeroBottomBar />
+            <div
+                className={`ubsc-hero-bottom-shell ${
+                    isReady ? "ubsc-hero-bottom-shell--ready" : ""
+                }`}
+            >
+                <HeroBottomBar showVideo />
+            </div>
         </>
     );
 }

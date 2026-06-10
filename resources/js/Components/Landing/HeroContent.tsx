@@ -4,16 +4,31 @@ const Arrow: React.FC<{ size?: number }> = ({ size = 56 }) => (
     <svg
         width={size}
         height={size}
-        viewBox="0 0 64 64"
+        viewBox="0 0 72 72"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
-            d="M12 32H52M52 32L34 14M52 32L34 50"
+            d="M24 36H53"
             stroke="white"
-            strokeWidth="5"
+            strokeWidth="3.8"
             strokeLinecap="round"
             strokeLinejoin="round"
+        />
+        <path
+            d="M42 22L56 36L42 50"
+            stroke="white"
+            strokeWidth="3.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M29 32.8C32.6 34.9 36 35.8 40 36"
+            stroke="white"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.48"
         />
     </svg>
 );
@@ -22,8 +37,8 @@ export default function HeroContent() {
     const [hovered, setHovered] = useState(false);
 
     return (
-        <div className="flex max-w-sm flex-col items-end gap-0 lg:max-w-xl lg:pt-14 lg:mt-1">
-            <div className="flex h-20 w-20 items-center justify-center lg:h-24 lg:w-20 self-end mt-6 lg:mt-0">
+        <div className="ubsc-hero-copy flex max-w-sm flex-col items-end gap-0 lg:mt-1 lg:max-w-xl lg:pt-14">
+            <div className="ubsc-hero-star mt-6 flex h-20 w-20 items-center justify-center self-end lg:mt-0 lg:h-24 lg:w-20">
                 <img
                     src="/assets/hero/star.png"
                     alt="Decorative mesh"
@@ -32,25 +47,31 @@ export default function HeroContent() {
             </div>
 
             <div className="flex w-full flex-col gap-1">
-                <p className="font-bdo leading-relaxed text-white/70 text-[clamp(0.875rem,1.25vw,24px)] pl-6 md:pl-10 lg:pl-[110px]">
-                    Selamat Datang di UB Sport Center,
-                </p>
-
-                <p className="font-bdo leading-relaxed text-white/70 text-[clamp(0.875rem,1.25vw,24px)] pl-3 md:pl-6 lg:pl-[60px]">
-                    pusat fasilitas{" "}
-                    <span className="font-medium text-white">
-                        olahraga modern
+                <p className="ubsc-hero-copy-line pl-6 font-bdo text-[clamp(0.875rem,1.25vw,24px)] leading-relaxed text-white/70 md:pl-10 lg:pl-[110px]">
+                    <span className="ubsc-hero-copy-text">
+                        Selamat Datang di UB Sport Center,
                     </span>
                 </p>
 
-                <p className="font-bdo font-medium leading-relaxed text-white text-[clamp(0.875rem,1.25vw,24px)] pl-1 md:pl-2 lg:pl-[20px]">
-                    untuk gaya hidup aktif Anda.
+                <p className="ubsc-hero-copy-line pl-3 font-bdo text-[clamp(0.875rem,1.25vw,24px)] leading-relaxed text-white/70 md:pl-6 lg:pl-[60px]">
+                    <span className="ubsc-hero-copy-text">
+                        pusat fasilitas{" "}
+                        <span className="font-medium text-white">
+                            olahraga modern
+                        </span>
+                    </span>
+                </p>
+
+                <p className="ubsc-hero-copy-line pl-1 font-bdo text-[clamp(0.875rem,1.25vw,24px)] font-medium leading-relaxed text-white md:pl-2 lg:pl-[20px]">
+                    <span className="ubsc-hero-copy-text">
+                        untuk gaya hidup aktif Anda.
+                    </span>
                 </p>
             </div>
 
             <a
                 href="/coming-soon"
-                className="relative lg:w-full cursor-pointer select-none overflow-hidden border-b  border-white/35 py-1"
+                className="ubsc-hero-cta relative cursor-pointer select-none overflow-hidden border-b border-white/35 py-1 lg:w-full"
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
             >
@@ -72,7 +93,7 @@ export default function HeroContent() {
                 />
 
                 <span className="pointer-events-none relative z-10 flex w-full items-center mr-36 lg:mr-0 justify-between">
-                    <span className="font-bdo text-[clamp(0.875rem,1.25vw,24px)] font-medium leading-tight tracking-tight text-white">
+                    <span className="font-bdo text-[clamp(0.875rem,1.25vw,24px)] font-medium leading-tight text-white">
                         Booking sekarang juga!
                     </span>
 

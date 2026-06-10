@@ -86,6 +86,7 @@ function FlashToast() {
 
 export default function HomePage() {
     const {
+        membershipPlans,
         promos,
         sponsors,
         news,
@@ -130,29 +131,39 @@ export default function HomePage() {
             </Head>
             <main className="relative">
                 <Navbar activeSection="Home" />
-                <Hero />
-                <FadeIn>
-                    <SectionTwo promos={promos} sponsors={sponsors} />
-                </FadeIn>
-                <FadeIn>
-                    <SectionThree />
-                </FadeIn>
-                <SectionFour facilities={facilities} />
-                <FadeIn>
-                    <SectionFive news={news} reels={reels} />
-                </FadeIn>
-                <FadeIn>
-                    <SectionSix facilities={facilities} />
-                </FadeIn>
-                <FadeIn>
-                    <SectionSeven
-                        testimonials={testimonials}
-                        reviews={reviews}
-                    />
-                </FadeIn>
-                <FadeIn>
-                    <SectionEight />
-                </FadeIn>
+                <div className="home-hero-section-reveal">
+                    <Hero />
+                    <div className="home-section-two-curtain">
+                        <SectionTwo
+                            membershipPlans={membershipPlans}
+                            promos={promos}
+                            sponsors={sponsors}
+                        />
+                    </div>
+                </div>
+                <div className="home-post-section-two-flow">
+                    <FadeIn lightweight>
+                        <SectionThree />
+                    </FadeIn>
+                    <SectionFour facilities={facilities} />
+                    <div className="home-post-section-four-flow">
+                        <FadeIn>
+                            <SectionFive news={news} reels={reels} />
+                        </FadeIn>
+                        <FadeIn>
+                            <SectionSix facilities={facilities} />
+                        </FadeIn>
+                        <FadeIn>
+                            <SectionSeven
+                                testimonials={testimonials}
+                                reviews={reviews}
+                            />
+                        </FadeIn>
+                        <FadeIn>
+                            <SectionEight />
+                        </FadeIn>
+                    </div>
+                </div>
             </main>
             <Footer />
             <FlashToast />

@@ -19,11 +19,13 @@ const ArrowIcon: React.FC = () => (
 interface ReservasiButtonProps {
     label?: string;
     href?: string;
+    size?: "default" | "compact";
 }
 
 export default function ReservasiButton({
     label = "Mulai Reservasi",
     href = "/coming-soon",
+    size = "default",
 }: ReservasiButtonProps) {
     return (
         <>
@@ -138,6 +140,45 @@ export default function ReservasiButton({
                         font-size: clamp(0.875rem, 0.94vw, 18px);
                     }
                     .reservasi-btn svg { width: 21px; height: 21px; }
+                    .reservasi-btn--compact {
+                        height: 51px;
+                        padding: 5px 26px 5px 5px;
+                    }
+                    .reservasi-btn--compact .reservasi-btn-fill {
+                        left: 5px; top: 5px; bottom: 5px; width: 42px;
+                    }
+                    .reservasi-btn--compact:hover .reservasi-btn-fill {
+                        width: calc(100% - 10px);
+                    }
+                    .reservasi-btn--compact .reservasi-icon-wrap {
+                        width: 42px;
+                        height: 42px;
+                    }
+                    .reservasi-btn--compact .reservasi-arrow-track {
+                        width: 84px;
+                        transform: translateX(-42px);
+                    }
+                    .reservasi-btn--compact:hover .reservasi-arrow-track {
+                        transform: translateX(0px);
+                    }
+                    .reservasi-btn--compact .reservasi-arrow-slot {
+                        width: 42px;
+                    }
+                    .reservasi-btn--compact .reservasi-text-wrap {
+                        height: 42px;
+                        padding-left: 13px;
+                    }
+                    .reservasi-btn--compact:hover .reservasi-text-track {
+                        transform: translateY(-42px);
+                    }
+                    .reservasi-btn--compact .reservasi-text-slot {
+                        height: 42px;
+                        font-size: clamp(0.75rem, 0.75vw, 14px);
+                    }
+                    .reservasi-btn--compact svg {
+                        width: 17px;
+                        height: 17px;
+                    }
                 }
                 .reservasi-text-1 { color: #111111; }
                 .reservasi-text-2 { color: #FFFFFF; }
@@ -149,7 +190,9 @@ export default function ReservasiButton({
                 rel={
                     href.startsWith("http") ? "noopener noreferrer" : undefined
                 }
-                className="reservasi-btn"
+                className={`reservasi-btn ${
+                    size === "compact" ? "reservasi-btn--compact" : ""
+                }`}
                 aria-label={label}
             >
                 <div className="reservasi-btn-fill" />
