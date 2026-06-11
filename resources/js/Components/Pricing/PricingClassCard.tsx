@@ -21,22 +21,25 @@ interface Props {
 }
 
 export default function PricingClassCard({ item }: Props) {
+    const title = item.title.replace(/\.$/, "");
+    const classCode = item.classCode.replace(/^\/+|\/+$/g, "");
+
     return (
-        <div className="flex flex-col flex-shrink-0 w-[85vw] xl:w-[580px] bg-black border border-white/10 overflow-hidden rounded-2xl">
-            <div className="relative h-[134px] xl:h-[250px]">
+        <div className="flex w-[85vw] flex-shrink-0 flex-col overflow-hidden rounded-none border border-white/40 bg-black xl:w-[clamp(29.5rem,30.4vw,36.6rem)]">
+            <div className="relative h-[134px] xl:h-[14.05rem]">
                 <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-[134px] xl:h-full object-cover"
+                    className="h-[134px] w-full object-cover xl:h-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute inset-0 flex flex-col justify-between p-3 xl:p-6">
+                <div className="absolute inset-0 bg-black/30" />
+                <div className="absolute inset-0 flex flex-col justify-between px-7 py-[2.05rem]">
                     <div className="flex items-start justify-between gap-2">
-                        <p className="font-bdo font-medium text-[clamp(1.25rem,1.2rem+2.5vw,2.5rem)] text-white leading-snug">
-                            {item.title}
+                        <p className="font-bdo text-[clamp(2rem,2.12vw,2.6rem)] font-semibold leading-none tracking-[-0.07em] text-white">
+                            {title}
                         </p>
-                        <span className="font-bdo font-normal text-[0.65rem] xl:text-xs text-white/40 flex-shrink-0 mt-1">
-                            {item.classCode}
+                        <span className="mt-1 flex-shrink-0 font-bdo text-[0.875rem] font-normal tracking-[-0.02em] text-white/80">
+                            /{classCode}/
                         </span>
                     </div>
                     <div>
@@ -49,26 +52,26 @@ export default function PricingClassCard({ item }: Props) {
                 </div>
             </div>
 
-            <div className="p-5 xl:p-6">
-                <p className="font-bdo font-medium text-[0.75rem] text-white/40 uppercase tracking-widest mb-4">
+            <div className="min-h-[12.85rem] px-6 pb-9 pt-[1.75rem] xl:px-6">
+                <p className="mb-[1.15rem] font-bdo text-[1.55rem] font-medium leading-none tracking-[-0.04em] text-white/70">
                     Daftar Harga
                 </p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-x-[4.2rem]">
+                    <div className="flex flex-col gap-[0.83rem]">
                         {item.daftarHarga.left.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
+                                className="whitespace-pre-line font-bdo text-[1rem] font-medium leading-none tracking-[-0.025em] text-white"
                             >
                                 + {entry.label}
                             </span>
                         ))}
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-[0.83rem]">
                         {item.daftarHarga.right.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
+                                className="whitespace-pre-line font-bdo text-[1rem] font-medium leading-none tracking-[-0.025em] text-white"
                             >
                                 + {entry.label}
                             </span>
@@ -77,26 +80,26 @@ export default function PricingClassCard({ item }: Props) {
                 </div>
             </div>
 
-            <div className="p-5 xl:p-6 border-t border-white/10">
-                <p className="font-bdo font-medium text-[0.75rem] text-white/40 uppercase tracking-widest mb-4">
+            <div className="min-h-[13.2rem] border-t border-white/20 px-6 pb-9 pt-[1.95rem] xl:px-6">
+                <p className="mb-[1.35rem] font-bdo text-[1.55rem] font-medium leading-none tracking-[-0.04em] text-white/70">
                     Persewaan
                 </p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-x-[4.2rem]">
+                    <div className="flex flex-col gap-[0.83rem]">
                         {item.persewaan.left.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
+                                className="whitespace-pre-line font-bdo text-[1rem] font-medium leading-[1.2] tracking-[-0.025em] text-white"
                             >
                                 + {entry.label}
                             </span>
                         ))}
                     </div>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-[0.83rem]">
                         {item.persewaan.right.map((entry, i) => (
                             <span
                                 key={i}
-                                className="font-bdo font-normal text-[clamp(0.875rem,0.83vw,16px)] text-white/80"
+                                className="whitespace-pre-line font-bdo text-[1rem] font-medium leading-[1.2] tracking-[-0.025em] text-white"
                             >
                                 + {entry.label}
                             </span>

@@ -1,6 +1,7 @@
 import TopBg from "@/../assets/hero/Top.png";
 import RightBg from "@/../assets/images/bg-heropricing.avif";
 import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
+import ScrollTextReveal from "@/Components/Landing/ScrollTextReveal";
 
 export default function PricingHero() {
     return (
@@ -52,9 +53,13 @@ export default function PricingHero() {
                             aria-hidden
                             className="mb-3 h-12 w-12 object-contain opacity-90"
                         />
-                        <h1 className="font-bdo font-medium text-[clamp(2.5rem,8vw,4rem)] leading-tight text-white ">
+                        <ScrollTextReveal
+                            as="h1"
+                            split="words"
+                            className="font-bdo font-medium text-[clamp(2.5rem,8vw,4rem)] leading-tight text-white "
+                        >
                             Jadwal &amp; Paket Harga
-                        </h1>
+                        </ScrollTextReveal>
                     </div>
 
                     {/* Bottom 25% — photo block — description centered */}
@@ -89,14 +94,18 @@ export default function PricingHero() {
                                     className="h-20 w-20 object-contain opacity-90"
                                 />
                             </div>
-                            <h1 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white">
+                            <ScrollTextReveal
+                                as="h1"
+                                split="words"
+                                className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.017em] text-white"
+                            >
                                 Jadwal &amp; Paket Harga
-                            </h1>
+                            </ScrollTextReveal>
                         </div>
 
                         {/* Right 2/3: description */}
                         <div className="flex flex-1 items-center xl:basis-2/3">
-                            <p className="relative z-10 ml-auto w-full text-right font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 xl:max-w-md xl:pr-16">
+                            <p className="relative z-10 ml-auto w-full text-left font-bdo font-light text-[clamp(0.9rem,1.5vw,1.3rem)] leading-relaxed text-white/80 xl:max-w-md xl:pr-16">
                                 Pilih jadwal dan paket terbaik Anda, lalu{" "}
                                 <span className="font-medium text-white">
                                     mulai perjalanan menuju tubuh yang lebih

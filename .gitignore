@@ -23,6 +23,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 *.md
-*.json
 *.html
-tools/
+*.json
+*.ffpreset
+*.exe

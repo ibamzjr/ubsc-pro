@@ -1,5 +1,6 @@
 import useEmblaCarousel from "embla-carousel-react";
 import SectionDivider from "@/Components/Landing/SectionDivider";
+import ScrollTextReveal from "@/Components/Landing/ScrollTextReveal";
 import AnimatedBookingLink from "@/Components/News/AnimatedBookingLink";
 import PricingClassCard, { ClassPricing } from "./PricingClassCard";
 
@@ -18,37 +19,71 @@ interface BackendFacility {
 
 const ArrowLeft = () => (
     <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
+        width="10"
+        height="12"
+        viewBox="0 0 12 20"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M19 12H5M5 12L12 19M5 12L12 5" />
+        <path
+            d="M10 2L2 10L10 18"
+            stroke="currentColor"
+            strokeWidth="4.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
     </svg>
 );
 
 const ArrowRight = () => (
     <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
+        width="10"
+        height="12"
+        viewBox="0 0 12 20"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M5 12H19M19 12L12 5M19 12L12 19" />
+        <path
+            d="M2 2L10 10L2 18"
+            stroke="currentColor"
+            strokeWidth="4.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
     </svg>
 );
 
 interface Props {
     facilities?: BackendFacility[];
 }
+
+const SECTION_CONTAINER_CLASS =
+    "mx-auto max-w-[1920px] px-[clamp(1.5rem,4.6vw,5.5rem)]";
+const DARK_HEADING_CLASS =
+    "font-bdo text-[clamp(1.5rem,2.82vw,3.65rem)] font-medium leading-[1.08] tracking-[-0.04em] text-white";
+const SECTION_DIVIDER_WRAP_CLASS =
+    "mx-auto px-[clamp(1.5rem,2.7vw,5.5rem)]  pb-16 pt-12 sm:pb-20 md:pt-14 lg:pt-16 xl:pb-16 xl:pt-14";
+
+const DEFAULT_DAFTAR_HARGA = {
+    left: [
+        { label: "Beginner" },
+        { label: "Warga UB 25K" },
+        { label: "Umum 23K" },
+    ],
+    right: [{ label: "Intermediate" }, { label: "Umum 35K" }],
+};
+
+const DEFAULT_PERSEWAAN = {
+    left: [
+        { label: "Sewa Ruang Yoga" },
+        { label: "Warga UB 100K" },
+        { label: "Umum 150K" },
+    ],
+    right: [
+        { label: "Sewa Event Ruang" },
+        { label: "1650K/ Hari\n(Matras Kami Fasilitasi)" },
+    ],
+};
 
 export default function PricingClassSection({ facilities = [] }: Props) {
     // Map real facilities to ClassPricing format, filter to fitness classes only
@@ -62,19 +97,9 @@ export default function PricingClassSection({ facilities = [] }: Props) {
             description: `Ikuti kelas ${f.name} yang dipandu instruktur berpengalaman di UB Sport Center.`,
             image: f.image || "/assets/images/comingsoon.avif",
             badgeLocation: f.location ?? "Veteran",
-            badgeType: f.venue_type ?? "Indoor Facility",
-            daftarHarga: (f.display_metadata as any)?.daftarHarga || {
-                left: [
-                    { label: "Reguler" },
-                    { label: "Warga UB 25K" },
-                    { label: "Umum 35K" },
-                ],
-                right: [{ label: "Paket" }, { label: "Diskon Tersedia" }],
-            },
-            persewaan: (f.display_metadata as any)?.persewaan || {
-                left: [{ label: "Sewa Ruang" }, { label: "Hubungi Kami" }],
-                right: [{ label: "Event" }, { label: "Custom Quote" }],
-            },
+            badgeType: "Kebugaran",
+            daftarHarga: DEFAULT_DAFTAR_HARGA,
+            persewaan: DEFAULT_PERSEWAAN,
         }));
 
     // Use real data if available, fallback to DUMMY data
@@ -85,8 +110,8 @@ export default function PricingClassSection({ facilities = [] }: Props) {
     });
 
     return (
-        <section className="bg-[#242424] overflow-x-clip" id="pricing-classes">
-            <div className="mx-auto max-w px-6 pt-8 sm:px-10 sm:pt-12 lg:px-16 xl:px-24 xl:pt-10">
+        <section className="overflow-x-clip bg-[#242424]" id="pricing-classes">
+            <div className={SECTION_DIVIDER_WRAP_CLASS}>
                 <SectionDivider
                     number="03"
                     title="Kelas"
@@ -94,38 +119,44 @@ export default function PricingClassSection({ facilities = [] }: Props) {
                     theme="dark"
                 />
             </div>
-            <div className="max-w-8xl mx-auto px-4 sm:px-8 xl:px-16 pb-8 lg:pb-24 mt-10 xl:mt-0">
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-12 mb-12 xl:mb-16">
-                    <div className="xl:col-span-8 flex flex-col gap-6">
-                        <div className="flex items-center gap-3">
-                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-accent-red flex-shrink-0" />
-                            <span className="font-bdo font-normal text-base xl:text-[clamp(1rem,1.25vw,24px)] text-white">
-                                Kelas Olahraga Terstruktur
-                            </span>
+            <div className={`${SECTION_CONTAINER_CLASS} pb-0 pt-[1.85rem]`}>
+                <div className="mb-[6.75rem] grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10">
+                    <div className="flex flex-col gap-[3.2rem] xl:col-span-8">
+                        <div className="flex items-center gap-4">
+                            <span className="section-label-diamond" />
+                            <ScrollTextReveal className="font-bdo text-[clamp(1.16rem,1.32vw,1.45rem)] font-medium tracking-[-0.025em] text-white">
+                                Gabung Member Sekarang
+                            </ScrollTextReveal>
                         </div>
-                        <h2 className="font-bdo font-medium text-[clamp(2rem,2.7vw,52px)] leading-[1.1] tracking-[-0.021em] text-white">
-                            Ikuti kelas yang dipandu instruktur berpengalaman,
-                            sesuai level dan tujuan Anda.
-                        </h2>
+                        <ScrollTextReveal
+                            as="h2"
+                            split="block"
+                            delay={80}
+                            className={`${DARK_HEADING_CLASS} max-w-[60rem]`}
+                        >
+                            Area gym ini dirancang kardio yang sangat nyaman
+                            bagi seluruh pengguna yang ada di UB Sport Center®
+                        </ScrollTextReveal>
                     </div>
 
-                    <div className="xl:col-span-4 flex flex-col xl:items-end xl:justify-end gap-4 xl:gap-6">
+                    <div className="flex flex-col gap-4 xl:col-span-4 xl:items-end xl:justify-start xl:gap-[4.2rem] xl:pt-[4.95rem]">
                         <AnimatedBookingLink
-                            label="Ikuti Keseruan Kami"
+                            label="More about me"
                             href="/coming-soon"
+                            width="18rem"
                         />
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-5">
                             <button
                                 onClick={() => emblaApi?.scrollPrev()}
                                 aria-label="Previous"
-                                className="flex-shrink-0 flex size-11 items-center justify-center rounded-full border border-white/30 text-white hover:bg-white/10 transition-colors"
+                                className="flex size-[2.75rem] flex-shrink-0 items-center justify-center rounded-full border border-white text-white transition-colors hover:bg-white/10"
                             >
                                 <ArrowLeft />
                             </button>
                             <button
                                 onClick={() => emblaApi?.scrollNext()}
                                 aria-label="Next"
-                                className="flex-shrink-0 flex size-11 items-center justify-center rounded-full bg-white text-black hover:bg-white/90 transition-colors"
+                                className="flex size-[2.75rem] flex-shrink-0 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-white/90"
                             >
                                 <ArrowRight />
                             </button>
@@ -134,7 +165,7 @@ export default function PricingClassSection({ facilities = [] }: Props) {
                 </div>
 
                 <div className="min-w-0 overflow-hidden" ref={emblaRef}>
-                    <div className="flex gap-4 xl:gap-6">
+                    <div className="flex gap-[0.95rem]">
                         {activeClasses.map((item) => (
                             <PricingClassCard key={item.id} item={item} />
                         ))}

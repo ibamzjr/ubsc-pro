@@ -7,7 +7,7 @@ import PricingAccordionSection from "@/Components/Pricing/PricingAccordionSectio
 import AboutSectionContact from "@/Components/About/AboutSectionContact";
 import Footer from "@/Components/Landing/Footer";
 import { Head, usePage } from "@inertiajs/react";
-import type { PageProps } from "@/types";
+import type { MembershipPlanItem, PageProps } from "@/types";
 
 type PricingPageProps = PageProps<{
     facilities?: Array<{
@@ -22,10 +22,12 @@ type PricingPageProps = PageProps<{
         rating?: number | null;
         display_metadata?: Record<string, unknown> | null;
     }>;
+    membershipPlans?: MembershipPlanItem[];
 }>;
 
 export default function PricingPage() {
-    const { facilities = [] } = usePage<PricingPageProps>().props;
+    const { facilities = [], membershipPlans = [] } =
+        usePage<PricingPageProps>().props;
     return (
         <>
             <Head>
@@ -51,9 +53,8 @@ export default function PricingPage() {
             </Head>
             <main className="relative">
                 <Navbar activeSection="Pricing" />
-                <Navbar activeSection="Pricing" />
                 <PricingHero />
-                <PricingInfo />
+                <PricingInfo membershipPlans={membershipPlans} />
                 <PricingFacilityList facilities={facilities} />
                 <PricingClassSection facilities={facilities} />
                 <PricingAccordionSection facilities={facilities} />
