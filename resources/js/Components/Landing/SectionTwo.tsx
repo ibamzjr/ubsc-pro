@@ -43,7 +43,7 @@ const DUMMY_IMAGES: CarouselImage[] = [
     },
 ];
 
-const FALLBACK_PLANS: MembershipPlanItem[] = [
+export const FALLBACK_MEMBERSHIP_PLANS: MembershipPlanItem[] = [
     {
         id: 0,
         name: "Design Agencies & Team",
@@ -393,7 +393,7 @@ function SectionTwoHeadline() {
     );
 }
 
-function MembershipPlanCarousel({ plans }: { plans: MembershipPlanItem[] }) {
+export function MembershipPlanCarousel({ plans }: { plans: MembershipPlanItem[] }) {
     const [emblaRef, emblaApi] = useEmblaCarousel({
         align: "start",
         containScroll: "trimSnaps",
@@ -590,7 +590,7 @@ export default function SectionTwo({
         () =>
             membershipPlans && membershipPlans.length > 0
                 ? membershipPlans
-                : FALLBACK_PLANS,
+                : FALLBACK_MEMBERSHIP_PLANS,
         [membershipPlans],
     );
 
