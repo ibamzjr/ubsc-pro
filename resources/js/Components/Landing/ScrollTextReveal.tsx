@@ -8,7 +8,7 @@ import {
     useState,
 } from "react";
 
-type RevealTag = "span" | "p" | "h2" | "h3" | "div";
+type RevealTag = "span" | "p" | "h1" | "h2" | "h3" | "div";
 type RevealSplit = "block" | "words" | "lines";
 
 interface ScrollTextRevealProps {

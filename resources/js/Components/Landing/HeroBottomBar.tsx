@@ -8,6 +8,8 @@ interface HeroBottomBarProps {
     showVideo?: boolean;
     /** 'solid' = opaque bg (default); 'transparent' = no bg, only the top border line */
     variant?: "solid" | "transparent";
+    insetLine?: boolean;
+    compact?: boolean;
 }
 
 function getCleanDescription(description: string) {
@@ -75,6 +77,8 @@ export default function HeroBottomBar({
     targetId = "about",
     showVideo = true,
     variant = "solid",
+    insetLine = false,
+    compact = false,
 }: HeroBottomBarProps) {
     const rootRef = useRef<HTMLDivElement>(null);
     const [rotated, setRotated] = useState(false);
@@ -175,9 +179,23 @@ export default function HeroBottomBar({
                 />
             )}
 
-            <div className="absolute left-0 right-0 top-0 border-t border-white/35" />
+            <div
+                className={`absolute top-0 border-t border-white/35 ${
+                    insetLine
+                        ? "left-[clamp(2.75rem,3.25vw,4rem)] right-[clamp(2.75rem,3.25vw,4rem)]"
+                        : "left-0 right-0"
+                }`}
+            />
 
-            <div className="relative z-10 hidden min-h-[100px] grid-cols-[minmax(152px,0.72fr)_minmax(360px,1fr)_minmax(220px,0.72fr)] items-center gap-6 px-[clamp(2rem,4.2vw,4.25rem)] py-6 xl:grid">
+            <div
+                className={`relative z-10 hidden grid-cols-[minmax(152px,0.72fr)_minmax(360px,1fr)_minmax(220px,0.72fr)] items-center gap-6 xl:grid ${
+                    compact ? "min-h-[72px] py-3" : "min-h-[100px] py-6"
+                } ${
+                    insetLine
+                        ? "px-[clamp(2.75rem,3.25vw,4rem)]"
+                        : "px-[clamp(2rem,4.2vw,4.25rem)]"
+                }`}
+            >
                 <div className="hero-bottom-item hero-bottom-item--meta flex items-center gap-2">
                     <span className="font-bdo text-[16px] font-light leading-none text-white">
                         {sectionNumber}
@@ -187,7 +205,11 @@ export default function HeroBottomBar({
                     </span>
                 </div>
 
-                <p className="hero-bottom-item hero-bottom-item--copy mx-auto max-w-[560px] text-left font-bdo text-[16px] font-light leading-[1.32] text-white">
+                <p
+                    className={`hero-bottom-item hero-bottom-item--copy mx-auto max-w-[560px] font-bdo text-[16px] font-light leading-[1.32] text-white ${
+                        insetLine ? "text-center" : "text-left"
+                    }`}
+                >
                     {isHomepageDescription ? (
                         <>
                             <span className="block whitespace-nowrap">
@@ -223,7 +245,11 @@ export default function HeroBottomBar({
                     </span>
                 </div>
 
-                <p className="hero-bottom-item hero-bottom-item--copy max-w-[440px] text-left font-bdo text-[15px] font-light leading-[1.32] text-white">
+                <p
+                    className={`hero-bottom-item hero-bottom-item--copy max-w-[440px] font-bdo text-[15px] font-light leading-[1.32] text-white ${
+                        insetLine ? "mx-auto text-center" : "text-left"
+                    }`}
+                >
                     <span className="font-medium">UB Sport Center</span>
                     <span> - </span>
                     {cleanDescription}

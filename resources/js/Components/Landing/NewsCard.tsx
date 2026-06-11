@@ -12,6 +12,8 @@ interface NewsCardProps extends NewsItem {
     layoutOverride?: "berita" | "artikel" | "alternate";
     className?: string;
     compact?: boolean;
+    variant?: "default" | "news-page";
+    featured?: boolean;
 }
 
 export default function NewsCard({
@@ -24,6 +26,8 @@ export default function NewsCard({
     layoutOverride,
     className,
     compact = false,
+    variant = "default",
+    featured = false,
 }: NewsCardProps) {
     const isImageTop =
         layoutOverride === "berita"
@@ -31,6 +35,92 @@ export default function NewsCard({
             : layoutOverride === "artikel"
               ? false
               : index % 2 === 0;
+
+    if (variant === "news-page") {
+        const outerClass =
+            className ?? (featured ? "w-full aspect-[857/529]" : "w-full aspect-[413/529]");
+        const imageClass = featured ? "aspect-[857/311]" : "aspect-[413/233]";
+        const padClass = featured
+            ? "px-[clamp(1rem,1.1vw,1.3125rem)] py-[clamp(1.125rem,1.45vw,1.875rem)]"
+            : "px-[clamp(1rem,1.1vw,1.3125rem)] py-[clamp(1rem,1.45vw,1.75rem)]";
+        const badgeTone =
+            category === "Artikel"
+                ? "linear-gradient(to right, #15678d, #153359)"
+                : "linear-gradient(to right, #790a0a, #FF0000)";
+        const descriptionTone = isImageTop ? "text-black/70" : "text-white/70";
+
+        const imageNode = (
+            <div className={`relative w-full flex-shrink-0 overflow-hidden ${imageClass}`}>
+                <img
+                    src={image}
+                    alt={title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    draggable={false}
+                    loading="lazy"
+                />
+                <span
+                    className={`absolute left-4 rounded-[4px] px-3 py-1 font-bdo text-xs font-medium text-white ${
+                        isImageTop ? "top-4" : "bottom-4"
+                    }`}
+                    style={{ background: badgeTone }}
+                >
+                    {category}
+                </span>
+            </div>
+        );
+
+        const titleNode = (
+            <p className="font-bdo text-lg font-medium leading-snug text-current line-clamp-2 xl:text-xl">
+                {title}
+            </p>
+        );
+        const descNode =
+            description && (
+                <p
+                    className={`mt-2 font-bdo text-sm font-normal leading-relaxed line-clamp-3 xl:text-base ${descriptionTone}`}
+                >
+                    {description}
+                </p>
+            );
+
+        return (
+            <article
+                className={`group flex min-h-0 cursor-pointer flex-col overflow-hidden border border-black/5 ${outerClass}`}
+            >
+                {isImageTop ? (
+                    <>
+                        {imageNode}
+                        <div className={`flex min-h-0 flex-1 flex-col bg-white text-black ${padClass}`}>
+                            <div className="min-h-0">
+                                {titleNode}
+                                {descNode}
+                            </div>
+                            <div className="mt-auto flex h-12 items-end">
+                                <span className="font-bdo text-base font-normal text-black/70 xl:text-lg">
+                                    {date}
+                                </span>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className={`flex min-h-0 flex-1 flex-col bg-black text-white ${padClass}`}>
+                            <div className="flex h-10 items-start">
+                                <span className="font-bdo text-base font-normal text-white/70 xl:text-lg">
+                                    {date}
+                                </span>
+                            </div>
+                            <div className="mt-auto min-h-0">
+                                {descNode}
+                                <div className="mt-4">{titleNode}</div>
+                            </div>
+                        </div>
+                        {imageNode}
+                    </>
+                )}
+            </article>
+        );
+    }
 
     const outerClass =
         className ??

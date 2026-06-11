@@ -18,11 +18,13 @@ const FALLBACK_LOGOS: SponsorItem[] = [
 interface LogoMarqueeProps {
     sponsors?: SponsorItem[];
     density?: "default" | "compact";
+    label?: string;
 }
 
 export default function LogoMarquee({
     sponsors,
     density = "default",
+    label,
 }: LogoMarqueeProps) {
     const logos =
         sponsors && sponsors.filter((item) => item.img).length > 0
@@ -205,6 +207,37 @@ export default function LogoMarquee({
         );
     };
 
+    const marquee = (
+        <div
+            ref={railRef}
+            className="sponsor-logo-rail"
+            onPointerEnter={handlePointerEnter}
+            onPointerLeave={handlePointerLeave}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={endPointerDrag}
+            onPointerCancel={endPointerDrag}
+        >
+            <div ref={trackRef} className="sponsor-logo-track flex w-max">
+                <div ref={groupRef} className="flex shrink-0 gap-2 pr-2" aria-hidden>
+                    {marqueeLogos.map((logo, index) =>
+                        renderLogo(logo, index, "primary"),
+                    )}
+                </div>
+                <div className="flex shrink-0 gap-2 pr-2">
+                    {marqueeLogos.map((logo, index) =>
+                        renderLogo(logo, index, "secondary"),
+                    )}
+                </div>
+                <div className="flex shrink-0 gap-2 pr-2" aria-hidden>
+                    {marqueeLogos.map((logo, index) =>
+                        renderLogo(logo, index, "tertiary"),
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <section className={`w-full overflow-hidden bg-white ${isCompact ? "pb-5" : "pb-6"}`}>
             <style>{`
@@ -222,34 +255,18 @@ export default function LogoMarquee({
                     transform: translateZ(0);
                 }
             `}</style>
-            <div
-                ref={railRef}
-                className="sponsor-logo-rail"
-                onPointerEnter={handlePointerEnter}
-                onPointerLeave={handlePointerLeave}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={endPointerDrag}
-                onPointerCancel={endPointerDrag}
-            >
-                <div ref={trackRef} className="sponsor-logo-track flex w-max">
-                    <div ref={groupRef} className="flex shrink-0 gap-2 pr-2" aria-hidden>
-                        {marqueeLogos.map((logo, index) =>
-                            renderLogo(logo, index, "primary"),
-                        )}
-                    </div>
-                    <div className="flex shrink-0 gap-2 pr-2">
-                        {marqueeLogos.map((logo, index) =>
-                            renderLogo(logo, index, "secondary"),
-                        )}
-                    </div>
-                    <div className="flex shrink-0 gap-2 pr-2" aria-hidden>
-                        {marqueeLogos.map((logo, index) =>
-                            renderLogo(logo, index, "tertiary"),
-                        )}
+            {label ? (
+                <div className="grid items-center gap-8 lg:grid-cols-[minmax(10rem,13.5rem)_minmax(0,1fr)]">
+                    <p className="font-bdo text-[clamp(0.88rem,0.95vw,1rem)] font-semibold uppercase leading-none tracking-[-0.04em] text-[#242424]">
+                        {label}
+                    </p>
+                    <div className="min-w-0 overflow-hidden">
+                        {marquee}
                     </div>
                 </div>
-            </div>
+            ) : (
+                marquee
+            )}
         </section>
     );
 }
