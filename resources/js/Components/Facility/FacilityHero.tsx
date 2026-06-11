@@ -3,13 +3,19 @@ import HeroBottomBar from "@/Components/Landing/HeroBottomBar";
 import TopBg from "@/../assets/hero/Top.png";
 
 const FACILITY_IMAGES = [
-    { src: "/assets/images/fasilitas-futsal-ub-sport-center.avif", alt: "" },
-    { src: "/assets/images/fasilitas-yoga-ub-sport-center.avif", alt: "" },
+    { src: "/assets/images/fasilitas-tenis-ub-sport-center.avif", alt: "" },
+    {
+        src: "/assets/images/gym-konten-2-olahraga-ub-sport-center.avif",
+        alt: "",
+    },
+    {
+        src: "/assets/images/fasilitas-sepak-bola-ub-sport-center.avif",
+        alt: "",
+    },
     {
         src: "/assets/images/fasilitas-arena-terbuka-dieng-ub-sport-center-malang.avif",
         alt: "",
     },
-    { src: "/assets/images/fasilitas-aerobik-ub-sport-center.avif", alt: "" },
     {
         src: "/assets/images/fasilitas-bulutangkis-ub-sport-center.avif",
         alt: "",
@@ -37,13 +43,23 @@ const ArrowRight = () => (
 
 export default function FacilityHero() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: true,
+        loop: false,
         align: "start",
     });
+    const scrollNext = () => {
+        if (!emblaApi) return;
+
+        if (emblaApi.canScrollNext()) {
+            emblaApi.scrollNext();
+            return;
+        }
+
+        emblaApi.scrollTo(0);
+    };
 
     return (
         <section
-            className="relative w-full h-screen min-h-[700px] flex flex-col overflow-hidden"
+            className="relative flex h-screen min-h-[700px] w-full flex-col overflow-hidden"
             id="facility-hero"
         >
             <div className="pointer-events-none absolute inset-0 z-0">
@@ -56,38 +72,40 @@ export default function FacilityHero() {
                 <div className="absolute inset-0 " />
             </div>
 
-            <div className="relative z-10 pt-32 px-8 xl:px-20">
-                <h1 className="font-archivo font-extrabold text-[clamp(3rem,5vw,52px)] text-white leading-[1.2]">
+            <div className="relative z-10 px-[clamp(2.75rem,3.25vw,4rem)] pt-[clamp(8.25rem,6.7vw,8.75rem)]">
+                <h1 className="font-bdo text-[clamp(2.35rem,2.55vw,2.85rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white">
                     Fasilitas Terbaik Kami
                 </h1>
             </div>
 
             <div className="flex-1 " />
 
-            <div className="relative z-10"> 
+            <div className="relative z-10">
                 <HeroBottomBar
                     variant="transparent"
                     sectionNumber="04/"
                     sectionLabel="facilitypage"
-                    description="Temukan fasilitas olahraga terlengkap di UB Sport Center Malang."
+                    description="UB Sport Center – Temukan fasilitas olahraga modern untuk berlatih, berprestasi, dan berkembang bersama."
                     targetId="facility-content"
                     showVideo={false}
+                    insetLine
+                    compact
                 />
             </div>
 
-            <div className="relative z-10 pt-6 pb-8">
+            <div className="relative z-10 pb-[2.15rem] pt-[1.55rem]">
                 <div
-                    className="min-w-0 overflow-hidden pl-8 xl:pl-20 pr-20"
+                    className="min-w-0 overflow-hidden pl-[clamp(2.75rem,3.25vw,4rem)] pr-[clamp(2.75rem,3.25vw,4rem)]"
                     ref={emblaRef}
                 >
-                    <div className="flex gap-4">
+                    <div className="flex gap-[1rem]">
                         {FACILITY_IMAGES.map((img, i) => (
                             <div
                                 key={i}
-                                className={`flex-shrink-0 overflow-hidden rounded-2xl h-[200px] xl:h-[360px] ${
+                                className={`h-[200px] flex-shrink-0 overflow-hidden rounded-[0.8rem] xl:h-[18rem] ${
                                     i % 2 === 0
-                                        ? "w-[80vw] xl:w-[640px]"
-                                        : "w-[32vw] xl:w-[250px]"
+                                        ? "w-[74vw] xl:w-[32rem]"
+                                        : "w-[34vw] xl:w-[16rem]"
                                 }`}
                             >
                                 <img
@@ -101,9 +119,9 @@ export default function FacilityHero() {
                     </div>
                 </div>
                 <button
-                    onClick={() => emblaApi?.scrollNext()}
+                    onClick={scrollNext}
                     aria-label="Next"
-                    className="absolute right-8 top-1/2 -translate-y-1/2 z-20 flex size-12 items-center justify-center rounded-full bg-accent-red text-white hover:bg-accent-red/90 transition-colors flex-shrink-0"
+                    className="absolute right-[clamp(1.25rem,2.75vw,3.5rem)] top-1/2 z-20 flex size-[3.25rem] -translate-y-1/2 flex-shrink-0 items-center justify-center rounded-full bg-accent-red text-white transition-colors hover:bg-accent-red/90"
                 >
                     <ArrowRight />
                 </button>
