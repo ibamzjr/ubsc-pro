@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 
 const ArrowIcon: React.FC<{ size?: number }> = ({ size = 32 }) => (
     <svg
@@ -21,11 +21,15 @@ const ArrowIcon: React.FC<{ size?: number }> = ({ size = 32 }) => (
 interface AnimatedBookingLinkProps {
     href?: string;
     label?: string;
+    width?: CSSProperties["width"];
+    className?: string;
 }
 
 export default function AnimatedBookingLink({
     href = "/coming-soon",
     label = "Booking sekarang juga!",
+    width,
+    className = "",
 }: AnimatedBookingLinkProps) {
     const [hovered, setHovered] = useState(false);
 
@@ -36,7 +40,8 @@ export default function AnimatedBookingLink({
             rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="relative w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1"
+            className={`relative block w-full cursor-pointer select-none overflow-hidden border-b border-white/35 py-1 ${className}`}
+            style={{ width }}
             aria-label={label}
         >
             <span

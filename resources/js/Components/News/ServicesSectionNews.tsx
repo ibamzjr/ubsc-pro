@@ -12,65 +12,23 @@ interface DummyNewsItem extends NewsItem {
     description: string;
 }
 
-const DUMMY_NEWS: DummyNewsItem[] = [
-    {
-        id: 1,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: NewsHeroBg,
-    },
-    {
-        id: 2,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: "/assets/images/comingsoon.avif",
-    },
-    {
-        id: 3,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: "/assets/images/comingsoon.avif",
-    },
-    {
-        id: 4,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: "/assets/images/comingsoon.avif",
-    },
-    {
-        id: 5,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: "/assets/images/comingsoon.avif",
-    },
-    {
-        id: 6,
-        title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
-        description:
-            "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
-        date: "26.02.2026",
-        category: "Berita",
-        image: "/assets/images/comingsoon.avif",
-    },
-];
+const DUMMY_NEWS: DummyNewsItem[] = Array.from({ length: 6 }, (_, idx) => ({
+    id: idx + 1,
+    title: "Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir",
+    description:
+        "Streaming is transforming how we watch movies and TV. Explore trends shaping 2025, including......",
+    date: "26.02.2026",
+    category: "Berita",
+    image: idx === 0 ? NewsHeroBg : "/assets/images/comingsoon.avif",
+}));
 
-const CARD_CLASS = "h-[clamp(22.5rem,19rem+9vw,30rem)] w-full";
-const COMPACT_CARD_CLASS = "w-full aspect-[208/267]";
+const SECTION_CONTAINER_CLASS =
+    "mx-auto px-6 py-8 sm:px-10 sm:py-12 xl:px-[clamp(70px,4.53vw,87px)]";
+const CARD_FEATURED_CLASS =
+    "w-full aspect-[857/529] md:col-span-2 xl:col-span-2";
+const CARD_STANDARD_CLASS = "w-full aspect-[413/529]";
+const CARD_GRID_CLASS =
+    "grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-[clamp(24px,1.56vw,30px)]";
 
 function useResponsiveCurve(mobile: number, desktop: number): number {
     const [curve, setCurve] = useState<number>(() =>
@@ -78,12 +36,14 @@ function useResponsiveCurve(mobile: number, desktop: number): number {
             ? mobile
             : desktop,
     );
+
     useEffect(() => {
         const update = () =>
             setCurve(window.innerWidth < 1280 ? mobile : desktop);
         window.addEventListener("resize", update);
         return () => window.removeEventListener("resize", update);
     }, [mobile, desktop]);
+
     return curve;
 }
 
@@ -101,48 +61,20 @@ export default function ServicesSectionNews({
             "linear-gradient(266deg, #15678d 3%, #173859 61%, #002244 97%)",
     } as const;
 
-    // Mobile: same CARD_CLASS height; video uses absolute inset-0 to truly fill flex-1
-    const unggulanCardMobile = (
+    const unggulanCard = (
         <div
-            className="w-full flex flex-col p-6 overflow-hidden"
+            className={`${CARD_STANDARD_CLASS} flex flex-col overflow-hidden p-6`}
             style={unggulanBg}
         >
-            <div className="flex items-center justify-center gap-2 mb-2">
-                <p className="font-bdo font-medium text-[0.75rem] text-white text-center">
+            <div className="mb-2 flex items-center justify-center gap-2">
+                <p className="text-center font-bdo text-xs font-medium text-white xl:text-sm">
                     Unggulan Kami
                 </p>
             </div>
-            <p className="font-bdo font-medium text-[0.875rem] text-white text-center leading-snug">
+            <p className="text-center font-bdo text-sm font-medium leading-snug text-white xl:text-base">
                 Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir
             </p>
-            <div className="mt-4 rounded-sm overflow-hidden">
-                <video
-                    src="/assets/reels/tennis vid.mp4"
-                    className="w-full h-auto block"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                />
-            </div>
-        </div>
-    );
-
-    // Desktop: fixed card height with flex-1 video container
-    const unggulanCardDesktop = (
-        <div
-            className={`${CARD_CLASS} flex flex-col p-6 overflow-hidden`}
-            style={unggulanBg}
-        >
-            <div className="flex items-center justify-center gap-2 mb-2">
-                <p className="font-bdo font-medium text-[clamp(0.75rem,0.73vw,0.875rem)] text-white text-center">
-                    Unggulan Kami
-                </p>
-            </div>
-            <p className="font-bdo font-medium text-[clamp(0.875rem,0.83vw,1rem)] text-white text-center leading-snug">
-                Dalam Pengembangan: Fitur artikel dan berita akan Segera Hadir
-            </p>
-            <div className="flex-1 mt-4 bg-black/40 rounded-sm overflow-hidden">
+            <div className="mt-4 flex-1 overflow-hidden rounded-sm bg-black/40">
                 <video
                     src="/assets/reels/tennis vid.mp4"
                     className="h-full w-full object-cover"
@@ -156,8 +88,8 @@ export default function ServicesSectionNews({
     );
 
     return (
-        <section className="bg-[#F5F7F9] overflow-x-clip" id="news-content">
-            <div className="mx-auto max-w px-6 py-8 sm:px-10 sm:py-12 xl:px-24">
+        <section className="overflow-x-clip bg-[#F5F7F9]" id="news-content">
+            <div className={SECTION_CONTAINER_CLASS}>
                 <SectionDivider
                     number="01"
                     title="Berita Kami"
@@ -165,107 +97,73 @@ export default function ServicesSectionNews({
                     theme="light"
                 />
 
-                {/* Header */}
-                <div className="mt-10 flex flex-col xl:flex-row xl:items-end justify-between mb-8 xl:mb-12 gap-3 xl:gap-0">
+                <div className="mb-8 mt-10 flex flex-col justify-between gap-3 xl:mb-12 xl:flex-row xl:items-end xl:gap-0">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-3">
-                            <div className="size-[14px] xl:size-[17px] rounded-[5px] bg-[#ff0000] flex-shrink-0" />
-                            <span className="font-bdo font-regular text-[clamp(1rem,1.25vw,1.5rem)] text-black">
+                            <div className="size-[14px] flex-shrink-0 rounded-[5px] bg-[#ff0000] xl:size-[17px]" />
+                            <span className="font-bdo text-[clamp(1rem,1.25vw,1.5rem)] font-normal text-black">
                                 Berita Terbaru Kami
                             </span>
                         </div>
-                        <h2 className="mt-10 font-bdo font-medium text-[clamp(2rem,2.7vw,3.25rem)] leading-[1.1] tracking-[-0.021em] text-black">
+                        <h2 className="mt-10 font-bdo text-[clamp(2rem,2.7vw,3.25rem)] font-medium leading-[1.1] tracking-[-0.021em] text-black">
                             Berita Terkini Kami
                         </h2>
                     </div>
-                    {/* Desktop-only nav link */}
                     <a
                         href="#"
-                        className="hidden xl:flex items-center gap-2 font-bdo font-normal text-[clamp(1rem,1.25vw,1.5rem)] text-[#ff0000] xl:flex-shrink-0 hover:gap-3 transition-all duration-300"
+                        className="hidden items-center gap-2 font-bdo text-[clamp(1rem,1.25vw,1.5rem)] font-normal text-[#ff0000] transition-all duration-300 hover:gap-3 xl:flex xl:flex-shrink-0"
                     >
                         Lihat Selengkapnya
                         <ArrowRight size={18} />
                     </a>
                 </div>
 
-                {/* === MOBILE LAYOUT (hidden on xl+) === */}
-                <div className="xl:hidden">
-                    {/* 1. Featured card — full width */}
+                <div className={`${CARD_GRID_CLASS} pb-12`}>
                     <NewsCard
                         {...featured}
                         description={undefined}
                         index={0}
                         layoutOverride="berita"
-                        className={CARD_CLASS}
+                        className={CARD_FEATURED_CLASS}
+                        variant="news-page"
+                        featured
                     />
 
-                    {/* 2. Lihat Selengkapnya — right-aligned, immediately after featured */}
-                    <div className="flex justify-end mt-3 mb-4">
+                    <div className="flex justify-end md:hidden">
                         <a
                             href="#"
-                            className="flex items-center gap-2 font-bdo font-normal text-sm text-[#ff0000] hover:gap-3 transition-all duration-300"
+                            className="flex items-center gap-2 font-bdo text-sm font-normal text-[#ff0000] transition-all duration-300 hover:gap-3"
                         >
                             Lihat Selengkapnya
                             <ArrowRight size={16} />
                         </a>
                     </div>
 
-                    {/* 3. 2-column grid — remaining news cards */}
-                    <div className="grid grid-cols-2 gap-3">
-                        {[standard, ...bottom4].map((item, idx) => (
-                            <NewsCard
-                                key={item.id}
-                                {...item}
-                                index={idx + 1}
-                                layoutOverride="berita"
-                                className={COMPACT_CARD_CLASS}
-                                compact
-                            />
-                        ))}
-                    </div>
+                    <NewsCard
+                        {...standard}
+                        index={1}
+                        layoutOverride="berita"
+                        className={CARD_STANDARD_CLASS}
+                        variant="news-page"
+                    />
 
-                    {/* 4. Unggulan — last on mobile */}
-                    <div className="mt-3">{unggulanCardMobile}</div>
-                </div>
+                    <div className="hidden md:block">{unggulanCard}</div>
 
-                {/* === DESKTOP LAYOUT (hidden on mobile) === */}
-                <div className="hidden xl:grid xl:grid-cols-4 xl:gap-8 pb-12">
-                    {/* Featured — spans 2 cols */}
-                    <div className="xl:col-span-2">
-                        <NewsCard
-                            {...featured}
-                            description={undefined}
-                            index={0}
-                            layoutOverride="berita"
-                            className={CARD_CLASS}
-                        />
-                    </div>
-                    {/* Standard — col 3 */}
-                    <div className="col-span-1">
-                        <NewsCard
-                            {...standard}
-                            index={1}
-                            layoutOverride="berita"
-                            className={CARD_CLASS}
-                        />
-                    </div>
-                    {/* Unggulan — col 4 (same row as featured) */}
-                    <div className="col-span-1">{unggulanCardDesktop}</div>
-                    {/* Bottom 4 news */}
                     {bottom4.map((item, idx) => (
-                        <div key={item.id} className="col-span-1">
-                            <NewsCard
-                                {...item}
-                                index={idx + 2}
-                                layoutOverride="berita"
-                                className={CARD_CLASS}
-                            />
-                        </div>
+                        <NewsCard
+                            key={item.id}
+                            {...item}
+                            index={idx + 2}
+                            layoutOverride="berita"
+                            className={CARD_STANDARD_CLASS}
+                            variant="news-page"
+                        />
                     ))}
+
+                    <div className="md:hidden">{unggulanCard}</div>
                 </div>
             </div>
 
-            {/* CurvedLoop — very bottom */}
             <div
                 className="relative mx-4 overflow-hidden py-36 xl:mx-16 xl:mb-12 xl:py-52"
                 style={{
@@ -276,7 +174,7 @@ export default function ServicesSectionNews({
                 }}
             >
                 <CurvedLoop
-                    marqueeText="UB   ✦   SPORT  ✦  CENTER   ✦   UBSC   ✦   "
+                    marqueeText="UB   *   SPORT  *  CENTER   *   UBSC   *   "
                     speed={1.5}
                     curveAmount={curveAmount}
                     direction="left"
